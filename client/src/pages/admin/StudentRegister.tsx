@@ -133,7 +133,7 @@ const StudentRegister = () => {
           <p>برای وارد کردن همزمان چندین هنرجو، از بخش بارگذاری فایل Excel استفاده کنید。</p>
           <p>
             جهت بارگذاری گروهی به{" "}
-            <Link to={"/admin/dashboard"} className="text-blue-600 underline">
+            <Link to={"/admin/students"} className="text-blue-600 underline">
               صفحه لیست هنرجویان
             </Link>{" "}
             مراجعه کنید。

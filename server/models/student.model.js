@@ -24,7 +24,7 @@ const studentSchema = new mongoose.Schema({
   academic_year: { type: String, required: true },
   education_level: { type: String, required: true },
   mother_job: { type: String, required: true },
-  grade: { type: Number }, // ← اصلاح شده: قبلاً String بود
+  grade: { type: Number },
 
   emergency_phone: {
     type: String, required: true, match: /^09\d{9}$/

@@ -4,6 +4,7 @@ import Dashboard from "./pages/admin/Dashboard"
 import AdminLayout from "./layout/AdminLayout"
 import StudentRegister from "./pages/admin/StudentRegister"
 import { Toaster } from "sonner"
+import StudentsPage from "./pages/admin/Students"
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route path='dashboard' element={<Dashboard />} />
             <Route path='register-student' element={<StudentRegister />} />
+            <Route path='students' element={<StudentsPage />} />
           </Route>
         </Routes>
       </Router>

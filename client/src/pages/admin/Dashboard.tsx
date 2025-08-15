@@ -24,7 +24,7 @@ const cards = [
     body: "لیست دانش آموزان",
     desc: "ویرایش ، حذف ، بارگزاری تصویر",
     icon: <PiStudentBold size={40} />,
-    href: "/admin/dashboard",
+    href: "/admin/students",
     hasPerm: true,
   },
   {
