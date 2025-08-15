@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const mongoose = require('mongoose');
 const multer = require('multer');
 const Student = require('../models/student.model');
 const XLSX = require('xlsx');
@@ -73,15 +74,15 @@ exports.getAllStudents = async (req, res) => {
 
     const searchQuery = search
       ? {
-          $or: [
-            { first_name: new RegExp(search, 'i') },
-            { last_name: new RegExp(search, 'i') },
-            { national_code: new RegExp(search, 'i') },
-            { student_phone: new RegExp(search, 'i') },
-            { father_phone: new RegExp(search, 'i') },
-            { mother_phone: new RegExp(search, 'i') },
-          ],
-        }
+        $or: [
+          { first_name: new RegExp(search, 'i') },
+          { last_name: new RegExp(search, 'i') },
+          { national_code: new RegExp(search, 'i') },
+          { student_phone: new RegExp(search, 'i') },
+          { father_phone: new RegExp(search, 'i') },
+          { mother_phone: new RegExp(search, 'i') },
+        ],
+      }
       : {};
 
     const students = await Student.find(searchQuery)
@@ -198,68 +199,247 @@ exports.createStudent = async (req, res) => {
   }
 };
 
+// Enum translations for Persian
+const translations = {
+  marital_status: {
+    single: 'مجرد',
+    married: 'متاهل',
+    divorced: 'طلاق گرفته',
+    widowed: 'بیوه'
+  },
+  residence_status: {
+    'مالک': 'مالک',
+    'مستاجر': 'مستاجر',
+    'سایر': 'سایر'
+  },
+  academic_status: {
+    high: 'بالا',
+    medium: 'متوسط',
+    low: 'پایین'
+  },
+  evaluation_result: {
+    accepted: 'پذیرفته شده',
+    notAccepted: 'پذیرفته نشده'
+  }
+};
+
 // ==== Import students from Excel ====
 exports.importStudentsFromExcel = async (req, res) => {
+  let filePath;
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'لطفاً فایل اکسل را آپلود کنید' });
     }
 
-    const workbook = XLSX.readFile(req.file.path);
+    filePath = req.file.path;
+    const workbook = XLSX.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
 
-    // Required headers for validation
-    const requiredHeaders = ['نام', 'نام خانوادگی', 'کد ملی']; // or their English equivalents
+    // Validate headers
+    const requiredHeaders = ['نام', 'نام خانوادگی', 'کد ملی'];
     const headers = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 })[0];
-    const missingHeaders = requiredHeaders.filter((header) => !headers.includes(header) && !headers.includes(header.replace('نام', 'first_name').replace('نام خانوادگی', 'last_name').replace('کد ملی', 'national_code')));
+    const missingHeaders = requiredHeaders.filter(
+      (header) =>
+        !headers.includes(header) &&
+        !headers.includes(
+          header.replace('نام', 'first_name').replace('نام خانوادگی', 'last_name').replace('کد ملی', 'national_code')
+        )
+    );
     if (missingHeaders.length > 0) {
-      fs.unlinkSync(req.file.path); // Clean up uploaded file
-      return res.status(400).json({ message: `Missing required headers: ${missingHeaders.join(', ')}` });
+      return res.status(400).json({ message: `ستون‌های ضروری وجود ندارند: ${missingHeaders.join(', ')}` });
     }
 
     let addedCount = 0;
     let skippedCount = 0;
     let skippedRows = [];
 
+    const phoneRegex = /^09\d{9}$/;
+    const nationalCodeRegex = /^\d{10}$/;
+    const homePhoneRegex = /^\d{8,11}$/;
+    const validMaritalStatus = ['single', 'married', 'divorced', 'widowed'];
+    const validResidenceStatus = ['مالک', 'مستاجر', 'سایر'];
+    const validAcademicStatus = ['high', 'medium', 'low'];
+    const validEvaluationResult = ['accepted', 'notAccepted'];
+
+    // Map Persian values to English for enum fields
+    const maritalStatusMap = {
+      'مجرد': 'single',
+      'متاهل': 'married',
+      'مطلقه': 'divorced',
+      'بیوه': 'widowed',
+    };
+    const academicStatusMap = {
+      'بالا': 'high',
+      'متوسط': 'medium',
+      'پایین': 'low',
+    };
+    const evaluationResultMap = {
+      'پذیرفته شده': 'accepted',
+      'پذیرفته نشده': 'notAccepted',
+    };
+
     for (let row of sheetData) {
       const studentData = {
-        first_name: row['نام'] || row['first_name'],
-        last_name: row['نام خانوادگی'] || row['last_name'],
-        father_name: row['نام پدر'] || row['father_name'],
-        mother_name: row['نام مادر'] || row['mother_name'],
-        national_code: row['کد ملی'] || row['national_code'],
-        birth_date: row['تاریخ تولد'] || row['birth_date'],
-        birth_certificate_number: row['شماره شناسنامه'] || row['birth_certificate_number'],
-        student_phone: row['تلفن دانش‌آموز'] || row['student_phone'],
-        father_phone: row['تلفن پدر'] || row['father_phone'],
-        father_job: row['شغل پدر'] || row['father_job'],
-        mother_phone: row['تلفن مادر'] || row['mother_phone'],
-        academic_year: row['سال تحصیلی'] || row['academic_year'],
-        education_level: row['مقطع تحصیلی'] || row['education_level'],
-        mother_job: row['شغل مادر'] || row['mother_job'],
-        grade: row['پایه تحصیلی'] || row['grade'],
-        emergency_phone: row['تلفن اضطراری'] || row['emergency_phone'],
-        marital_status: row['وضعیت تاهل'] || row['marital_status'],
-        guardian: row['ولی'] ? JSON.parse(row['ولی']) : undefined,
-        previous_school_address: row['آدرس مدرسه قبلی'] || row['previous_school_address'],
-        home_address: row['آدرس منزل'] || row['home_address'],
-        residence_status: row['وضعیت سکونت'] || row['residence_status'],
-        postal_code: row['کد پستی'] || row['postal_code'],
-        home_phone: row['تلفن منزل'] || row['home_phone'],
-        appearance_neat: row['ظاهر مرتب'] === 'بله' || row['appearance_neat'] === true,
-        polite_behavior: row['رفتار مودبانه'] === 'بله' || row['polite_behavior'] === true,
-        family_involvement: row['مشارکت خانواده'] === 'بله' || row['family_involvement'] === true,
-        student_goal: row['هدف دانش‌آموز'] || row['student_goal'],
-        academic_status: row['وضعیت تحصیلی'] || row['academic_status'],
-        commitment: row['تعهد'] ? JSON.parse(row['تعهد']) : undefined,
-        evaluation_result: row['نتیجه ارزیابی'] || row['evaluation_result'],
+        first_name: row['نام'] || row['first_name'] || '',
+        last_name: row['نام خانوادگی'] || row['last_name'] || '',
+        father_name: row['نام پدر'] || row['father_name'] || '',
+        mother_name: row['نام مادر'] || row['mother_name'] || '',
+        national_code: row['کد ملی'] || row['national_code'] || '',
+        birth_date: row['تاریخ تولد'] || row['birth_date'] || '',
+        birth_certificate_number: row['شماره شناسنامه'] || row['birth_certificate_number'] || '',
+        student_phone: row['تلفن دانش‌آموز'] || row['student_phone'] || '',
+        father_phone: row['تلفن پدر'] || row['father_phone'] || '',
+        father_job: row['شغل پدر'] || row['father_job'] || '',
+        mother_phone: row['تلفن مادر'] || row['mother_phone'] || '',
+        academic_year: row['سال تحصیلی'] || row['academic_year'] || '',
+        education_level: row['مقطع تحصیلی'] || row['education_level'] || '',
+        mother_job: row['شغل مادر'] || row['mother_job'] || '',
+        grade: row['پایه تحصیلی'] || row['grade'] ? Number(row['پایه تحصیلی'] || row['grade']) : undefined,
+        emergency_phone: row['تلفن اضطراری'] || row['emergency_phone'] || '',
+        marital_status: maritalStatusMap[row['وضعیت تاهل'] || row['marital_status'] || ''] || row['وضعیت تاهل'] || row['marital_status'] || '',
+        guardian: row['ولی']
+          ? (() => {
+            try {
+              const parsed = JSON.parse(row['ولی']);
+              return {
+                name: parsed.name || '',
+                relation: parsed.relation || '',
+                phone: parsed.phone || '',
+              };
+            } catch {
+              return undefined;
+            }
+          })()
+          : undefined,
+        previous_school_address: row['آدرس مدرسه قبلی'] || row['previous_school_address'] || '',
+        home_address: row['آدرس منزل'] || row['home_address'] || '',
+        residence_status: row['وضعیت سکونت'] || row['residence_status'] || '',
+        postal_code: row['کد پستی'] || row['postal_code'] || '',
+        home_phone: row['تلفن منزل'] || row['home_phone'] || '',
+        appearance_neat: Boolean(
+          row['ظاهر مرتب'] === 'بله' ||
+          row['appearance_neat'] === true ||
+          row['appearance_neat'] === 'true' ||
+          row['appearance_neat'] === 1
+        ),
+        polite_behavior: Boolean(
+          row['رفتار مودبانه'] === 'بله' ||
+          row['polite_behavior'] === true ||
+          row['polite_behavior'] === 'true' ||
+          row['polite_behavior'] === 1
+        ),
+        family_involvement: Boolean(
+          row['مشارکت خانواده'] === 'بله' ||
+          row['family_involvement'] === true ||
+          row['family_involvement'] === 'true' ||
+          row['family_involvement'] === 1
+        ),
+        student_goal: row['هدف دانش‌آموز'] || row['student_goal'] || '',
+        academic_status: academicStatusMap[row['وضعیت تحصیلی'] || row['academic_status'] || ''] || row['وضعیت تحصیلی'] || row['academic_status'] || '',
+        commitment: row['تعهد']
+          ? (() => {
+            try {
+              const parsed = JSON.parse(row['تعهد']);
+              return {
+                discipline: Boolean(parsed.discipline),
+                rules: Boolean(parsed.rules),
+              };
+            } catch {
+              return { discipline: false, rules: false };
+            }
+          })()
+          : { discipline: false, rules: false },
+        evaluation_result: evaluationResultMap[row['نتیجه ارزیابی'] || row['evaluation_result'] || ''] || row['نتیجه ارزیابی'] || row['evaluation_result'] || '',
       };
 
-      // Skip if missing required fields
-      if (!studentData.first_name || !studentData.last_name || !studentData.national_code) {
+      console.log('Prepared studentData:', JSON.stringify(studentData, null, 2));
+
+      // Validate required fields
+      const requiredFields = [
+        'first_name',
+        'last_name',
+        'national_code',
+        'father_name',
+        'mother_name',
+        'birth_date',
+        'birth_certificate_number',
+        'student_phone',
+        'father_phone',
+        'father_job',
+        'mother_phone',
+        'academic_year',
+        'education_level',
+        'mother_job',
+        'emergency_phone',
+        'marital_status',
+        'previous_school_address',
+        'home_address',
+        'residence_status',
+        'postal_code',
+        'home_phone',
+        'appearance_neat',
+        'polite_behavior',
+        'family_involvement',
+        'student_goal',
+        'academic_status',
+        'commitment',
+        'evaluation_result',
+      ];
+
+      const missingFields = requiredFields.filter(
+        (field) => studentData[field] === '' || studentData[field] === null || studentData[field] === undefined
+      );
+      if (missingFields.length > 0) {
         skippedCount++;
-        skippedRows.push(row);
+        skippedRows.push({ row, reason: `Missing or empty fields: ${missingFields.join(', ')}` });
+        continue;
+      }
+
+      // Validate regex and enum fields
+      if (!nationalCodeRegex.test(studentData.national_code)) {
+        skippedCount++;
+        skippedRows.push({ row, reason: 'Invalid national_code format' });
+        continue;
+      }
+      if (
+        !phoneRegex.test(studentData.student_phone) ||
+        !phoneRegex.test(studentData.father_phone) ||
+        !phoneRegex.test(studentData.mother_phone) ||
+        !phoneRegex.test(studentData.emergency_phone)
+      ) {
+        skippedCount++;
+        skippedRows.push({ row, reason: 'Invalid phone number format' });
+        continue;
+      }
+      if (!homePhoneRegex.test(studentData.home_phone)) {
+        skippedCount++;
+        skippedRows.push({ row, reason: 'Invalid home_phone format' });
+        continue;
+      }
+      if (!validMaritalStatus.includes(studentData.marital_status)) {
+        skippedCount++;
+        skippedRows.push({ row, reason: `Invalid marital_status: ${studentData.marital_status}` });
+        continue;
+      }
+      if (!validResidenceStatus.includes(studentData.residence_status)) {
+        skippedCount++;
+        skippedRows.push({ row, reason: `Invalid residence_status: ${studentData.residence_status}` });
+        continue;
+      }
+      if (!validAcademicStatus.includes(studentData.academic_status)) {
+        skippedCount++;
+        skippedRows.push({ row, reason: `Invalid academic_status: ${studentData.academic_status}` });
+        continue;
+      }
+      if (!validEvaluationResult.includes(studentData.evaluation_result)) {
+        skippedCount++;
+        skippedRows.push({ row, reason: `Invalid evaluation_result: ${studentData.evaluation_result}` });
+        continue;
+      }
+      if (studentData.guardian && (!studentData.guardian.name || !studentData.guardian.relation || !phoneRegex.test(studentData.guardian.phone))) {
+        skippedCount++;
+        skippedRows.push({ row, reason: 'Invalid guardian data' });
         continue;
       }
 
@@ -267,17 +447,34 @@ exports.importStudentsFromExcel = async (req, res) => {
       const exists = await Student.findOne({ national_code: studentData.national_code });
       if (exists) {
         skippedCount++;
-        skippedRows.push(row);
+        skippedRows.push({ row, reason: 'Duplicate national_code' });
         continue;
       }
 
-      await Student.create(studentData);
-      addedCount++;
+      try {
+        console.log('Mongoose connection state:', mongoose.connection.readyState);
+        console.log('Attempting to save student...');
+        const student = new Student(studentData);
+        const savedStudent = await student.save(); // Use save() for better validation error handling
+        console.log('Saved student:', savedStudent);
+        addedCount++;
+      } catch (err) {
+        console.error('Error saving student:', err);
+        if (err.code === 11000) {
+          skippedCount++;
+          skippedRows.push({ row, reason: `Duplicate key error: ${JSON.stringify(err.keyValue)}` });
+        } else {
+          skippedCount++;
+          skippedRows.push({ row, reason: err.message });
+        }
+      }
     }
 
-    // Clean up the uploaded file
-    fs.unlinkSync(req.file.path);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
 
+    console.log('Import complete:', { addedCount, skippedCount, skippedRows });
     res.status(201).json({
       message: 'وارد کردن دانش‌آموزان با موفقیت انجام شد',
       added: addedCount,
@@ -285,9 +482,9 @@ exports.importStudentsFromExcel = async (req, res) => {
       skippedRows,
     });
   } catch (err) {
-    console.error(err);
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path); // Clean up on error
+    console.error('Server error:', err);
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
     }
     res.status(500).json({ message: 'خطای سرور', error: err.message });
   }
@@ -315,32 +512,52 @@ exports.exportStudentsToExcel = async (req, res) => {
       'شغل مادر': s.mother_job,
       'پایه تحصیلی': s.grade,
       'تلفن اضطراری': s.emergency_phone,
-      'وضعیت تاهل': s.marital_status,
+      'وضعیت تاهل': translations.marital_status[s.marital_status] || s.marital_status,
       'ولی': s.guardian ? JSON.stringify(s.guardian) : '',
       'آدرس مدرسه قبلی': s.previous_school_address,
       'آدرس منزل': s.home_address,
-      'وضعیت سکونت': s.residence_status,
+      'وضعیت سکونت': translations.residence_status[s.residence_status] || s.residence_status,
       'کد پستی': s.postal_code,
       'تلفن منزل': s.home_phone,
       'ظاهر مرتب': s.appearance_neat ? 'بله' : 'خیر',
       'رفتار مودبانه': s.polite_behavior ? 'بله' : 'خیر',
       'مشارکت خانواده': s.family_involvement ? 'بله' : 'خیر',
       'هدف دانش‌آموز': s.student_goal,
-      'وضعیت تحصیلی': s.academic_status,
+      'وضعیت تحصیلی': translations.academic_status[s.academic_status] || s.academic_status,
       'تعهد': JSON.stringify(s.commitment),
-      'نتیجه ارزیابی': s.evaluation_result,
+      'نتیجه ارزیابی': translations.evaluation_result[s.evaluation_result] || s.evaluation_result
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'دانش‌آموزان');
 
-    const filePath = path.join(__dirname, '../Uploads/students_export.xlsx');
+    // Use a temporary directory for the file
+    const tempDir = path.join(__dirname, '../temp');
+    try {
+      // Check if directory exists; create it if it doesn't
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+    } catch (err) {
+      console.error('Error creating temp directory:', err);
+      throw new Error('خطا در ایجاد پوشه موقت');
+    }
+
+    const filePath = path.join(tempDir, `students_export_${Date.now()}.xlsx`);
     XLSX.writeFile(workbook, filePath);
 
     res.download(filePath, 'students.xlsx', (err) => {
-      if (err) console.error(err);
-      fs.unlinkSync(filePath); // Delete temp file after download
+      if (err) {
+        console.error('Download error:', err);
+      }
+      try {
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      } catch (cleanupErr) {
+        console.error('Cleanup error:', cleanupErr);
+      }
     });
   } catch (err) {
     console.error(err);
