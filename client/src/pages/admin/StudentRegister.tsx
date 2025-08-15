@@ -16,6 +16,7 @@ import persian_fa from "react-date-object/locales/persian_fa";
 const StudentRegister = () => {
   const [formData, setFormData] = useState<Record<string, any>>({
     commitment: { rules: false, discipline: false },
+    guardian: { name: "", relation: "", phone: "" },
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -23,7 +24,15 @@ const StudentRegister = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name.startsWith("guardian.")) {
+      const field = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        guardian: { ...prev.guardian, [field]: value },
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSelectChange = (name: string, value: string) => {
@@ -71,8 +80,10 @@ const StudentRegister = () => {
       "polite_behavior", "family_involvement", "student_goal", "academic_status",
       "evaluation_result"
     ];
-    return requiredFields.every((field) => formData[field] !== undefined && formData[field] !== "") &&
-           formData.commitment.rules !== undefined && formData.commitment.discipline !== undefined;
+    const isBasicFieldsComplete = requiredFields.every((field) => formData[field] !== undefined && formData[field] !== "");
+    const isCommitmentComplete = formData.commitment.rules !== undefined && formData.commitment.discipline !== undefined;
+    const isGuardianComplete = !formData.guardian.phone || (formData.guardian.name && formData.guardian.relation);
+    return isBasicFieldsComplete && isCommitmentComplete && isGuardianComplete;
   };
 
   const handleSubmit = async () => {
@@ -95,7 +106,7 @@ const StudentRegister = () => {
       });
 
       toast.success("هنرجو با موفقیت ثبت شد");
-      setFormData({ commitment: { rules: false, discipline: false } });
+      setFormData({ commitment: { rules: false, discipline: false }, guardian: { name: "", relation: "", phone: "" } });
       setImageFile(null);
       setImagePreview(null);
     } catch (err: any) {
@@ -224,6 +235,25 @@ const StudentRegister = () => {
             </div>
           </div>
 
+          {/* Guardian Information */}
+          <div>
+            <h3 className="font-semibold text-sm mb-3">اطلاعات ولی قانونی</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="guardian_name">نام ولی قانونی</Label>
+                <Input id="guardian_name" name="guardian.name" value={formData.guardian.name || ""} onChange={handleChange} />
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="guardian_relation">نسبت با هنرجو</Label>
+                <Input id="guardian_relation" name="guardian.relation" value={formData.guardian.relation || ""} onChange={handleChange} />
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="guardian_phone">شماره موبایل ولی قانونی</Label>
+                <Input id="guardian_phone" name="guardian.phone" value={formData.guardian.phone || ""} onChange={handleChange} />
+              </div>
+            </div>
+          </div>
+
           {/* Contact Information */}
           <div>
             <h3 className="font-semibold text-sm mb-3">اطلاعات تماس</h3>
@@ -246,7 +276,7 @@ const StudentRegister = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="postal_code">کد پستی</Label>
-                <Input id="postal_code" name="postal_code" value={formData.postal_code || ""} onChange={handleChange} />
+                <Input id="postal_code" name="postal_code" value={formData.postPostal_code || ""} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="residence_status">وضعیت سکونت</Label>
