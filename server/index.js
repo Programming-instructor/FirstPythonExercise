@@ -19,9 +19,6 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-const userRoutes = require('./routes/user.routes');
-app.use('/api/user', userRoutes)
-
 // Connect to MongoDB
 const connectDB = async () => {
   try {
@@ -35,8 +32,15 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
-
 connectDB();
+
+// Routes
+const userRoutes = require('./routes/user.routes');
+app.use('/api/user', userRoutes);
+
+const studentRoutes = require('./routes/student.routes');
+app.use('/api/student', studentRoutes);
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;

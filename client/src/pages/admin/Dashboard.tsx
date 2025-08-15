@@ -10,7 +10,7 @@ const cards = [
     body: "ثبت نام هنرجوی جدید",
     desc: "مدیریت فناوری اطلاعات",
     icon: <PiStudentBold size={40} />,
-    href: "/admin/dashboard",
+    href: "/admin/register-student",
     hasPerm: true,
   },
   {
