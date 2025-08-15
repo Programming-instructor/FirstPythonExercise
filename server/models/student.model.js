@@ -49,25 +49,12 @@ const studentSchema = new mongoose.Schema({
   },
   postal_code: { type: String, required: true },
   home_phone: { type: String, required: true, unique: true, match: /^\d{8,11}$/, },
-  appearance_neat: { type: Boolean, required: true },
-  polite_behavior: { type: Boolean, required: true },
-  family_involvement: { type: Boolean, required: true },
   student_goal: { type: String, required: true },
   academic_status: {
     type: String,
     enum: ['high', 'medium', 'low'],
     required: true
   },
-  commitment: {
-    discipline: { type: Boolean, required: true },
-    rules: { type: Boolean, required: true }
-  },
-  evaluation_result: {
-    type: String,
-    enum: ['accepted', 'notAccepted'],
-    required: true
-  },
-
   student_portrait_front: {
     url: { type: String, required: false },
     public_id: { type: String, required: false }

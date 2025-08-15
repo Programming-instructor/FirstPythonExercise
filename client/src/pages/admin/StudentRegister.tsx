@@ -15,7 +15,6 @@ import persian_fa from "react-date-object/locales/persian_fa";
 
 const StudentRegister = () => {
   const [formData, setFormData] = useState<Record<string, any>>({
-    commitment: { rules: false, discipline: false },
     guardian: { name: "", relation: "", phone: "" },
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -36,21 +35,7 @@ const StudentRegister = () => {
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    const booleanFields = ["appearance_neat", "polite_behavior", "family_involvement", "commitment.rules", "commitment.discipline"];
-    if (booleanFields.includes(name)) {
-      const booleanValue = value === "true";
-      if (name.startsWith("commitment.")) {
-        const field = name.split(".")[1];
-        setFormData((prev) => ({
-          ...prev,
-          commitment: { ...prev.commitment, [field]: booleanValue },
-        }));
-      } else {
-        setFormData((prev) => ({ ...prev, [name]: booleanValue }));
-      }
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,14 +61,11 @@ const StudentRegister = () => {
       "birth_date", "birth_certificate_number", "student_phone", "father_phone",
       "father_job", "mother_phone", "mother_job", "academic_year", "education_level",
       "emergency_phone", "marital_status", "previous_school_address", "home_address",
-      "residence_status", "postal_code", "home_phone", "appearance_neat",
-      "polite_behavior", "family_involvement", "student_goal", "academic_status",
-      "evaluation_result"
+      "residence_status", "postal_code", "home_phone", "student_goal", "academic_status",
     ];
     const isBasicFieldsComplete = requiredFields.every((field) => formData[field] !== undefined && formData[field] !== "");
-    const isCommitmentComplete = formData.commitment.rules !== undefined && formData.commitment.discipline !== undefined;
     const isGuardianComplete = !formData.guardian.phone || (formData.guardian.name && formData.guardian.relation);
-    return isBasicFieldsComplete && isCommitmentComplete && isGuardianComplete;
+    return isBasicFieldsComplete && isGuardianComplete;
   };
 
   const handleSubmit = async () => {
@@ -91,7 +73,7 @@ const StudentRegister = () => {
       setLoading(true);
       const data = new FormData();
       Object.keys(formData).forEach((key) => {
-        if (key === "commitment" || key === "guardian") {
+        if (key === "guardian") {
           data.append(key, JSON.stringify(formData[key]));
         } else {
           data.append(key, formData[key]);
@@ -106,7 +88,7 @@ const StudentRegister = () => {
       });
 
       toast.success("هنرجو با موفقیت ثبت شد");
-      setFormData({ commitment: { rules: false, discipline: false }, guardian: { name: "", relation: "", phone: "" } });
+      setFormData({ guardian: { name: "", relation: "", phone: "" } });
       setImageFile(null);
       setImagePreview(null);
     } catch (err: any) {
@@ -276,7 +258,7 @@ const StudentRegister = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="postal_code">کد پستی</Label>
-                <Input id="postal_code" name="postal_code" value={formData.postPostal_code || ""} onChange={handleChange} />
+                <Input id="postal_code" name="postal_code" value={formData.postal_code || ""} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="residence_status">وضعیت سکونت</Label>
@@ -339,85 +321,6 @@ const StudentRegister = () => {
               <div className="flex flex-col gap-3">
                 <Label htmlFor="student_goal">هدف هنرجو</Label>
                 <Input id="student_goal" name="student_goal" value={formData.student_goal || ""} onChange={handleChange} />
-              </div>
-            </div>
-          </div>
-
-          {/* Evaluation Information */}
-          <div>
-            <h3 className="font-semibold text-sm mb-3">اطلاعات ارزیابی</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="appearance_neat">آراستگی ظاهری</Label>
-                <Select onValueChange={(v) => handleSelectChange("appearance_neat", v)} value={formData.appearance_neat?.toString()}>
-                  <SelectTrigger id="appearance_neat" className="w-full" dir="rtl">
-                    <SelectValue placeholder="انتخاب کنید" />
-                  </SelectTrigger>
-                  <SelectContent dir="rtl">
-                    <SelectItem value="true">بله</SelectItem>
-                    <SelectItem value="false">خیر</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="polite_behavior">رفتار مؤدبانه</Label>
-                <Select onValueChange={(v) => handleSelectChange("polite_behavior", v)} value={formData.polite_behavior?.toString()}>
-                  <SelectTrigger id="polite_behavior" className="w-full" dir="rtl">
-                    <SelectValue placeholder="انتخاب کنید" />
-                  </SelectTrigger>
-                  <SelectContent dir="rtl">
-                    <SelectItem value="true">بله</SelectItem>
-                    <SelectItem value="false">خیر</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="family_involvement">مشارکت خانواده</Label>
-                <Select onValueChange={(v) => handleSelectChange("family_involvement", v)} value={formData.family_involvement?.toString()}>
-                  <SelectTrigger id="family_involvement" className="w-full" dir="rtl">
-                    <SelectValue placeholder="انتخاب کنید" />
-                  </SelectTrigger>
-                  <SelectContent dir="rtl">
-                    <SelectItem value="true">بله</SelectItem>
-                    <SelectItem value="false">خیر</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="commitment_rules">تعهد به قوانین</Label>
-                <Select onValueChange={(v) => handleSelectChange("commitment.rules", v)} value={formData.commitment.rules.toString()}>
-                  <SelectTrigger id="commitment_rules" className="w-full" dir="rtl">
-                    <SelectValue placeholder="انتخاب کنید" />
-                  </SelectTrigger>
-                  <SelectContent dir="rtl">
-                    <SelectItem value="true">بله</SelectItem>
-                    <SelectItem value="false">خیر</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="commitment_discipline">انضباط</Label>
-                <Select onValueChange={(v) => handleSelectChange("commitment.discipline", v)} value={formData.commitment.discipline.toString()}>
-                  <SelectTrigger id="commitment_discipline" className="w-full" dir="rtl">
-                    <SelectValue placeholder="انتخاب کنید" />
-                  </SelectTrigger>
-                  <SelectContent dir="rtl">
-                    <SelectItem value="true">بله</SelectItem>
-                    <SelectItem value="false">خیر</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="evaluation_result">نتیجه ارزیابی</Label>
-                <Select onValueChange={(v) => handleSelectChange("evaluation_result", v)} value={formData.evaluation_result}>
-                  <SelectTrigger id="evaluation_result" className="w-full" dir="rtl">
-                    <SelectValue placeholder="انتخاب کنید" />
-                  </SelectTrigger>
-                  <SelectContent dir="rtl">
-                    <SelectItem value="accepted">پذیرفته</SelectItem>
-                    <SelectItem value="notAccepted">پذیرفته نشده</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           </div>
