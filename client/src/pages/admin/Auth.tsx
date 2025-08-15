@@ -57,7 +57,7 @@ const Auth = () => {
     setError(null);
 
     try {
-      const response: SendOTPResponse = await api.post("/send-otp", { mobile });
+      const response: SendOTPResponse = await api.post("/user/send-otp", { mobile });
       setOnOTP(true);
       console.log(response.message);
     } catch (err) {
@@ -78,7 +78,7 @@ const Auth = () => {
     setError(null);
 
     try {
-      const response: LoginResponse = await api.post("/login", { mobile, otp });
+      const response: LoginResponse = await api.post("/user/login", { mobile, otp });
       localStorage.setItem("token", response.token); // Store JWT token
       navigate("/admin/dashboard");
     } catch (err) {

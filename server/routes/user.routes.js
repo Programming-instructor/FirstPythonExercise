@@ -7,5 +7,6 @@ router.post('/login', userController.login);
 router.post('/send-otp', userController.sendOTP);
 router.post('/check-otp', userController.checkOTP);
 router.post('/users', authMiddleware, userController.addUser);
+router.get('/me', authMiddleware, userController.currentUser);
 
 module.exports = router;
