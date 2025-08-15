@@ -17,6 +17,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { toast } from "sonner";
 import type { Student } from "@/types/student";
 import { Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface StudentResponse {
   students: Student[];
@@ -152,6 +153,9 @@ const StudentsPage = () => {
               </Button>
             </div>
           </div>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 transition-all duration-200" >
+            <Link to="/admin/dashboard">بازگشت به داشبورد</Link>
+          </Button>
         </CardContent>
       </Card>
 
@@ -232,6 +236,7 @@ const StudentsPage = () => {
           />
         </div>
       )}
+
     </div>
   );
 };
