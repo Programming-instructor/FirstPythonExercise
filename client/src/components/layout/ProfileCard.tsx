@@ -11,7 +11,7 @@ const ProfileCard = ({ name }: { name: string }) => {
     nav('/admin/auth')
   }
   return (
-    <div className="min-w-80 min-h-28 shadow-lg rounded flex gap-3 items-center px-5" dir="rtl">
+    <div className="min-w-80 min-h-28 shadow-lg rounded-lg flex gap-3 items-center px-5 bg-slate-100" dir="rtl">
       <FaUserAlt size={64} className="text-neutral-600 border-2 border-neutral-600 rounded-full p-1" />
       <div className="flex flex-col gap-1">
         <p>{name}</p>
