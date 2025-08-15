@@ -5,24 +5,22 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 
-// Load environment variables
 dotenv.config();
-
-// Initialize Express app
 const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (optional, for uploads)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes placeholder
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
+
+const userRoutes = require('./routes/user.routes');
+app.use('/api', userRoutes)
 
 // Connect to MongoDB
 const connectDB = async () => {
