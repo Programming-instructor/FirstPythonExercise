@@ -45,3 +45,19 @@ export interface Student {
   student_portrait_front: StudentPortraitFront;
   __v: number;
 }
+
+export interface StudentFormData {
+  [key: string]: any;
+  guardian: {
+    name: string;
+    relation: string;
+    phone: string;
+  };
+}
+
+export interface StudentResponse {
+  students: Student[];
+  total: number;
+  page: number;
+  totalPages: number;
+}

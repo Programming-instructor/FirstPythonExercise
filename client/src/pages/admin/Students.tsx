@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { FaFileImport, FaFileExport, FaSearch } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,89 +12,45 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import api from "@/lib/axiosConfig";
 import { Pagination } from "@/components/ui/pagination";
-import { toast } from "sonner";
-import type { Student } from "@/types/student";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
-
-interface StudentResponse {
-  students: Student[];
-  total: number;
-  page: number;
-  totalPages: number;
-}
+import { toast } from "sonner";
+import { useImportStudents } from "@/hooks/useImportStudents";
+import { useExportStudents } from "@/hooks/useExportStudents";
+import { useFetchStudents } from "@/hooks/useFetchStudents";
 
 const StudentsPage = () => {
-  const [students, setStudents] = useState<Student[]>([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      const data: StudentResponse = await api.get(
-        `/student?page=${page}&limit=${limit}&search=${search}`
-      );
-      setStudents(data.students);
-      setTotalPages(data.totalPages);
-    } catch (err: any) {
-      toast.error(err.message || "خطا در دریافت لیست دانش‌آموزان");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data, isLoading } = useFetchStudents(page, limit, search);
+  const importMutation = useImportStudents();
+  const exportMutation = useExportStudents();
 
-  const handleImport = async () => {
+  const students = data?.students || [];
+  const totalPages = data?.totalPages || 1;
+
+  const handleImport = () => {
     if (!file) {
       toast.error("لطفاً فایل اکسل را انتخاب کنید");
       return;
     }
-    // Validate file type
-    if (!["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel"].includes(file.type)) {
-      toast.error("لطفاً یک فایل اکسل معتبر (.xlsx یا .xls) انتخاب کنید");
-      return;
-    }
-    try {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append("file", file);
-      await api.post("/student/import", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("دانش‌آموزان با موفقیت وارد شدند");
-      setFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""; // Reset file input
-      }
-      fetchStudents();
-    } catch (err: any) {
-      toast.error(err.message || "خطا در وارد کردن دانش‌آموزان");
-    } finally {
-      setLoading(false);
-    }
+    importMutation.mutate(file, {
+      onSuccess: () => {
+        setFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      },
+    });
   };
 
-  const handleExport = async () => {
-    try {
-      const res: Blob = await api.get("/student/export", { responseType: "blob" });
-      const url = window.URL.createObjectURL(res);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "students.xlsx");
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err: any) {
-      toast.error(err.message || "خطا در خروجی گرفتن دانش‌آموزان");
-    }
+  const handleExport = () => {
+    exportMutation.mutate();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,10 +61,6 @@ const StudentsPage = () => {
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
-
-  useEffect(() => {
-    fetchStudents();
-  }, [page, search]);
 
   return (
     <div className="container mx-auto p-6 space-y-8" dir="rtl">
@@ -123,8 +75,8 @@ const StudentsPage = () => {
             <p className="font-semibold text-amber-800">راهنمای وارد کردن دانش‌آموزان:</p>
             <ul className="list-disc list-inside mt-2 space-y-1 text-gray-700">
               <li>فایل اکسل باید شامل ستون‌های نام، نام خانوادگی، کد ملی، و سایر اطلاعات الزامی باشد.</li>
-              <li>از الگوی ارائه شده توسط سامانه استفاده کنید.</li>
-              <li>اطلاعات تکراری (بر اساس کد ملی) وارد نخواهند شد.</li>
+              <li>از الگوی ارائه شده توسط سامانه استفاده کنید。</li>
+              <li>اطلاعات تکراری (بر اساس کد ملی) وارد نخواهند شد。</li>
             </ul>
           </div>
           <div className="space-y-4">
@@ -140,14 +92,14 @@ const StudentsPage = () => {
               <Button
                 onClick={triggerFileInput}
                 className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 transition-all duration-200"
-                disabled={loading}
+                disabled={isLoading || importMutation.isPending}
               >
                 <FaFileImport /> انتخاب فایل
               </Button>
               <Button
                 onClick={handleImport}
                 className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 transition-all duration-200"
-                disabled={!file || loading}
+                disabled={!file || isLoading || importMutation.isPending}
               >
                 <FaFileImport /> وارد کردن
               </Button>
@@ -155,7 +107,7 @@ const StudentsPage = () => {
                 onClick={handleExport}
                 variant="outline"
                 className="border-blue-600 text-blue-600 hover:bg-blue-50 flex items-center gap-2 transition-all duration-200"
-                disabled={loading}
+                disabled={isLoading || exportMutation.isPending}
               >
                 <FaFileExport /> خروجی گرفتن
               </Button>
@@ -175,7 +127,7 @@ const StudentsPage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pr-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
-            disabled={loading}
+            disabled={isLoading}
           />
           <FaSearch className="absolute right-3 text-gray-400" />
         </div>
@@ -196,7 +148,7 @@ const StudentsPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loading ? (
+                {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center py-10">
                       <div className="flex justify-center items-center gap-2 text-gray-500">

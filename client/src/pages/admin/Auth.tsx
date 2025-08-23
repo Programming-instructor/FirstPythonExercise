@@ -14,78 +14,45 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "@/lib/axiosConfig";
-
-// Define response types
-interface SendOTPResponse {
-  message: string;
-}
-
-interface LoginResponse {
-  token: string;
-  user: {
-    id: string;
-    username: string;
-    mobile: string;
-    role: string;
-    name: string;
-    isAdmin: boolean;
-  };
-  message: string;
-}
-
-interface ApiError {
-  message: string;
-}
+import { useSendOTP } from "@/hooks/useSendOTP";
+import { useLogin } from "@/hooks/useLogin";
 
 const Auth = () => {
   const [onOTP, setOnOTP] = useState<boolean>(false);
   const [mobile, setMobile] = useState<string>("");
   const [otp, setOtp] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  const sendOTPMutation = useSendOTP();
+  const loginMutation = useLogin();
+
   // Handle sending OTP
-  const handleSendOTP = async () => {
+  const handleSendOTP = () => {
     if (!mobile || !/^\d{10,11}$/.test(mobile)) {
       setError("لطفاً شماره موبایل معتبر وارد کنید (۱۰ یا ۱۱ رقم)");
       return;
     }
-
-    setIsLoading(true);
     setError(null);
-
-    try {
-      const response: SendOTPResponse = await api.post("/user/send-otp", { mobile });
-      setOnOTP(true);
-      console.log(response.message);
-    } catch (err) {
-      setError("خطا در ارسال کد. لطفاً دوباره تلاش کنید.");
-    } finally {
-      setIsLoading(false);
-    }
+    sendOTPMutation.mutate(mobile, {
+      onSuccess: () => {
+        setOnOTP(true);
+      },
+    });
   };
 
   // Handle login with OTP
-  const handleLogin = async () => {
+  const handleLogin = () => {
     if (!otp || otp.length !== 6) {
       setError("لطفاً کد ۶ رقمی معتبر وارد کنید");
       return;
     }
-
-    setIsLoading(true);
     setError(null);
-
-    try {
-      const response: LoginResponse = await api.post("/user/login", { mobile, otp });
-      localStorage.setItem("token", response.token); // Store JWT token
-      navigate("/admin/dashboard");
-    } catch (err) {
-      setError("خطا در ورود. لطفاً دوباره تلاش کنید.");
-    } finally {
-      setIsLoading(false);
-    }
+    loginMutation.mutate({ mobile, otp }, {
+      onSuccess: () => {
+        navigate("/admin/dashboard");
+      },
+    });
   };
 
   // Handle button click (send OTP or login)
@@ -148,9 +115,13 @@ const Auth = () => {
             type="submit"
             className="w-full"
             onClick={handleSubmit}
-            disabled={isLoading}
+            disabled={sendOTPMutation.isPending || loginMutation.isPending}
           >
-            {isLoading ? "در حال پردازش..." : onOTP ? "تایید کد" : "ارسال کد"}
+            {(sendOTPMutation.isPending || loginMutation.isPending)
+              ? "در حال پردازش..."
+              : onOTP
+                ? "تایید کد"
+                : "ارسال کد"}
           </Button>
         </CardFooter>
       </Card>

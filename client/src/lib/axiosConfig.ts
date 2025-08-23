@@ -13,10 +13,4 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Always return only data
-api.interceptors.response.use(
-  (res) => res.data,
-  (err) => Promise.reject(err.response?.data || err)
-);
-
 export default api;

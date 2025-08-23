@@ -1,31 +1,13 @@
 import { useState, useEffect } from "react";
 import ProfileCard from "@/components/layout/ProfileCard";
-import api from "@/lib/axiosConfig";
 import { Outlet } from "react-router-dom";
-import type { User } from "@/types/user";
+import { useFetchUser } from "@/hooks/useFetchUser";
 
 const AdminLayout = () => {
-  const [user, setUser] = useState<User | undefined>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>();
+  const { data: user, error, isLoading } = useFetchUser();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response: User = await api.get("/user/me");
-        setUser(response);
-        setLoading(false);
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch user data");
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (error || !user) return <div>Error: {error}</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (error || !user) return <div>an Error occurred</div>;
 
 
   return (

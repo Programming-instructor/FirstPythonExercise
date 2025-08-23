@@ -2,24 +2,49 @@ import { useState } from "react";
 import { CgDanger } from "react-icons/cg";
 import { FaCamera } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import api from "@/lib/axiosConfig";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
+import type { StudentFormData } from "@/types/student";
+import { useStudentRegister } from "@/hooks/useStudentRegister";
 
 const StudentRegister = () => {
-  const [formData, setFormData] = useState<Record<string, any>>({
+  const [formData, setFormData] = useState<StudentFormData>({
     guardian: { name: "", relation: "", phone: "" },
+    first_name: "",
+    last_name: "",
+    father_name: "",
+    mother_name: "",
+    national_code: "",
+    birth_date: "",
+    birth_certificate_number: "",
+    student_phone: "",
+    father_phone: "",
+    father_job: "",
+    mother_phone: "",
+    mother_job: "",
+    academic_year: "",
+    education_level: "",
+    emergency_phone: "",
+    marital_status: "",
+    previous_school_address: "",
+    home_address: "",
+    residence_status: "",
+    postal_code: "",
+    home_phone: "",
+    student_goal: "",
+    academic_status: "",
+    grade: "",
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+
+  const { mutate, isPending } = useStudentRegister();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -57,45 +82,72 @@ const StudentRegister = () => {
 
   const isFormComplete = () => {
     const requiredFields = [
-      "first_name", "last_name", "father_name", "mother_name", "national_code",
-      "birth_date", "birth_certificate_number", "student_phone", "father_phone",
-      "father_job", "mother_phone", "mother_job", "academic_year", "education_level",
-      "emergency_phone", "marital_status", "previous_school_address", "home_address",
-      "residence_status", "postal_code", "home_phone", "student_goal", "academic_status",
+      "first_name",
+      "last_name",
+      "father_name",
+      "mother_name",
+      "national_code",
+      "birth_date",
+      "birth_certificate_number",
+      "student_phone",
+      "father_phone",
+      "father_job",
+      "mother_phone",
+      "mother_job",
+      "academic_year",
+      "education_level",
+      "emergency_phone",
+      "marital_status",
+      "previous_school_address",
+      "home_address",
+      "residence_status",
+      "postal_code",
+      "home_phone",
+      "student_goal",
+      "academic_status",
     ];
     const isBasicFieldsComplete = requiredFields.every((field) => formData[field] !== undefined && formData[field] !== "");
     const isGuardianComplete = !formData.guardian.phone || (formData.guardian.name && formData.guardian.relation);
     return isBasicFieldsComplete && isGuardianComplete;
   };
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      const data = new FormData();
-      Object.keys(formData).forEach((key) => {
-        if (key === "guardian") {
-          data.append(key, JSON.stringify(formData[key]));
-        } else {
-          data.append(key, formData[key]);
-        }
-      });
-      if (imageFile) {
-        data.append("portrait", imageFile);
+  const handleSubmit = () => {
+    mutate(
+      { formData, imageFile },
+      {
+        onSuccess: () => {
+          setFormData({
+            guardian: { name: "", relation: "", phone: "" },
+            first_name: "",
+            last_name: "",
+            father_name: "",
+            mother_name: "",
+            national_code: "",
+            birth_date: "",
+            birth_certificate_number: "",
+            student_phone: "",
+            father_phone: "",
+            father_job: "",
+            mother_phone: "",
+            mother_job: "",
+            academic_year: "",
+            education_level: "",
+            emergency_phone: "",
+            marital_status: "",
+            previous_school_address: "",
+            home_address: "",
+            residence_status: "",
+            postal_code: "",
+            home_phone: "",
+            student_goal: "",
+            academic_status: "",
+            grade: "",
+          });
+          setImageFile(null);
+          setImagePreview(null);
+        },
       }
-
-      await api.post("/student", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      toast.success("هنرجو با موفقیت ثبت شد");
-      setFormData({ guardian: { name: "", relation: "", phone: "" } });
-      setImageFile(null);
-      setImagePreview(null);
-    } catch (err: any) {
-      toast.error(err.message || "خطا در ثبت هنرجو");
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   return (
@@ -141,15 +193,15 @@ const StudentRegister = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="first_name">نام</Label>
-                <Input id="first_name" name="first_name" value={formData.first_name || ""} onChange={handleChange} />
+                <Input id="first_name" name="first_name" value={formData.first_name} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="last_name">نام خانوادگی</Label>
-                <Input id="last_name" name="last_name" value={formData.last_name || ""} onChange={handleChange} />
+                <Input id="last_name" name="last_name" value={formData.last_name} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="national_code">کد ملی</Label>
-                <Input id="national_code" name="national_code" value={formData.national_code || ""} onChange={handleChange} />
+                <Input id="national_code" name="national_code" value={formData.national_code} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="birth_date">تاریخ تولد</Label>
@@ -157,7 +209,7 @@ const StudentRegister = () => {
                   id="birth_date"
                   calendar={persian}
                   locale={persian_fa}
-                  value={formData.birth_date || ""}
+                  value={formData.birth_date}
                   onChange={handleDateChange}
                   format="YYYY-MM-DD"
                   containerStyle={{ width: "100%" }}
@@ -167,7 +219,7 @@ const StudentRegister = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="birth_certificate_number">شماره شناسنامه</Label>
-                <Input id="birth_certificate_number" name="birth_certificate_number" value={formData.birth_certificate_number || ""} onChange={handleChange} />
+                <Input id="birth_certificate_number" name="birth_certificate_number" value={formData.birth_certificate_number} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="marital_status">وضعیت تأهل پدر و مادر</Label>
@@ -192,27 +244,27 @@ const StudentRegister = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="father_name">نام پدر</Label>
-                <Input id="father_name" name="father_name" value={formData.father_name || ""} onChange={handleChange} />
+                <Input id="father_name" name="father_name" value={formData.father_name} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="father_job">شغل پدر</Label>
-                <Input id="father_job" name="father_job" value={formData.father_job || ""} onChange={handleChange} />
+                <Input id="father_job" name="father_job" value={formData.father_job} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="father_phone">شماره موبایل پدر</Label>
-                <Input id="father_phone" name="father_phone" value={formData.father_phone || ""} onChange={handleChange} />
+                <Input id="father_phone" name="father_phone" value={formData.father_phone} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="mother_name">نام مادر</Label>
-                <Input id="mother_name" name="mother_name" value={formData.mother_name || ""} onChange={handleChange} />
+                <Input id="mother_name" name="mother_name" value={formData.mother_name} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="mother_job">شغل مادر</Label>
-                <Input id="mother_job" name="mother_job" value={formData.mother_job || ""} onChange={handleChange} />
+                <Input id="mother_job" name="mother_job" value={formData.mother_job} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="mother_phone">شماره موبایل مادر</Label>
-                <Input id="mother_phone" name="mother_phone" value={formData.mother_phone || ""} onChange={handleChange} />
+                <Input id="mother_phone" name="mother_phone" value={formData.mother_phone} onChange={handleChange} />
               </div>
             </div>
           </div>
@@ -223,15 +275,15 @@ const StudentRegister = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="guardian_name">نام ولی قانونی</Label>
-                <Input id="guardian_name" name="guardian.name" value={formData.guardian.name || ""} onChange={handleChange} />
+                <Input id="guardian_name" name="guardian.name" value={formData.guardian.name} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="guardian_relation">نسبت با هنرجو</Label>
-                <Input id="guardian_relation" name="guardian.relation" value={formData.guardian.relation || ""} onChange={handleChange} />
+                <Input id="guardian_relation" name="guardian.relation" value={formData.guardian.relation} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="guardian_phone">شماره موبایل ولی قانونی</Label>
-                <Input id="guardian_phone" name="guardian.phone" value={formData.guardian.phone || ""} onChange={handleChange} />
+                <Input id="guardian_phone" name="guardian.phone" value={formData.guardian.phone} onChange={handleChange} />
               </div>
             </div>
           </div>
@@ -242,23 +294,23 @@ const StudentRegister = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="student_phone">شماره موبایل هنرجو</Label>
-                <Input id="student_phone" name="student_phone" value={formData.student_phone || ""} onChange={handleChange} />
+                <Input id="student_phone" name="student_phone" value={formData.student_phone} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="emergency_phone">شماره اضطراری</Label>
-                <Input id="emergency_phone" name="emergency_phone" value={formData.emergency_phone || ""} onChange={handleChange} />
+                <Input id="emergency_phone" name="emergency_phone" value={formData.emergency_phone} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="home_phone">تلفن منزل</Label>
-                <Input id="home_phone" name="home_phone" value={formData.home_phone || ""} onChange={handleChange} />
+                <Input id="home_phone" name="home_phone" value={formData.home_phone} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="home_address">آدرس منزل</Label>
-                <Textarea id="home_address" name="home_address" value={formData.home_address || ""} onChange={handleChange} />
+                <Textarea id="home_address" name="home_address" value={formData.home_address} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="postal_code">کد پستی</Label>
-                <Input id="postal_code" name="postal_code" value={formData.postal_code || ""} onChange={handleChange} />
+                <Input id="postal_code" name="postal_code" value={formData.postal_code} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="residence_status">وضعیت سکونت</Label>
@@ -282,7 +334,7 @@ const StudentRegister = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="academic_year">سال تحصیلی</Label>
-                <Input id="academic_year" name="academic_year" value={formData.academic_year || ""} onChange={handleChange} />
+                <Input id="academic_year" name="academic_year" value={formData.academic_year} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="education_level">پایه تحصیلی</Label>
@@ -299,11 +351,11 @@ const StudentRegister = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="grade">آخرین معدل</Label>
-                <Input id="grade" type="number" name="grade" value={formData.grade || ""} onChange={handleChange} />
+                <Input id="grade" type="number" name="grade" value={formData.grade} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="previous_school_address">آدرس مدرسه قبلی</Label>
-                <Textarea id="previous_school_address" name="previous_school_address" value={formData.previous_school_address || ""} onChange={handleChange} />
+                <Textarea id="previous_school_address" name="previous_school_address" value={formData.previous_school_address} onChange={handleChange} />
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="academic_status">وضعیت تحصیلی</Label>
@@ -320,7 +372,7 @@ const StudentRegister = () => {
               </div>
               <div className="flex flex-col gap-3">
                 <Label htmlFor="student_goal">هدف هنرجو</Label>
-                <Input id="student_goal" name="student_goal" value={formData.student_goal || ""} onChange={handleChange} />
+                <Input id="student_goal" name="student_goal" value={formData.student_goal} onChange={handleChange} />
               </div>
             </div>
           </div>
@@ -338,11 +390,7 @@ const StudentRegister = () => {
               className="absolute inset-0 opacity-0 cursor-pointer"
             />
             {imagePreview ? (
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-full h-full object-cover"
-              />
+              <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
             ) : (
               <FaCamera className="text-neutral-500 text-3xl" />
             )}
@@ -354,8 +402,8 @@ const StudentRegister = () => {
           <Button asChild variant="outline">
             <Link to="/admin/dashboard">بازگشت به داشبورد</Link>
           </Button>
-          <Button disabled={loading || !isFormComplete()} onClick={handleSubmit}>
-            {loading ? "در حال ثبت..." : "ثبت هنرجو"}
+          <Button disabled={isPending || !isFormComplete()} onClick={handleSubmit}>
+            {isPending ? "در حال ثبت..." : "ثبت هنرجو"}
           </Button>
         </div>
       </div>
