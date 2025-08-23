@@ -58,7 +58,8 @@ const studentSchema = new mongoose.Schema({
   student_portrait_front: {
     url: { type: String, required: false },
     public_id: { type: String, required: false }
-  }
+  },
+  accepted: { type: Boolean, default: false }
 });
 
 const Student = mongoose.model('Student', studentSchema, 'student');

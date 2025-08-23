@@ -6,6 +6,7 @@ import StudentRegister from "./pages/admin/StudentRegister"
 import { Toaster } from "sonner"
 import StudentsPage from "./pages/admin/Students"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import AcademicCounseling from "./pages/admin/AcademicCounseling"
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
               <Route path='dashboard' element={<Dashboard />} />
               <Route path='register-student' element={<StudentRegister />} />
               <Route path='students' element={<StudentsPage />} />
+              <Route path='academic-counseling' element={<AcademicCounseling />} />
             </Route>
           </Routes>
         </Router>

@@ -45,7 +45,7 @@ const cards = [
     body: "واحد مشاوره تحصیلی",
     desc: "مشاوره تحصیلی",
     icon: <NotebookPen size={40} />,
-    href: "/admin/dashboard",
+    href: "/admin/academic-counseling",
     hasPerm: true,
   },
   {

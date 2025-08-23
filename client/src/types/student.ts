@@ -32,6 +32,11 @@ export interface Student {
   marital_status: string;
   previous_school_address: string;
   home_address: string;
+  guardian: {
+    name: string,
+    relation: string,
+    phone: string
+  },
   residence_status: string;
   postal_code: string;
   home_phone: string;

@@ -291,17 +291,17 @@ exports.importStudentsFromExcel = async (req, res) => {
         marital_status: maritalStatusMap[maritalStatusInput] || (validMaritalStatus.includes(maritalStatusInput) ? maritalStatusInput : ''),
         guardian: row['ولی']
           ? (() => {
-              try {
-                const parsed = JSON.parse(row['ولی']);
-                return {
-                  name: parsed.name || '',
-                  relation: parsed.relation || '',
-                  phone: parsed.phone || '',
-                };
-              } catch {
-                return undefined;
-              }
-            })()
+            try {
+              const parsed = JSON.parse(row['ولی']);
+              return {
+                name: parsed.name || '',
+                relation: parsed.relation || '',
+                phone: parsed.phone || '',
+              };
+            } catch {
+              return undefined;
+            }
+          })()
           : undefined,
         previous_school_address: row['آدرس مدرسه قبلی'] || row['previous_school_address'] || '',
         home_address: row['آدرس منزل'] || row['home_address'] || '',
@@ -502,6 +502,32 @@ exports.exportStudentsToExcel = async (req, res) => {
       } catch (cleanupErr) {
         console.error('Cleanup error:', cleanupErr);
       }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'خطای سرور', error: err.message });
+  }
+};
+
+exports.getStudentByNationalCode = async (req, res) => {
+  try {
+    const { national_code } = req.params;
+
+    // Validate national code
+    const nationalCodeRegex = /^\d{10}$/;
+    if (!national_code || !nationalCodeRegex.test(national_code)) {
+      return res.status(400).json({ message: 'کد ملی نامعتبر است' });
+    }
+
+    const student = await Student.findOne({ national_code }).lean();
+
+    if (!student) {
+      return res.status(404).json({ message: 'دانش‌آموزی با این کد ملی یافت نشد' });
+    }
+
+    res.status(200).json({
+      message: 'دانش‌آموز با موفقیت یافت شد',
+      student,
     });
   } catch (err) {
     console.error(err);
