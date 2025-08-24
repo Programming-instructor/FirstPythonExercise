@@ -27,8 +27,6 @@ export const fieldMapper = {
   "نتیجه نهایی معاون آموزشی (پذیرش/عدم پذیرش)": "deputyDecision",
   "وضعیت خانواده (شغلی، اقتصادی، فرهنگی)": "familyStatus",
   "وضعیت سکونت (نزدیکی به مدرسه، خوابگاه و ...)": "residenceStatus",
-  "گزارش مشاور تحصیلی": "advisorReport",
-  "گزارش معاونت آموزشی": "deputyReport",
   "تعامل والدین با مدرسه": "parentCooperation",
   "توانایی‌های ویژه دانش‌آموز": "specialTalents",
   "نیازهای خاص (سلامتی، مالی، آموزشی)": "specialNeeds",

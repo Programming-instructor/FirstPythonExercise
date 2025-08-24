@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AcademicCounseling from "./pages/admin/AcademicCounseling"
 import EducationalDeputy from "./pages/admin/EducationalDeputy"
 import PsychCounselor from "./pages/admin/PsychCounselor"
+import Principal from "./pages/admin/Principal"
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
               <Route path='academic-counseling' element={<AcademicCounseling />} />
               <Route path='educational-deputy' element={<EducationalDeputy />} />
               <Route path='psych-counselor' element={<PsychCounselor />} />
+              <Route path='principal' element={<Principal />} />
             </Route>
           </Routes>
         </Router>

@@ -50,6 +50,9 @@ app.use('/api/educational-deputy', educationalDeputy);
 const psychCounselor = require('./routes/psychCounselor.routes');
 app.use('/api/psych-counselor', psychCounselor);
 
+const principalRoutes = require('./routes/principal.routes');
+app.use('/api/principal', principalRoutes);
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;

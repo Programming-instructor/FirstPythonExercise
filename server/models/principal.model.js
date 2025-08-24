@@ -6,8 +6,6 @@ const principalSchema = new mongoose.Schema({
   familyStatus: String,
   residenceStatus: String,
   disciplineStatus: String,
-  advisorReport: String,
-  deputyReport: String,
   parentCooperation: String,
   specialTalents: String,
   specialNeeds: String,
