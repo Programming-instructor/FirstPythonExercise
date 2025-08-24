@@ -47,6 +47,9 @@ app.use('/api/academic-advisor', academicAdvisorRoutes);
 const educationalDeputy = require('./routes/educationalDeputy.routes');
 app.use('/api/educational-deputy', educationalDeputy);
 
+const psychCounselor = require('./routes/psychCounselor.routes');
+app.use('/api/psych-counselor', psychCounselor);
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;

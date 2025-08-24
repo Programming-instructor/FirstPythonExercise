@@ -1,6 +1,6 @@
 import DashboardCard from "@/components/admin/dashboard/DashboardCard";
 import { NotebookPen } from "lucide-react";
-import { FaChalkboardTeacher, FaRegCalendarAlt } from "react-icons/fa";
+import { FaBrain, FaChalkboardTeacher, FaClipboardList, FaRegCalendarAlt } from "react-icons/fa";
 import { FaRegFaceSmile } from "react-icons/fa6";
 import { GrUserAdmin } from "react-icons/gr";
 import { PiStudentBold } from "react-icons/pi";
@@ -49,10 +49,17 @@ const cards = [
     hasPerm: true,
   },
   {
-    body: "معونت آموزشی",
+    body: "معاونت آموزشی",
     desc: "پیگیری امور آموزش",
-    icon: <FaRegCalendarAlt size={40} />,
+    icon: <FaClipboardList size={40} />,
     href: "/admin/educational-deputy",
+    hasPerm: true,
+  },
+  {
+    body: "مشاور روانکاوی",
+    desc: "مشاوره ",
+    icon: <FaBrain size={40} />,
+    href: "/admin/psych-counselor",
     hasPerm: true,
   },
 ];
