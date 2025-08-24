@@ -68,7 +68,7 @@ const cards = [
     body: 'مدیریت کاربران ویژه',
     desc: 'تعیین سطح دسترسی',
     icon: <GrUserAdmin size={40} />,
-    href: '/admin/dashboard',
+    href: '/admin/users',
     permission: 'manage_users',
   },
 ];

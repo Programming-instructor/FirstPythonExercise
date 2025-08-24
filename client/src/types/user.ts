@@ -29,3 +29,34 @@ export interface LoginResponse {
   };
   message: string;
 }
+
+export interface AddUserData {
+  mobile: string;
+  role: string;
+  name: string;
+  permissions?: string[];
+}
+
+export interface AddUserResponse {
+  message: string;
+  user: {
+    id: string;
+    mobile: string;
+    role: string;
+    name: string;
+    permissions: string[];
+    isAdmin: boolean;
+  };
+}
+
+export interface GetAllUsersResponse {
+  message: string;
+  users: {
+    id: string;
+    mobile: string;
+    role: string;
+    name: string;
+    permissions: string[];
+    isAdmin: boolean;
+  }[];
+}
