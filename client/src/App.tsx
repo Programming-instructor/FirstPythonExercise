@@ -7,6 +7,7 @@ import { Toaster } from "sonner"
 import StudentsPage from "./pages/admin/Students"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AcademicCounseling from "./pages/admin/AcademicCounseling"
+import EducationalDeputy from "./pages/admin/EducationalDeputy"
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
               <Route path='register-student' element={<StudentRegister />} />
               <Route path='students' element={<StudentsPage />} />
               <Route path='academic-counseling' element={<AcademicCounseling />} />
+              <Route path='educational-deputy' element={<EducationalDeputy />} />
             </Route>
           </Routes>
         </Router>

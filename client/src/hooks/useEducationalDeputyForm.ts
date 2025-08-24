@@ -1,30 +1,30 @@
-import { fetchAdvisorForm } from "@/services/academic-advisor";
-import type { AcademicAdvisorForm } from "@/types/academicAdvisor";
+import { fetchDeputyForm } from "@/services/educationalDeputy";
+import type { EducationalDeputyForm } from "@/types/educationalDeputy";
 import { reverseMapper, type FieldMapperKeys, type FieldMapperValues } from "@/utils/fieldMapper";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
-type TransformedAdvisorForm = {
+type TransformedDeputyForm = {
   form: Partial<Record<FieldMapperKeys, string>>;
   exists: boolean;
   locked: boolean;
 };
 
-export const useAcademicAdvisorForm = (
+export const useEducationalDeputyForm = (
   studentId?: string
-): UseQueryResult<TransformedAdvisorForm, Error> => {
+): UseQueryResult<TransformedDeputyForm, Error> => {
   return useQuery({
-    queryKey: ["academicAdvisorForm", studentId],
-    queryFn: () => fetchAdvisorForm(studentId!),
+    queryKey: ["educationalDeputyForm", studentId],
+    queryFn: () => fetchDeputyForm(studentId!),
     enabled: !!studentId,
-    select: (data: { form: AcademicAdvisorForm | null; exists: boolean; locked: boolean }) => {
+    select: (data: { form: EducationalDeputyForm | null; exists: boolean; locked: boolean }) => {
       const mappedData: Partial<Record<FieldMapperKeys, string>> = {};
       if (data.form) {
-        const form = data.form; // Store in local variable for type narrowing
-        (Object.keys(form) as (keyof AcademicAdvisorForm)[]).forEach((key) => {
+        const form = data.form; // Store in local variable to ensure type narrowing
+        (Object.keys(form) as (keyof EducationalDeputyForm)[]).forEach((key) => {
           if (key === "locked") return;
           const persianKey = reverseMapper[key as FieldMapperValues] as FieldMapperKeys;
           if (persianKey) {
-            mappedData[persianKey] = key === "advisorDecision"
+            mappedData[persianKey] = key === "deputyDecision"
               ? form[key] ? "پذیرش" : "عدم پذیرش"
               : (form[key] as string) || "";
           }

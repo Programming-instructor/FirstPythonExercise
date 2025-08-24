@@ -49,10 +49,10 @@ const cards = [
     hasPerm: true,
   },
   {
-    body: "معاونت آموزشی و انضباطی",
-    desc: "پیگیری انضباط",
+    body: "معونت آموزشی",
+    desc: "پیگیری امور آموزش",
     icon: <FaRegCalendarAlt size={40} />,
-    href: "/admin/dashboard",
+    href: "/admin/educational-deputy",
     hasPerm: true,
   },
 ];

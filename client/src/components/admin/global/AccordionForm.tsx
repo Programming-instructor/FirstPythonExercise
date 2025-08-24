@@ -15,6 +15,65 @@ interface AccordionFormProps {
   isSubmitting?: boolean;
 }
 
+const fieldInputConfig: Record<
+  FieldMapperKeys,
+  { type: "Input" | "Textarea" | "Select"; options?: string[] }
+> = {
+  "نقاط قوت درسی": { type: "Textarea" },
+  "نقاط ضعف درسی": { type: "Textarea" },
+  "علاقه‌مندی‌های درسی": { type: "Textarea" },
+  "رشته مورد علاقه برای ادامه تحصیل": { type: "Input" },
+  "وضعیت انضباطی": { type: "Select", options: ["عالی", "خوب", "متوسط", "نیاز به بهبود"] },
+  "ساعات مطالعه روزانه": { type: "Input" },
+  "فعالیت‌های فوق برنامه (المپیاد، کلاس زبان، ورزش و ...)": { type: "Textarea" },
+  "نیاز به کلاس تقویتی": { type: "Select", options: ["دارد", "ندارد"] },
+  "سطح همکاری در کلاس": { type: "Select", options: ["عالی", "خوب", "متوسط", "ضعیف"] },
+  "وضعیت تکالیف و پروژه‌ها": { type: "Select", options: ["عالی", "خوب", "متوسط", "نیاز به بهبود"] },
+  "مهارت‌های یادگیری (یادداشت‌برداری، خلاصه‌نویسی و ...)": { type: "Textarea" },
+  "توضیحات تکمیلی مشاور تحصیلی": { type: "Textarea" },
+  "نتیجه نهایی مشاور تحصیلی (پذیرش/عدم پذیرش)": { type: "Select", options: ["پذیرش", "عدم پذیرش"] },
+  "مدارک تحصیلی ارائه‌شده": { type: "Textarea" },
+  "کارنامه سال گذشته": { type: "Textarea" },
+  "نمره دروس اصلی (ریاضی، علوم، ادبیات، زبان)": { type: "Input" },
+  "حضور و غیاب در مدارس قبلی": { type: "Textarea" },
+  "وضعیت انتقالی یا تغییر مدرسه": { type: "Select", options: ["بدون انتقال", "انتقال از مدرسه دیگر", "تغییر رشته"] },
+  "سطح زبان خارجی": { type: "Select", options: ["مبتدی", "متوسط", "پیشرفته"] },
+  "میزان مشارکت در فعالیت‌های کلاسی": { type: "Select", options: ["فعال", "متوسط", "غیرفعال"] },
+  "مشکلات آموزشی پیشین": { type: "Textarea" },
+  "نیاز به امکانات آموزشی خاص (کتاب، ابزار و ...)": { type: "Textarea" },
+  "پیشنهاد برای کلاس‌بندی": { type: "Textarea" },
+  "وضعیت سوابق تحصیلی در سال‌های قبل": { type: "Textarea" },
+  "توضیحات تکمیلی معاون آموزشی": { type: "Textarea" },
+  "نتیجه نهایی معاون آموزشی (پذیرش/عدم پذیرش)": { type: "Select", options: ["پذیرش", "عدم پذیرش"] },
+  "وضعیت خانواده (شغلی، اقتصادی، فرهنگی)": { type: "Textarea" },
+  "وضعیت سکونت (نزدیکی به مدرسه، خوابگاه و ...)": { type: "Textarea" },
+  "گزارش مشاور تحصیلی": { type: "Textarea" },
+  "گزارش معاونت آموزشی": { type: "Textarea" },
+  "تعامل والدین با مدرسه": { type: "Select", options: ["عالی", "خوب", "متوسط", "ضعیف"] },
+  "توانایی‌های ویژه دانش‌آموز": { type: "Textarea" },
+  "نیازهای خاص (سلامتی، مالی، آموزشی)": { type: "Textarea" },
+  "اهداف خانواده از ثبت‌نام": { type: "Textarea" },
+  "پیشینه حضور در مدارس دیگر": { type: "Textarea" },
+  "تصویر کلی از رفتار اجتماعی": { type: "Textarea" },
+  "ارزیابی کلی مدیر از دانش‌آموز": { type: "Textarea" },
+  "توضیحات تکمیلی مدیر": { type: "Textarea" },
+  "نتیجه نهایی مدیر (پذیرش/عدم پذیرش)": { type: "Select", options: ["پذیرش", "عدم پذیرش"] },
+  "وضعیت روحی/روانی کلی": { type: "Select", options: ["عالی", "خوب", "متوسط", "نیاز به توجه"] },
+  "سطح اعتماد به نفس": { type: "Select", options: ["بالا", "متوسط", "پایین"] },
+  "سطح اضطراب و استرس": { type: "Select", options: ["کم", "متوسط", "زیاد"] },
+  "مهارت‌های اجتماعی": { type: "Select", options: ["عالی", "خوب", "متوسط", "نیاز به بهبود"] },
+  "ارتباط با همسالان": { type: "Select", options: ["عالی", "خوب", "متوسط", "نیاز به بهبود"] },
+  "ارتباط با والدین": { type: "Select", options: ["عالی", "خوب", "متوسط", "نیاز به بهبود"] },
+  "مشکلات خانوادگی احتمالی": { type: "Textarea" },
+  "سابقه مراجعه به مشاور یا روانپزشک": { type: "Select", options: ["دارد", "ندارد"] },
+  "مشکلات رفتاری احتمالی": { type: "Textarea" },
+  "نقاط قوت شخصیتی": { type: "Textarea" },
+  "سبک یادگیری ترجیحی (دیداری، شنیداری، عملی)": { type: "Select", options: ["دیداری", "شنیداری", "عملی", "ترکیبی"] },
+  "میزان انگیزه برای تحصیل": { type: "Select", options: ["بالا", "متوسط", "پایین"] },
+  "توصیه‌های مشاور روانشناسی": { type: "Textarea" },
+  "نتیجه نهایی مشاور روانشناسی (پذیرش/عدم پذیرش)": { type: "Select", options: ["پذیرش", "عدم پذیرش"] },
+};
+
 export default function AccordionForm({
   fields,
   completed,
@@ -46,7 +105,7 @@ export default function AccordionForm({
       type="single"
       collapsible
       className="w-full rounded-2xl border shadow-sm"
-      value={isOpen ? "form" : ""} // Use "" instead of undefined for closed state
+      value={isOpen ? "form" : ""}
       onValueChange={(value) => setIsOpen(value === "form")}
     >
       <AccordionItem value="form">
@@ -65,8 +124,7 @@ export default function AccordionForm({
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {fields.map((field) => {
-                  const isFinalResult = field.includes("نتیجه نهایی");
-                  const isNotes = field.includes("توضیحات");
+                  const config = fieldInputConfig[field] || { type: "Input" }; // Fallback to Input if not specified
 
                   return (
                     <div key={field} className="flex flex-col">
@@ -76,7 +134,7 @@ export default function AccordionForm({
                         <div className="text-sm bg-muted p-2 rounded-md">
                           {formData[field] || "بدون داده"}
                         </div>
-                      ) : isFinalResult ? (
+                      ) : config.type === "Select" ? (
                         <Select
                           onValueChange={(val) => handleChange(field, val)}
                           value={formData[field] || ""}
@@ -85,11 +143,14 @@ export default function AccordionForm({
                             <SelectValue placeholder="انتخاب کنید" />
                           </SelectTrigger>
                           <SelectContent dir="rtl">
-                            <SelectItem value="پذیرش">پذیرش</SelectItem>
-                            <SelectItem value="عدم پذیرش">عدم پذیرش</SelectItem>
+                            {config.options?.map((option) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
-                      ) : isNotes ? (
+                      ) : config.type === "Textarea" ? (
                         <Textarea
                           value={formData[field] || ""}
                           onChange={(e) => handleChange(field, e.target.value)}
