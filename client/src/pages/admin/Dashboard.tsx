@@ -1,81 +1,101 @@
-import DashboardCard from "@/components/admin/dashboard/DashboardCard";
-import { NotebookPen } from "lucide-react";
-import { FaBrain, FaChalkboardTeacher, FaClipboardList, FaUserTie } from "react-icons/fa";
-import { FaRegFaceSmile } from "react-icons/fa6";
-import { GrUserAdmin } from "react-icons/gr";
-import { PiStudentBold } from "react-icons/pi";
+import { useFetchUser } from '@/hooks/useFetchUser'; // Adjust path if needed
+import DashboardCard from '@/components/admin/dashboard/DashboardCard';
+import { NotebookPen } from 'lucide-react';
+import { FaBrain, FaChalkboardTeacher, FaClipboardList, FaUserTie } from 'react-icons/fa';
+import { FaRegFaceSmile } from 'react-icons/fa6';
+import { GrUserAdmin } from 'react-icons/gr';
+import { PiStudentBold } from 'react-icons/pi';
 
+// Define cards with associated permissions
 const cards = [
   {
-    body: "ثبت نام هنرجوی جدید",
-    desc: "مدیریت فناوری اطلاعات",
+    body: 'ثبت نام هنرجوی جدید',
+    desc: 'مدیریت فناوری اطلاعات',
     icon: <PiStudentBold size={40} />,
-    href: "/admin/register-student",
-    hasPerm: true,
+    href: '/admin/register-student',
+    permission: 'register_student',
   },
   {
-    body: "لیست دانش آموزان",
-    desc: "ویرایش ، حذف ، بارگزاری تصویر",
+    body: 'لیست دانش آموزان',
+    desc: 'ویرایش ، حذف ، بارگزاری تصویر',
     icon: <PiStudentBold size={40} />,
-    href: "/admin/students",
-    hasPerm: true,
+    href: '/admin/students',
+    permission: 'manage_students',
   },
   {
-    body: "ثبت نام اساتید",
-    desc: "مدیریت فناوری اطلاعات",
+    body: 'ثبت نام اساتید',
+    desc: 'مدیریت فناوری اطلاعات',
     icon: <FaChalkboardTeacher size={40} />,
-    href: "/admin/dashboard",
-    hasPerm: false,
+    href: '/admin/dashboard',
+    permission: 'register_teachers',
   },
   {
-    body: "ارزیابی و عملکرد",
-    desc: "بررسی عملکرد هنرجویان",
+    body: 'ارزیابی و عملکرد',
+    desc: 'بررسی عملکرد هنرجویان',
     icon: <FaRegFaceSmile size={40} />,
-    href: "/admin/dashboard",
-    hasPerm: true,
+    href: '/admin/dashboard',
+    permission: 'evaluate_performance',
   },
   {
-    body: "واحد مشاوره تحصیلی",
-    desc: "مشاوره تحصیلی",
+    body: 'واحد مشاوره تحصیلی',
+    desc: 'مشاوره تحصیلی',
     icon: <NotebookPen size={40} />,
-    href: "/admin/academic-counseling",
-    hasPerm: true,
+    href: '/admin/academic-counseling',
+    permission: 'academic_counseling',
   },
   {
-    body: "معاونت آموزشی",
-    desc: "پیگیری امور آموزش",
+    body: 'معاونت آموزشی',
+    desc: 'پیگیری امور آموزش',
     icon: <FaClipboardList size={40} />,
-    href: "/admin/educational-deputy",
-    hasPerm: true,
+    href: '/admin/educational-deputy',
+    permission: 'educational_deputy',
   },
   {
-    body: "مشاور روانکاوی",
-    desc: "مشاوره",
+    body: 'مشاور روانکاوی',
+    desc: 'مشاوره',
     icon: <FaBrain size={40} />,
-    href: "/admin/psych-counselor",
-    hasPerm: true,
+    href: '/admin/psych-counselor',
+    permission: 'psych_counselor',
   },
   {
-    body: "مدیر",
-    desc: "مدیریت هنرستان",
+    body: 'مدیر',
+    desc: 'مدیریت هنرستان',
     icon: <FaUserTie size={40} />,
-    href: "/admin/principal",
-    hasPerm: true,
+    href: '/admin/principal',
+    permission: 'principal',
   },
   {
-    body: "مدیریت کاربران ویژه",
-    desc: "تعیین سطح دسترسی",
+    body: 'مدیریت کاربران ویژه',
+    desc: 'تعیین سطح دسترسی',
     icon: <GrUserAdmin size={40} />,
-    href: "/admin/dashboard",
-    hasPerm: true,
+    href: '/admin/dashboard',
+    permission: 'manage_users',
   },
-]
+];
 
 const Dashboard = () => {
+  const { data: user, isLoading, error } = useFetchUser();
+
+  // Function to check if user has permission for a card
+  const hasPermission = (permission: string) => {
+    if (!user) return false;
+    if (user.isAdmin) return true;
+    console.log(user.permissions, permission)
+    return user.permissions.includes(permission);
+  };
+
+  if (isLoading) {
+    return <div className="text-center">در حال بارگذاری...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">خطا در بارگذاری اطلاعات کاربر</div>;
+  }
+
   return (
     <div className="flex flex-col items-center gap-8" dir="rtl">
       <h3 className="text-2xl font-bold">اتوماسیون اداری هنرستان</h3>
-      <div className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl w-full auto-rows-fr justify-center ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl w-full auto-rows-fr justify-center">
         {cards.map((card, index) => (
           <DashboardCard
             key={index}
@@ -83,7 +103,7 @@ const Dashboard = () => {
             desc={card.desc}
             icon={card.icon}
             href={card.href}
-            hasPerm={card.hasPerm}
+            hasPerm={hasPermission(card.permission)}
           />
         ))}
       </div>

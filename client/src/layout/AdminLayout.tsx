@@ -1,17 +1,24 @@
-import { useState, useEffect } from "react";
-import ProfileCard from "@/components/layout/ProfileCard";
-import { Outlet } from "react-router-dom";
-import { useFetchUser } from "@/hooks/useFetchUser";
+import { useFetchUser } from '@/hooks/useFetchUser';
+import ProfileCard from '@/components/layout/ProfileCard';
+import { Outlet, Navigate } from 'react-router-dom';
 
 const AdminLayout = () => {
   const { data: user, error, isLoading } = useFetchUser();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error || !user) return <div>an Error occurred</div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-screen flex items-center justify-center text-center" dir="rtl">
+        در حال بارگذاری...
+      </div>
+    );
+  }
 
+  if (error || !user) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
-    <div className="min-h-screen w-screen pt-16 px-28 flex flex-col gap-9">
+    <div className="min-h-screen w-screen pt-16 px-28 flex flex-col gap-9" dir="rtl">
       <div className="flex justify-end">
         <ProfileCard name={user.name} />
       </div>

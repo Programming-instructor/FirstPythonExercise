@@ -6,7 +6,6 @@ dotenv.config();
 
 // Admin user data
 const adminUser = {
-  username: 'admin',
   mobile: '09123456789',
   role: 'admin',
   name: 'ادمین',
