@@ -12,6 +12,7 @@ import PsychCounselor from "./pages/admin/PsychCounselor"
 import Principal from "./pages/admin/Principal"
 import NotAllowed from "./components/layout/NotAllowed"
 import UsersPage from "./pages/admin/UsersPage"
+import Evaluation from "./pages/admin/Evaluation"
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
               <Route path='psych-counselor' element={<PsychCounselor />} />
               <Route path='principal' element={<Principal />} />
               <Route path='users' element={<UsersPage />} />
+              <Route path='evaluation' element={<Evaluation />} />
               <Route path='not-allowed' element={<NotAllowed />} />
             </Route>
           </Routes>

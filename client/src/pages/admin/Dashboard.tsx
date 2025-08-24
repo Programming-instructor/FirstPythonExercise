@@ -33,7 +33,7 @@ const cards = [
     body: 'ارزیابی و عملکرد',
     desc: 'بررسی عملکرد هنرجویان',
     icon: <FaRegFaceSmile size={40} />,
-    href: '/admin/dashboard',
+    href: '/admin/evaluation',
     permission: 'evaluate_performance',
   },
   {

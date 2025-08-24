@@ -1,0 +1,138 @@
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import ReadOnlyStudent from "@/components/admin/global/ReadOnlyStudent";
+import { useFetchDecisionsByNationalCode } from "@/hooks/useDecisionsByNationalCode";
+import { useFetchStudentByCode } from "@/hooks/useFetchStudnetByNationalCode";
+
+const Evaluation = () => {
+  const [nationalCode, setNationalCode] = useState("");
+  const [submittedCode, setSubmittedCode] = useState("");
+  const { data: student, isLoading: studentLoading, error: studentError } = useFetchStudentByCode(submittedCode);
+  const { data: decisions, isLoading: decisionsLoading } = useFetchDecisionsByNationalCode(submittedCode);
+
+  const roleTranslations: { [key: string]: string } = {
+    academicAdvisor: 'مشاور تحصیلی',
+    educationalDeputy: 'معاونت آموزشی',
+    principal: 'مدیر',
+    psychCounselor: 'مشاور روانکاوی',
+  };
+
+  const handleSubmitCode = () => {
+    if (!/^\d{10}$/.test(nationalCode)) {
+      toast.error("لطفاً یک کد ملی ۱۰ رقمی معتبر وارد کنید");
+      return;
+    }
+    setSubmittedCode(nationalCode);
+  };
+
+  return (
+    <div className="flex flex-col items-center min-h-screen p-4" dir="rtl">
+      <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
+        <h1 className="font-bold text-2xl text-center">ارزیابی</h1>
+
+        <div>
+          <Label htmlFor="national_code" className="text-sm font-semibold">
+            کد ملی هنرجو
+          </Label>
+          <div className="flex gap-4 mt-2">
+            <Input
+              id="national_code"
+              value={nationalCode}
+              onChange={(e) => setNationalCode(e.target.value)}
+              placeholder="کد ملی ۱۰ رقمی را وارد کنید"
+              className="max-w-md"
+            />
+            <Button
+              onClick={handleSubmitCode}
+              disabled={studentLoading || !/^\d{10}$/.test(nationalCode)}
+            >
+              {studentLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>در حال جستجو...</span>
+                </div>
+              ) : (
+                "جستجوی هنرجو"
+              )}
+            </Button>
+          </div>
+          {studentError && (
+            <p className="text-red-600 text-sm mt-2">
+              خطا در یافتن هنرجو: {studentError.message}
+            </p>
+          )}
+          {submittedCode && !studentLoading && !student && (
+            <p className="text-red-600 text-sm mt-2">
+              هیچ هنرجویی با این کد ملی یافت نشد.
+            </p>
+          )}
+        </div>
+
+        {student && <ReadOnlyStudent student={student} short />}
+
+        {submittedCode && (
+          <Card className="">
+            <CardContent className="p-6">
+              <Table className="w-full min-w-full overflow-visible">
+                <TableCaption className="text-gray-600">تصمیمات ارزیابی</TableCaption>
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="font-semibold text-gray-700 text-start">نقش</TableHead>
+                    <TableHead className="font-semibold text-gray-700 text-start">وضعیت</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {decisionsLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={2} className="text-center py-10">
+                        <div className="flex justify-center items-center gap-2 text-gray-500">
+                          <Loader2 className="h-6 w-6 animate-spin" />
+                          <span>در حال بارگذاری...</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    Object.entries(decisions || {}).map(([role, status]) => (
+                      <TableRow
+                        key={role}
+                        className="hover:bg-gray-50 transition-colors duration-200"
+                      >
+                        <TableCell className="text-gray-800">
+                          {roleTranslations[role] || role}
+                        </TableCell>
+                        <TableCell className={`text-gray-800 ${status === true ? 'text-green-600' : status === false ? 'text-red-600' : 'text-gray-600'}`}>
+                          {status === true ? 'تأیید شده' : status === false ? 'رد شده' : 'تعریف نشده'}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        <Link to="/admin/dashboard">
+          <Button>داشبورد</Button>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+export default Evaluation;

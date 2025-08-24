@@ -52,3 +52,17 @@ export const fetchStudentByNationalCode = async (national_code: string) => {
     throw error;
   }
 };
+
+export const fetchDecisionsByNationalCode = async (national_code: string) => {
+  try {
+    if (!/^\d{10}$/.test(national_code)) {
+      throw new Error("کد ملی نامعتبر است");
+    }
+    const response = await api.get(`/student/evaluation/${national_code}`);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching student by national code: ', error);
+    throw error;
+  }
+};

@@ -4,6 +4,10 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const Student = require('../models/student.model');
 const XLSX = require('xlsx');
+const AcademicAdvisor = require('../models/academicAdvisor.model');
+const EducationalDeputy = require('../models/educationalDeputy.model');
+const Principal = require('../models/principal.model');
+const PsychCounselor = require('../models/psychCounselor.model');
 
 // ==== Multer setup for images ====
 const imageStorage = multer.diskStorage({
@@ -532,5 +536,35 @@ exports.getStudentByNationalCode = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'خطای سرور', error: err.message });
+  }
+};
+
+
+exports.getDecisionsByNationalCode = async (req, res) => {
+  const { nationalCode } = req.params;
+
+  try {
+    const student = await Student.findOne({ national_code: nationalCode });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    const studentId = student._id;
+
+    const academicAdvisorRecord = await AcademicAdvisor.findOne({ studentId });
+    const educationalDeputyRecord = await EducationalDeputy.findOne({ studentId });
+    const principalRecord = await Principal.findOne({ studentId });
+    const psychCounselorRecord = await PsychCounselor.findOne({ studentId });
+
+    const decisions = {
+      academicAdvisor: academicAdvisorRecord ? academicAdvisorRecord.advisorDecision : null,
+      educationalDeputy: educationalDeputyRecord ? educationalDeputyRecord.deputyDecision : null,
+      principal: principalRecord ? principalRecord.principalDecision : null,
+      psychCounselor: psychCounselorRecord ? psychCounselorRecord.psychDecision : null,
+    };
+
+    res.json(decisions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
