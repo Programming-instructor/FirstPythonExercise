@@ -29,7 +29,7 @@ exports.login = async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign(
-      { userId: user._id, role: user.role, isAdmin: user.isAdmin },
+      { userId: user._id, role: user.role, isAdmin: user.isAdmin, name: user.name },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -160,11 +160,11 @@ exports.currentUser = async (req, res) => {
       return res.status(403).json({ message: 'Unauthorized.' })
     }
 
-    const user = await User.findById(req.user.userId);
+    const user = req.user;
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
-    return res.status(200).json( user );
+    return res.status(200).json(user);
   }
   catch (error) {
     console.error('ERROR FETHCING USER: ', error)

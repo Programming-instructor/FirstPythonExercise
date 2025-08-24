@@ -1,6 +1,6 @@
 import DashboardCard from "@/components/admin/dashboard/DashboardCard";
 import { NotebookPen } from "lucide-react";
-import { FaBrain, FaChalkboardTeacher, FaClipboardList, FaRegCalendarAlt, FaUserTie } from "react-icons/fa";
+import { FaBrain, FaChalkboardTeacher, FaClipboardList, FaUserTie } from "react-icons/fa";
 import { FaRegFaceSmile } from "react-icons/fa6";
 import { GrUserAdmin } from "react-icons/gr";
 import { PiStudentBold } from "react-icons/pi";
@@ -14,13 +14,6 @@ const cards = [
     hasPerm: true,
   },
   {
-    body: "ثبت نام اساتید",
-    desc: "مدیریت فناوری اطلاعات",
-    icon: <FaChalkboardTeacher size={40} />,
-    href: "/admin/dashboard",
-    hasPerm: false,
-  },
-  {
     body: "لیست دانش آموزان",
     desc: "ویرایش ، حذف ، بارگزاری تصویر",
     icon: <PiStudentBold size={40} />,
@@ -28,16 +21,16 @@ const cards = [
     hasPerm: true,
   },
   {
+    body: "ثبت نام اساتید",
+    desc: "مدیریت فناوری اطلاعات",
+    icon: <FaChalkboardTeacher size={40} />,
+    href: "/admin/dashboard",
+    hasPerm: false,
+  },
+  {
     body: "ارزیابی و عملکرد",
     desc: "بررسی عملکرد هنرجویان",
     icon: <FaRegFaceSmile size={40} />,
-    href: "/admin/dashboard",
-    hasPerm: true,
-  },
-  {
-    body: "مدیریت کاربران ویژه",
-    desc: "تعیین سطح دسترسی",
-    icon: <GrUserAdmin size={40} />,
     href: "/admin/dashboard",
     hasPerm: true,
   },
@@ -57,7 +50,7 @@ const cards = [
   },
   {
     body: "مشاور روانکاوی",
-    desc: "مشاوره ",
+    desc: "مشاوره",
     icon: <FaBrain size={40} />,
     href: "/admin/psych-counselor",
     hasPerm: true,
@@ -69,7 +62,14 @@ const cards = [
     href: "/admin/principal",
     hasPerm: true,
   },
-];
+  {
+    body: "مدیریت کاربران ویژه",
+    desc: "تعیین سطح دسترسی",
+    icon: <GrUserAdmin size={40} />,
+    href: "/admin/dashboard",
+    hasPerm: true,
+  },
+]
 
 const Dashboard = () => {
   return (
