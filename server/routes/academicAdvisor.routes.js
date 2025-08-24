@@ -4,7 +4,7 @@ const academicAdvisorController = require('../controllers/academicAdvisor.contro
 const authenticate = require('../middleware/auth.middleware')
 
 // GET form for a student
-router.get('/:studentId', academicAdvisorController.getFormForStudent);
+router.get('/:studentId', authenticate, academicAdvisorController.getFormForStudent);
 
 // POST submit form for a student
 router.post('/:studentId/submit', authenticate, academicAdvisorController.submitForm);

@@ -44,6 +44,9 @@ app.use('/api/student', studentRoutes);
 const academicAdvisorRoutes = require('./routes/academicAdvisor.routes');
 app.use('/api/academic-advisor', academicAdvisorRoutes);
 
+const educationalDeputy = require('./routes/educationalDeputy.routes');
+app.use('/api/educational-deputy', educationalDeputy);
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
