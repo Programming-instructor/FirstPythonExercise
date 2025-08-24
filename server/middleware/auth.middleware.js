@@ -9,7 +9,6 @@ exports.authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Decoded JWT:', decoded); // Debug: Log the decoded payload
     req.user = decoded;
     next();
   } catch (error) {
@@ -25,16 +24,12 @@ exports.permissionMiddleware = (requiredPermissions) => {
         return res.status(401).json({ message: 'Authentication required' });
       }
 
-      console.log('User ID from JWT:', req.user.id); // Debug: Log the user ID
       const user = await User.findById(req.user.id);
       if (!user) {
-        console.log('User not found for ID:', req.user.id); // Debug: Log missing user
         return res.status(404).json({ message: 'User not found' });
       }
 
-      console.log('User permissions:', user.permissions); // Debug: Log user permissions
       if (user.isAdmin) {
-        console.log('Admin bypass for user:', user._id); // Debug: Log admin bypass
         req.user = user;
         return next();
       }
