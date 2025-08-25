@@ -13,6 +13,7 @@ import Principal from "./pages/admin/Principal"
 import NotAllowed from "./components/layout/NotAllowed"
 import UsersPage from "./pages/admin/UsersPage"
 import Evaluation from "./pages/admin/Evaluation"
+import TeacherRegister from "./pages/admin/TeacherRegister"
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route path='dashboard' element={<Dashboard />} />
               <Route path='register-student' element={<StudentRegister />} />
+              <Route path='register-teacher' element={<TeacherRegister />} />
               <Route path='students' element={<StudentsPage />} />
               <Route path='academic-counseling' element={<AcademicCounseling />} />
               <Route path='educational-deputy' element={<EducationalDeputy />} />
