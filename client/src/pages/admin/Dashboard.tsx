@@ -17,7 +17,7 @@ const cards = [
   },
   {
     body: 'لیست دانش آموزان',
-    desc: 'ویرایش ، حذف ، بارگزاری تصویر',
+    desc: 'لیست هنرجویان ثبت شده',
     icon: <PiStudentBold size={40} />,
     href: '/admin/students',
     permission: 'manage_students',
@@ -26,7 +26,7 @@ const cards = [
     body: 'ثبت نام اساتید',
     desc: 'مدیریت فناوری اطلاعات',
     icon: <FaChalkboardTeacher size={40} />,
-    href: '/admin/dashboard',
+    href: '/admin/register-teacher',
     permission: 'register_teachers',
   },
   {

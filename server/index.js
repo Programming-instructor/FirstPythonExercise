@@ -41,6 +41,9 @@ app.use('/api/user', userRoutes);
 const studentRoutes = require('./routes/student.routes');
 app.use('/api/student', studentRoutes);
 
+const teacherRoutes = require('./routes/teacher.routes');
+app.use('/api/teacher', teacherRoutes);
+
 const academicAdvisorRoutes = require('./routes/academicAdvisor.routes');
 app.use('/api/academic-advisor', academicAdvisorRoutes);
 

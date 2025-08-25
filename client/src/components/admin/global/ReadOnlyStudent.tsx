@@ -48,7 +48,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
             ) : (
               <>
                 <div>
-                  <span className="font-medium">شماره موبایل مادر:</span> {student.mother_phone}
+                  <span className="font-medium">شماره موبایل پدر:</span> {student.father_phone}
                 </div>
                 <div>
                   <span className="font-medium">شماره موبایل مادر:</span> {student.mother_phone}
