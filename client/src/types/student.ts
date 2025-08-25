@@ -66,3 +66,10 @@ export interface StudentResponse {
   page: number;
   totalPages: number;
 }
+
+export interface DecisionData {
+  academicAdvisor: boolean | null;
+  educationalDeputy: boolean | null;
+  principal: boolean | null;
+  psychCounselor: boolean | null;
+}

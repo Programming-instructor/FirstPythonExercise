@@ -1,4 +1,6 @@
 const AcademicAdvisor = require('../models/academicAdvisor.model');
+const Student = require('../models/student.model');
+const { checkStudentAccepted } = require('../utils/checkStudentAccepted');
 
 // Get form data for a student (if exists)
 exports.getFormForStudent = async (req, res) => {
@@ -43,6 +45,10 @@ exports.submitForm = async (req, res) => {
       Object.assign(form, formData);
       form.locked = true;
       await form.save();
+      const accepted = await checkStudentAccepted(studentId);
+      if (accepted !== null) {
+        await Student.findByIdAndUpdate(studentId, { accepted });
+      }
       res.status(200).json({ message: 'Form updated and locked successfully', form });
     } else {
       // Create new form
@@ -52,6 +58,10 @@ exports.submitForm = async (req, res) => {
         locked: true,
       });
       await form.save();
+      const accepted = await checkStudentAccepted(studentId);
+      if (accepted !== null) {
+        await Student.findByIdAndUpdate(studentId, { accepted });
+      }
       res.status(201).json({ message: 'Form submitted and locked successfully', form });
     }
   } catch (error) {

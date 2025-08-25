@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { data, Link } from "react-router-dom";
 import ReadOnlyStudent from "@/components/admin/global/ReadOnlyStudent";
 import { useFetchDecisionsByNationalCode } from "@/hooks/useDecisionsByNationalCode";
 import { useFetchStudentByCode } from "@/hooks/useFetchStudnetByNationalCode";
@@ -31,6 +31,9 @@ const Evaluation = () => {
     principal: 'مدیر',
     psychCounselor: 'مشاور روانکاوی',
   };
+
+  const isTableFull = decisions && Object.values(decisions).every((status) => status !== null);
+  console.log(isTableFull)
 
   const handleSubmitCode = () => {
     if (!/^\d{10}$/.test(nationalCode)) {
@@ -115,11 +118,19 @@ const Evaluation = () => {
                         <TableCell className="text-gray-800">
                           {roleTranslations[role] || role}
                         </TableCell>
-                        <TableCell className={`text-gray-800 ${status === true ? 'text-green-600' : status === false ? 'text-red-600' : 'text-gray-600'}`}>
+                        <TableCell className={`${status === true ? 'text-green-700' : status === false ? 'text-red-600' : 'text-gray-600'}`}>
                           {status === true ? 'تأیید شده' : status === false ? 'رد شده' : 'تعریف نشده'}
                         </TableCell>
                       </TableRow>
                     ))
+                  )}
+                  {isTableFull && (
+                    <TableRow className="hover:bg-gray-50 transition-colors duration-200">
+                      <TableCell className="text-gray-800 font-semibold">وضعیت نهایی</TableCell>
+                      <TableCell className={`font-bold ${student.accepted === true ? 'text-green-600' : student.accepted === false ? 'text-red-600' : 'text-gray-600'}`}>
+                        {student.accepted ? 'پذیرفته شده' : 'پذیرفته نشده'}
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>
