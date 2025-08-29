@@ -14,11 +14,11 @@ const AdminLayout = () => {
   }
 
   if (error || !user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/admin/auth" replace />;
   }
 
   return (
-    <div className="min-h-screen w-screen pt-16 px-28 flex flex-col gap-9" dir="rtl">
+    <div className="min-h-screen w-screen pt-16 px-28 flex flex-col gap-9 pb-5" dir="rtl">
       <div className="flex">
         <ProfileCard name={user.name} />
       </div>

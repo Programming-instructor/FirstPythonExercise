@@ -50,7 +50,7 @@ const Auth = () => {
     setError(null);
     loginMutation.mutate({ mobile, otp }, {
       onSuccess: () => {
-        navigate("/admin/dashboard");
+        navigate("/admin");
       },
     });
   };

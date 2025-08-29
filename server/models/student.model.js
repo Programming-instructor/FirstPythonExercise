@@ -22,7 +22,7 @@ const studentSchema = new mongoose.Schema({
     type: String, required: true, match: /^09\d{9}$/
   },
   academic_year: { type: String, required: true },
-  education_level: { type: String, required: true },
+  education_level: { type: String, enum: ['10', '11', '12'], required: true },
   mother_job: { type: String, required: true },
   grade: { type: Number },
 
@@ -59,7 +59,8 @@ const studentSchema = new mongoose.Schema({
     url: { type: String, required: false },
     public_id: { type: String, required: false }
   },
-  accepted: { type: Boolean, default: false }
+  accepted: { type: Boolean, default: false },
+  class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' }
 });
 
 const Student = mongoose.model('Student', studentSchema, 'student');

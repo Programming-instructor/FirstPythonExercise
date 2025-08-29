@@ -98,7 +98,7 @@ const Principal = () => {
           )
         )}
 
-        <Link to="/admin/dashboard">
+        <Link to="/admin">
           <Button>داشبورد</Button>
         </Link>
       </div>

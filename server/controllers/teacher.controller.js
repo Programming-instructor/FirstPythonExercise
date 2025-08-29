@@ -50,7 +50,6 @@ exports.addTeacher = async (req, res) => {
         birth_date,
         birth_certificate_number,
         national_code,
-        subjects,
         academic_year,
         academic_level
       } = req.body;
@@ -99,7 +98,6 @@ exports.addTeacher = async (req, res) => {
         birth_date,
         birth_certificate_number,
         national_code,
-        subjects: subjects ? JSON.parse(subjects) : [],
         academic_year,
         academic_level,
       };
@@ -135,5 +133,15 @@ exports.addTeacher = async (req, res) => {
       success: false,
       message: 'Server error: ' + error.message,
     });
+  }
+};
+
+exports.getAllTeachers = async (req, res) => {
+  try {
+    const teachers = await Teacher.find().select('first_name last_name mobile _id');
+    res.json(teachers);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 };

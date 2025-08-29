@@ -116,7 +116,7 @@ export default function UsersPage() {
             <Button
               className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 transition-all duration-200"
             >
-              <Link to="/admin/dashboard">بازگشت به داشبورد</Link>
+              <Link to="/admin">بازگشت به داشبورد</Link>
             </Button>
           </div>
         </CardContent>
@@ -183,8 +183,8 @@ export default function UsersPage() {
       </Card>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="font-noto" dir="rtl">
-          <DialogHeader>
+        <DialogContent className="font-noto" dir='rtl'>
+          <DialogHeader dir='ltr'>
             <DialogTitle>افزودن کاربر جدید</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">

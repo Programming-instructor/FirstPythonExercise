@@ -400,7 +400,7 @@ const StudentRegister = () => {
         {/* Form Actions */}
         <div className="flex justify-start gap-4 mt-8">
           <Button asChild variant="outline">
-            <Link to="/admin/dashboard">بازگشت به داشبورد</Link>
+            <Link to="/admin">بازگشت به داشبورد</Link>
           </Button>
           <Button disabled={isPending || !isFormComplete()} onClick={handleSubmit}>
             {isPending ? "در حال ثبت..." : "ثبت هنرجو"}

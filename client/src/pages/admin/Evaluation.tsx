@@ -33,7 +33,6 @@ const Evaluation = () => {
   };
 
   const isTableFull = decisions && Object.values(decisions).every((status) => status !== null);
-  console.log(isTableFull)
 
   const handleSubmitCode = () => {
     if (!/^\d{10}$/.test(nationalCode)) {
@@ -138,7 +137,7 @@ const Evaluation = () => {
           </Card>
         )}
 
-        <Link to="/admin/dashboard">
+        <Link to="/admin">
           <Button>داشبورد</Button>
         </Link>
       </div>

@@ -5,7 +5,6 @@ export interface TeacherFormData {
   birth_date: string;
   birth_certificate_number: string;
   national_code: string;
-  subjects: string[];
   academic_year: string;
   academic_level: 'high_school_diploma' | 'teaching_diploma' | 'associate_degree' | 'bachelor_degree' | 'master_degree' | 'doctoral_degree' | 'postdoctoral' | 'other_certification';
   teacher_portrait_front?: {

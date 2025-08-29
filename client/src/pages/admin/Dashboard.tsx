@@ -5,6 +5,7 @@ import { FaBrain, FaChalkboardTeacher, FaClipboardList, FaUserTie } from 'react-
 import { FaRegFaceSmile } from 'react-icons/fa6';
 import { GrUserAdmin } from 'react-icons/gr';
 import { PiStudentBold } from 'react-icons/pi';
+import { MdClass } from 'react-icons/md';
 
 // Define cards with associated permissions
 const cards = [
@@ -70,6 +71,13 @@ const cards = [
     icon: <GrUserAdmin size={40} />,
     href: '/admin/users',
     permission: 'manage_users',
+  },
+  {
+    body: 'مدیریت کلاس ها',
+    desc: 'تعریف و مدیریت کلاس ها',
+    icon: <MdClass size={40} />,
+    href: '/admin/class',
+    permission: 'manage_classes',
   },
 ];
 

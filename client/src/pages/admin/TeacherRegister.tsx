@@ -20,13 +20,11 @@ const TeacherRegister = () => {
     birth_date: "",
     birth_certificate_number: "",
     national_code: "",
-    subjects: [],
     academic_year: "",
     academic_level: 'high_school_diploma',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [subjectsInput, setSubjectsInput] = useState<string>("");
 
   const { mutate, isPending } = useTeacherRegister();
 
@@ -37,15 +35,6 @@ const TeacherRegister = () => {
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubjectsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSubjectsInput(value);
-    setFormData((prev) => ({
-      ...prev,
-      subjects: value ? value.split("،").map((s) => s.trim()) : [],
-    }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,13 +79,11 @@ const TeacherRegister = () => {
             birth_date: "",
             birth_certificate_number: "",
             national_code: "",
-            subjects: [],
             academic_year: "",
             academic_level: "high_school_diploma",
           });
           setImageFile(null);
           setImagePreview(null);
-          setSubjectsInput("");
         },
       }
     );
@@ -176,16 +163,6 @@ const TeacherRegister = () => {
             <h3 className="font-semibold text-sm mb-3">اطلاعات حرفه‌ای</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="subjects">دروس تدریسی (با کاما جدا کنید)</Label>
-                <Input
-                  id="subjects"
-                  name="subjects"
-                  value={subjectsInput}
-                  onChange={handleSubjectsChange}
-                  placeholder="مثال: ریاضی، فیزیک، شیمی"
-                />
-              </div>
-              <div className="flex flex-col gap-3">
                 <Label htmlFor="academic_year">سال تحصیلی</Label>
                 <Input id="academic_year" name="academic_year" value={formData.academic_year} onChange={handleChange} />
               </div>
@@ -236,7 +213,7 @@ const TeacherRegister = () => {
         {/* Form Actions */}
         <div className="flex justify-start gap-4 mt-8">
           <Button asChild variant="outline">
-            <Link to="/admin/dashboard">بازگشت به داشبورد</Link>
+            <Link to="/admin">بازگشت به داشبورد</Link>
           </Button>
           <Button disabled={isPending || !isFormComplete()} onClick={handleSubmit}>
             {isPending ? "در حال ثبت..." : "ثبت معلم"}

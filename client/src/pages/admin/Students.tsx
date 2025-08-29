@@ -114,7 +114,7 @@ const StudentsPage = () => {
             </div>
           </div>
           <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 transition-all duration-200">
-            <Link to="/admin/dashboard">بازگشت به داشبورد</Link>
+            <Link to="/admin">بازگشت به داشبورد</Link>
           </Button>
         </CardContent>
       </Card>

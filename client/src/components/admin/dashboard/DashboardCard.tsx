@@ -18,7 +18,7 @@ interface props {
 
 const DashboardCard = ({ icon, body, desc, href, hasPerm }: props) => {
   return (
-    <Link to={hasPerm ? href : '/admin/dashboard'} className="h-full">
+    <Link to={hasPerm ? href : '/admin'} className="h-full">
       <Card className={cn("group h-[120px] bg-slate-50 flex flex-col items-center gap-3 p-3 cursor-pointer text-neutral-600 hover:-translate-y-1 hover:shadow-xl hover:border transition relative", hasPerm ? "hover:text-neutral-900 " : "hover:shadow-neutral-300 cursor-not-allowed hover:bg-red-50 hover:text-red-200")}>
         {
           !hasPerm && (

@@ -10,12 +10,6 @@ const teacherSchema = new mongoose.Schema({
     type: String, required: true, unique: true,
     match: /^\d{10}$/ // ← دقیقاً 10 رقم
   },
-  subjects: {
-    type: [String],
-    default: [],
-    enum: [
-    ],
-  },
   academic_year: { type: String, required: true },
   academic_level: {
     type: String,

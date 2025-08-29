@@ -14,6 +14,9 @@ import NotAllowed from "./components/layout/NotAllowed"
 import UsersPage from "./pages/admin/UsersPage"
 import Evaluation from "./pages/admin/Evaluation"
 import TeacherRegister from "./pages/admin/TeacherRegister"
+import ClassLevels from "./pages/admin/ClassLevels"
+import ClassesByLevel from "./pages/admin/ClassesByLevel"
+import ClassDetails from "./pages/admin/ClassDetails"
 
 
 function App() {
@@ -27,7 +30,7 @@ function App() {
           <Routes>
             <Route path="/admin/auth" element={<Auth />} />
             <Route path="/admin" element={<AdminLayout />}>
-              <Route path='dashboard' element={<Dashboard />} />
+              <Route path='' element={<Dashboard />} index />
               <Route path='register-student' element={<StudentRegister />} />
               <Route path='register-teacher' element={<TeacherRegister />} />
               <Route path='students' element={<StudentsPage />} />
@@ -36,6 +39,9 @@ function App() {
               <Route path='psych-counselor' element={<PsychCounselor />} />
               <Route path='principal' element={<Principal />} />
               <Route path='users' element={<UsersPage />} />
+              <Route path="/admin/class" element={<ClassLevels />} />
+              <Route path="/admin/class/:level" element={<ClassesByLevel />} />
+              <Route path="/admin/class/:level/:classname" element={<ClassDetails />} />
               <Route path='evaluation' element={<Evaluation />} />
               <Route path='not-allowed' element={<NotAllowed />} />
             </Route>
