@@ -20,7 +20,7 @@ exports.login = async (req, res) => {
     user.otpExpires = null;
     await user.save();
     const token = jwt.sign(
-      { userId: user._id, role: user.role, isAdmin: user.isAdmin, name: user.name, permissions: user.permissions },
+      { userId: user._id, role: user.role, isAdmin: user.isAdmin, name: user.name, permissions: user.permissions, loggedInAs: 'user' },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );

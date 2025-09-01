@@ -12,3 +12,10 @@ export interface TeacherFormData {
     public_id?: string;
   };
 }
+
+export interface Teacher {
+  id: string;
+  mobile: string;
+  firstName: string;
+  lastName: string;
+}

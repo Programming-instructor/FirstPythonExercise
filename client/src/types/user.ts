@@ -60,3 +60,14 @@ export interface GetAllUsersResponse {
     isAdmin: boolean;
   }[];
 }
+
+export interface TeacherLoginResponse {
+  token: string;
+  teacher: {
+    id: string;
+    mobile: string;
+    firstName: string,
+    lastName: string,
+  };
+  message: string;
+}

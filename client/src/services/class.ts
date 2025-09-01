@@ -1,0 +1,11 @@
+import api from "@/lib/axiosConfig";
+
+export const fetchStudentsInClass = async (className: string) => {
+  try {
+    const response = await api.get(`/class/name/${className}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching students in this class: ', error);
+    throw error;
+  }
+};

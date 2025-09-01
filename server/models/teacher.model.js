@@ -29,6 +29,15 @@ const teacherSchema = new mongoose.Schema({
     url: { type: String, required: false },
     public_id: { type: String, required: false }
   },
+  otp: String,
+  otpExpires: Date,
+  numberOfReports: { type: Number, required: false },
+  reports: [
+    {
+      date: { type: String, required: false },
+      message: { type: String, required: false },
+    }
+  ]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Teacher', teacherSchema);

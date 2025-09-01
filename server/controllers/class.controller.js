@@ -172,7 +172,7 @@ exports.getAllClasses = async (req, res) => {
   }
 };
 
-// Get a class by ID
+// Get a class by Name
 exports.getClassName = async (req, res) => {
   try {
     const { name } = req.params;
@@ -353,6 +353,116 @@ exports.removePeriodFromClass = async (req, res) => {
 
     await cls.save();
     res.json({ message: 'Period removed successfully', cls });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+exports.postAttendance = async (req, res) => {
+  try {
+    const { classId, date, day, period, attendances, report } = req.body;
+
+    // Validate required fields
+    if (!classId || !date || !day || !period || !attendances || !Array.isArray(attendances)) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const cls = await Class.findById(classId);
+    if (!cls) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    // Validate day and period exist in schedule
+    if (!cls.days[day] || cls.days[day].length < period || period < 1) {
+      return res.status(400).json({ message: 'Invalid day or period for this class' });
+    }
+
+    const schedulePeriod = cls.days[day][period - 1];
+
+    // Optional: Validate that attendances cover all students in the class
+    const classStudentIds = cls.students.map(s => s.toString());
+    const providedStudentIds = attendances.map(a => a.studentId.toString());
+    if (classStudentIds.length !== providedStudentIds.length || !classStudentIds.every(id => providedStudentIds.includes(id))) {
+      return res.status(400).json({ message: 'Attendance must be provided for all students in the class' });
+    }
+
+    // Check for existing attendance record (match by date, day, period)
+    let existing = cls.attendance.find(
+      a => a.date === date &&
+        a.day === day &&
+        a.period === period
+    );
+
+    const formattedAttendances = attendances.map(a => ({
+      student: a.studentId,
+      status: a.status
+    }));
+
+    if (existing) {
+      // Update existing record
+      existing.studentsAttendance = formattedAttendances;
+      existing.report = report || existing.report;
+      existing.subject = schedulePeriod.subject; // Refresh in case schedule changed
+      existing.teacher = schedulePeriod.teacher;
+    } else {
+      // Create new record
+      cls.attendance.push({
+        date,
+        day,
+        period,
+        subject: schedulePeriod.subject,
+        teacher: schedulePeriod.teacher,
+        studentsAttendance: formattedAttendances,
+        report: report || ''
+      });
+    }
+
+    await cls.save();
+    res.json({ message: 'Attendance saved successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get attendance for a class (optionally filtered by date, day, period)
+exports.getAttendance = async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const { date, day, period } = req.query;
+
+    const cls = await Class.findById(classId)
+      .select('attendance')
+      .populate({
+        path: 'attendance.studentsAttendance.student',
+        select: 'first_name last_name national_code'
+      })
+      .populate({
+        path: 'attendance.teacher',
+        select: 'first_name last_name mobile'
+      });
+
+    if (!cls) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    let filteredAttendance = cls.attendance || [];
+
+    if (date) {
+      filteredAttendance = filteredAttendance.filter(a => a.date === date);
+    }
+
+    if (day) {
+      filteredAttendance = filteredAttendance.filter(a => a.day === day.toLowerCase());
+    }
+
+    if (period) {
+      filteredAttendance = filteredAttendance.filter(a => a.period === parseInt(period, 10));
+    }
+
+    res.json(filteredAttendance);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });

@@ -2,6 +2,7 @@ const Teacher = require('../models/teacher.model');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const jwt = require('jsonwebtoken');
 
 // Configure multer specifically for teacher uploads
 const teacherImageStorage = multer.diskStorage({
@@ -145,3 +146,124 @@ exports.getAllTeachers = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+
+// Generate and Send OTP Controller
+exports.sendOTP = async (req, res) => {
+  try {
+    const { mobile } = req.body;
+    if (!mobile) {
+      return res.status(400).json({ message: 'Mobile number is required' });
+    }
+    const user = await Teacher.findOne({ mobile });
+    if (!user) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    await user.save();
+    console.log(`OTP for ${mobile}: ${otp}`);
+    res.status(200).json({ message: 'OTP generated and logged successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Check OTP Controller
+exports.checkOTP = async (req, res) => {
+  try {
+    const { mobile, otp } = req.body;
+    if (!mobile || !otp) {
+      return res.status(400).json({ message: 'Mobile number and OTP are required' });
+    }
+    const user = await Teacher.findOne({ mobile });
+    if (!user) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    if (user.otp !== otp || user.otpExpires < Date.now()) {
+      console.log('valid');
+      return res.status(401).json({ message: 'Invalid or expired OTP' });
+    }
+    res.status(200).json({ message: 'OTP is valid' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Current Teacher Controller
+exports.currentTeacher = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+    const user = await Teacher.findById(req.user.userId).select('-otp -otpExpires');
+    if (!user) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    res.status(200).json({
+      id: user._id,
+      mobile: user.mobile,
+      firstName: user.first_name,
+      lastName: user.last_name,
+    });
+  } catch (error) {
+    console.error('Error fetching teacher:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.login = async (req, res) => {
+  try {
+    const { mobile, otp } = req.body;
+    if (!mobile || !otp) {
+      return res.status(400).json({ message: 'Mobile number and OTP are required' });
+    }
+    const user = await Teacher.findOne({ mobile });
+    if (!user) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    if (user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(401).json({ message: 'Invalid or expired OTP' });
+    }
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+    console.log('here');
+    const token = jwt.sign(
+      { userId: user._id, firstName: user.first_name, lastName: user.last_name, loggedInAs: 'teacher' },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      teacher: {
+        id: user._id,
+        mobile: user.mobile,
+        firstName: user.first_name,
+        lastName: user.last_name,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.getReports = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ message: 'id is required' });
+  }
+  try {
+    const teach = await Teacher.findById(id);
+    res.status(200).json({
+      amount: teach.numberOfReports,
+      reports: teach.reports
+    })
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+}

@@ -17,7 +17,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 403) {
-      window.location.href = '/admin/not-allowed';
+      console.log('not allowed')
     }
     return Promise.reject(error);
   }

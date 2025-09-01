@@ -17,6 +17,10 @@ import TeacherRegister from "./pages/admin/TeacherRegister"
 import ClassLevels from "./pages/admin/ClassLevels"
 import ClassesByLevel from "./pages/admin/ClassesByLevel"
 import ClassDetails from "./pages/admin/ClassDetails"
+import TeacherAuth from "./pages/teacher/TeacherAuth"
+import TeacherLayout from "./layout/TeacherLayout"
+import TeacherDashboard from "./pages/teacher/TeacherDashboard"
+import TeacherClass from "./pages/teacher/TeacherClass"
 
 
 function App() {
@@ -39,11 +43,17 @@ function App() {
               <Route path='psych-counselor' element={<PsychCounselor />} />
               <Route path='principal' element={<Principal />} />
               <Route path='users' element={<UsersPage />} />
-              <Route path="/admin/class" element={<ClassLevels />} />
-              <Route path="/admin/class/:level" element={<ClassesByLevel />} />
-              <Route path="/admin/class/:level/:classname" element={<ClassDetails />} />
+              <Route path="class" element={<ClassLevels />} />
+              <Route path="class/:level" element={<ClassesByLevel />} />
+              <Route path="class/:level/:classname" element={<ClassDetails />} />
               <Route path='evaluation' element={<Evaluation />} />
               <Route path='not-allowed' element={<NotAllowed />} />
+            </Route>
+
+            <Route path="/teacher/auth" element={<TeacherAuth />} />
+            <Route path="/teacher" element={<TeacherLayout />}>
+              <Route index element={<TeacherDashboard />} />
+              <Route path="class/:classname/:day/:period" element={<TeacherClass />} />
             </Route>
           </Routes>
         </Router>
