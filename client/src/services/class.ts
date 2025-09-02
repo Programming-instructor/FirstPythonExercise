@@ -9,3 +9,14 @@ export const fetchStudentsInClass = async (className: string) => {
     throw error;
   }
 };
+
+
+export const fetchAttendanceByDate = async (date: string) => {
+  try {
+    const response = await api.get(`/class/attendance/${date}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching students in this class: ', error);
+    throw error;
+  }
+};

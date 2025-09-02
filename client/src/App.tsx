@@ -21,6 +21,7 @@ import TeacherAuth from "./pages/teacher/TeacherAuth"
 import TeacherLayout from "./layout/TeacherLayout"
 import TeacherDashboard from "./pages/teacher/TeacherDashboard"
 import TeacherClass from "./pages/teacher/TeacherClass"
+import DisciplinaryDeputy from "./pages/admin/DisciplinaryDeputy"
 
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
               <Route path="class/:level" element={<ClassesByLevel />} />
               <Route path="class/:level/:classname" element={<ClassDetails />} />
               <Route path='evaluation' element={<Evaluation />} />
+              <Route path='disciplinary-deputy' element={<DisciplinaryDeputy />} />
               <Route path='not-allowed' element={<NotAllowed />} />
             </Route>
 

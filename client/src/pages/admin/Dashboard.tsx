@@ -2,6 +2,7 @@ import { useFetchUser } from '@/hooks/useFetchUser'; // Adjust path if needed
 import DashboardCard from '@/components/admin/dashboard/DashboardCard';
 import { NotebookPen } from 'lucide-react';
 import { FaBrain, FaChalkboardTeacher, FaClipboardList, FaUserTie } from 'react-icons/fa';
+import { RiShieldUserLine } from 'react-icons/ri'
 import { FaRegFaceSmile } from 'react-icons/fa6';
 import { GrUserAdmin } from 'react-icons/gr';
 import { PiStudentBold } from 'react-icons/pi';
@@ -57,6 +58,13 @@ const cards = [
     icon: <FaBrain size={40} />,
     href: '/admin/psych-counselor',
     permission: 'psych_counselor',
+  },
+  {
+    body: 'معاونت انضباطی',
+    desc: 'معاونت انضباطی',
+    icon: <RiShieldUserLine size={40} />,
+    href: '/admin/disciplinary-deputy',
+    permission: 'disciplinary_deputy',
   },
   {
     body: 'مدیر',

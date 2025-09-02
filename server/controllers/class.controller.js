@@ -468,3 +468,28 @@ exports.getAttendance = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.getAttendanceByDate = async (req, res) => {
+  try {
+    const { date } = req.params;
+    if (!date) {
+      return res.status(400).json({ message: "Date is required" });
+    }
+
+    // Find classes with attendance records for the given date
+    const classes = await Class.find({ "attendance.date": date })
+      .populate("attendance.teacher")
+      .populate("attendance.studentsAttendance.student");
+
+    // Format response
+    const result = classes.map(cls => ({
+      className: cls.name,
+      attendance: cls.attendance.filter(a => a.date === date)
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error("Error fetching attendance:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
