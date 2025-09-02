@@ -568,3 +568,25 @@ exports.getDecisionsByNationalCode = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.report = async (req, res) => {
+  const { message, date, studentId } = req.body;
+  if (!message || !date || !studentId) {
+    return res.status(400).json({ message: "Message, date and studentId are required." })
+  }
+  try {
+    const student = await Student.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    student.reports.push({ date, message });
+
+    await student.save();
+
+    res.json({ message: 'Report added successfully', reports: student.r });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}

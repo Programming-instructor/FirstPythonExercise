@@ -20,3 +20,13 @@ export const fetchAttendanceByDate = async (date: string) => {
     throw error;
   }
 };
+
+export const fetchMissingAttendanceByDate = async (date: string) => {
+  try {
+    const response = await api.get(`/class/missing-attendance/${date}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching missing attendance: ', error);
+    throw error;
+  }
+};

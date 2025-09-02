@@ -60,7 +60,13 @@ const studentSchema = new mongoose.Schema({
     public_id: { type: String, required: false }
   },
   accepted: { type: Boolean, default: false },
-  class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' }
+  class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
+  reports: [
+    {
+      date: { type: String, required: false },
+      message: { type: String, required: false },
+    }
+  ]
 });
 
 const Student = mongoose.model('Student', studentSchema, 'student');

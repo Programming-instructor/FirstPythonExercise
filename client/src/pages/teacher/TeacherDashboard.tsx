@@ -66,8 +66,8 @@ const TeacherDashboard: React.FC = () => {
     }
   };
 
-  // const currentDayIndex = new Date().getDay();
-  const currentDayIndex = 6;
+  const currentDayIndex = new Date().getDay();
+  // const currentDayIndex = 6;
   const todayDay = dayMap[currentDayIndex];
   const todayPeriods: Period[] = schedule[todayDay] || [];
 

@@ -493,3 +493,60 @@ exports.getAttendanceByDate = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Get missing attendance records for a specific date across all classes
+exports.getMissingAttendanceByDate = async (req, res) => {
+  try {
+    const { date } = req.params;
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ message: 'Invalid date format (use YYYY-MM-DD)' });
+    }
+
+    // Compute day of week from date
+    const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const dayIndex = new Date(date).getDay();
+    const dayName = daysOfWeek[dayIndex];
+
+    console.log(dayName);
+
+    const classes = await Class.find({})
+      .populate({
+        path: 'days.saturday.teacher days.sunday.teacher days.monday.teacher days.tuesday.teacher days.wednesday.teacher days.thursday.teacher days.friday.teacher',
+        select: 'first_name last_name mobile'
+      });
+
+    let missingAttendances = [];
+
+    for (let cls of classes) {
+      const schedule = cls.days[dayName] || [];
+      for (let period = 1; period <= schedule.length; period++) {
+        const periodObj = schedule[period - 1];
+        if (!periodObj || !periodObj.teacher) continue; // Skip empty periods
+
+        // Check if attendance exists for this date, day, period
+        const existingAttendance = cls.attendance.find(
+          a => a.date === date && a.day === dayName && a.period === period
+        );
+
+        if (!existingAttendance) {
+          missingAttendances.push({
+            classId: cls._id,
+            className: cls.name,
+            date,
+            day: dayName,
+            period,
+            subject: periodObj.subject,
+            teacherId: periodObj.teacher._id,
+            teacherName: `${periodObj.teacher.first_name} ${periodObj.teacher.last_name}`,
+            teacherMobile: periodObj.teacher.mobile
+          });
+        }
+      }
+    }
+
+    res.json(missingAttendances);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

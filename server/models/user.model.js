@@ -10,15 +10,16 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: [],
     enum: [
-      'register_student',        // For "ثبت نام هنرجوی جدید" (/admin/register-student)
-      'manage_students',        // For "لیست دانش آموزان" (/admin/students)
-      'register_teachers',      // For "ثبت نام اساتید" (/admin/dashboard)
-      'evaluate_performance',   // For "ارزیابی و عملکرد" (/admin/dashboard)
-      'academic_counseling',    // For "واحد مشاوره تحصیلی" (/admin/academic-counseling)
-      'educational_deputy',     // For "معاونت آموزشی" (/admin/educational-deputy)
-      'psych_counselor',        // For "مشاور روانکاوی" (/admin/psych-counselor)
-      'principal',              // For "مدیر" (/admin/principal)
-      'manage_users',           // For "مدیریت کاربران ویژه" (/admin/dashboard)
+      'register_student',
+      'manage_students',
+      'register_teachers',
+      'evaluate_performance',
+      'academic_counseling',
+      'educational_deputy',
+      'psych_counselor',
+      'principal',
+      'manage_users',
+      'disciplinary_deputy',
     ],
   },
   isAdmin: { type: Boolean, default: false },

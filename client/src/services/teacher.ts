@@ -37,3 +37,13 @@ export const fetchTeacherReports = async (teacherId: string) => {
     console.error('Error Fetching Teacher: ', err);
   }
 };
+
+export const addReportToTeacher = async (data: { teacherId: string; date: string; message: string }) => {
+  try {
+    const response = await api.post(`/teacher/add-report`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding report to teacher: ', error);
+    throw error;
+  }
+};

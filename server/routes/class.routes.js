@@ -1,5 +1,5 @@
 const express = require('express');
-const { assignTeacherToClass, addStudentsToClass, getStudentsInClass, getTeacherClasses, deleteClass, addClass, getAllClasses, getClassLevel, distributeStudentsToLevel, autoAddStudentsToClass, getUnassignedStudentsByLevel, getClassName, removeStudentsFromClass, removePeriodFromClass, getAttendance, postAttendance, getAttendanceByDate } = require('../controllers/class.controller');
+const { assignTeacherToClass, addStudentsToClass, getStudentsInClass, getTeacherClasses, deleteClass, addClass, getAllClasses, getClassLevel, distributeStudentsToLevel, autoAddStudentsToClass, getUnassignedStudentsByLevel, getClassName, removeStudentsFromClass, removePeriodFromClass, getAttendance, postAttendance, getAttendanceByDate, getMissingAttendanceByDate } = require('../controllers/class.controller');
 const { authMiddleware, authMiddlewareTeacher, authMiddlewareTeacherAndAdmin } = require('../middleware/auth.middleware');
 const router = express.Router();
 
@@ -20,5 +20,7 @@ router.get('/unassigned-students/:level', authMiddleware, getUnassignedStudentsB
 router.post('/attendance', authMiddlewareTeacher, postAttendance); // full route: /api/class/attendance (use teacher auth to ensure only teachers can post)
 router.get('/:classId/attendance', authMiddlewareTeacherAndAdmin, getAttendance); // full route: /api/class/:classId/attendance?date=...&day=...&period=...
 router.get('/attendance/:date', authMiddleware, getAttendanceByDate);
+
+router.get('/missing-attendance/:date', authMiddleware, getMissingAttendanceByDate); // full route: /api/class/missing-attendance/:date
 
 module.exports = router;

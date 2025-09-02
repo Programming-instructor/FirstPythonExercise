@@ -22,6 +22,8 @@ import TeacherLayout from "./layout/TeacherLayout"
 import TeacherDashboard from "./pages/teacher/TeacherDashboard"
 import TeacherClass from "./pages/teacher/TeacherClass"
 import DisciplinaryDeputy from "./pages/admin/DisciplinaryDeputy"
+import DisciplinaryDeputyReports from "./pages/admin/DisciplinaryDeputyReports"
+import DisciplinaryDeputyStudent from "./pages/admin/DisciplinaryDeputyStudent"
 
 
 function App() {
@@ -30,7 +32,7 @@ function App() {
   return (
     <div className="bg-slate-200 min-h-screen max-w-screen overflow-x-hidden">
       <QueryClientProvider client={queryClient}>
-        <Toaster />
+        <Toaster dir="rtl" theme="light" swipeDirections={['left', 'right']} duration={2000} />
         <Router>
           <Routes>
             <Route path="/admin/auth" element={<Auth />} />
@@ -49,6 +51,8 @@ function App() {
               <Route path="class/:level/:classname" element={<ClassDetails />} />
               <Route path='evaluation' element={<Evaluation />} />
               <Route path='disciplinary-deputy' element={<DisciplinaryDeputy />} />
+              <Route path='disciplinary-deputy/students' element={<DisciplinaryDeputyStudent />} />
+              <Route path='disciplinary-deputy/class-reports' element={<DisciplinaryDeputyReports />} />
               <Route path='not-allowed' element={<NotAllowed />} />
             </Route>
 

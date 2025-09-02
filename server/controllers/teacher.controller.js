@@ -267,3 +267,28 @@ exports.getReports = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 }
+
+// Add a report (warning) to a teacher
+exports.addReportToTeacher = async (req, res) => {
+  try {
+    const { teacherId, date, message } = req.body;
+    if (!teacherId || !date || !message) {
+      return res.status(400).json({ message: 'teacherId, date, and message are required' });
+    }
+
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+
+    teacher.reports.push({ date, message });
+    teacher.numberOfReports = teacher.reports.length;
+
+    await teacher.save();
+
+    res.json({ message: 'Report added successfully', reports: teacher.reports });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

@@ -67,6 +67,7 @@ exports.addUser = async (req, res) => {
       'psych_counselor',
       'principal',
       'manage_users',
+      'disciplinary_deputy'
     ];
     if (permissions && !Array.isArray(permissions)) {
       return res.status(400).json({ message: 'Permissions must be an array' });
