@@ -25,6 +25,7 @@ import DisciplinaryDeputy from "./pages/admin/DisciplinaryDeputy"
 import DisciplinaryDeputyReports from "./pages/admin/DisciplinaryDeputyReports"
 import DisciplinaryDeputyStudent from "./pages/admin/DisciplinaryDeputyStudent"
 import TeachersList from "./pages/admin/TeachersList"
+import StudentAuth from "./pages/student/StudentAuth"
 
 
 function App() {
@@ -63,6 +64,8 @@ function App() {
               <Route index element={<TeacherDashboard />} />
               <Route path="class/:classname/:day/:period" element={<TeacherClass />} />
             </Route>
+
+            <Route path="/student/auth" element={<StudentAuth />} />
           </Routes>
         </Router>
       </QueryClientProvider>

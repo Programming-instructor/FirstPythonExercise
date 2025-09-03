@@ -1,4 +1,5 @@
 import api from "@/lib/axiosConfig";
+import type { SendOTPResponse, StudentLoginResponse } from "@/types/user"; // Assuming you will add StudentLoginResponse to types/user.ts
 import type { DecisionData } from "@/types/student";
 
 export const postStudentData = async (formData: FormData) => {
@@ -74,5 +75,24 @@ export const postStudentReport = async (id: string, message: string, date: strin
   } catch (error) {
     console.error('Error posting student report: ', error);
     throw error;
+  }
+};
+
+export const StudentSendOTP = async (student_phone: string): Promise<SendOTPResponse> => {
+  const response = await api.post('/student/send-otp', { student_phone });
+  return response.data;
+};
+
+export const studentLoginWithOTP = async ({ student_phone, otp }: { student_phone: string; otp: string }): Promise<StudentLoginResponse> => {
+  const response = await api.post('/student/login', { student_phone, otp });
+  return response.data;
+};
+
+export const fetchStudent = async () => {
+  try {
+    const response = await api.get("/student/me");
+    return response.data;
+  } catch (err) {
+    console.error('Error Fetching Student: ', err);
   }
 };

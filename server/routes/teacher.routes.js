@@ -1,4 +1,3 @@
-// Edited backend routes file: routes/teacher.routes.js (assuming the file name)
 const express = require('express');
 const { addTeacher, getAllTeachers, login, sendOTP, checkOTP, currentTeacher, getReports, addReportToTeacher, editTeacher, deleteTeacher, getTeacherById } = require('../controllers/teacher.controller');
 const { authMiddleware, authMiddlewareTeacher } = require('../middleware/auth.middleware');

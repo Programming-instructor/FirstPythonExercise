@@ -71,3 +71,14 @@ export interface TeacherLoginResponse {
   };
   message: string;
 }
+
+export interface StudentLoginResponse {
+  message: string;
+  token: string;
+  student: {
+    id: string;
+    student_phone: string;
+    firstName: string;
+    lastName: string;
+  };
+}

@@ -8,6 +8,7 @@ const AcademicAdvisor = require('../models/academicAdvisor.model');
 const EducationalDeputy = require('../models/educationalDeputy.model');
 const Principal = require('../models/principal.model');
 const PsychCounselor = require('../models/psychCounselor.model');
+const jwt = require('jsonwebtoken');
 
 // ==== Multer setup for images ====
 const imageStorage = multer.diskStorage({
@@ -590,3 +591,110 @@ exports.report = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
+
+// Generate and Send OTP Controller for Student
+exports.sendOTP = async (req, res) => {
+  try {
+    const { student_phone } = req.body;
+    if (!student_phone) {
+      return res.status(400).json({ message: 'Student phone number is required' });
+    }
+    const user = await Student.findOne({ student_phone });
+    if (!user) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    if (!user.accepted) {
+      return res.status(403).json({ message: 'Student account not accepted yet' });
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    await user.save();
+    console.log(`OTP for ${student_phone}: ${otp}`);
+    res.status(200).json({ message: 'OTP generated and logged successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Check OTP Controller for Student
+exports.checkOTP = async (req, res) => {
+  try {
+    const { student_phone, otp } = req.body;
+    if (!student_phone || !otp) {
+      return res.status(400).json({ message: 'Student phone number and OTP are required' });
+    }
+    const user = await Student.findOne({ student_phone });
+    if (!user) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    if (user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(401).json({ message: 'Invalid or expired OTP' });
+    }
+    res.status(200).json({ message: 'OTP is valid' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Login Controller for Student
+exports.login = async (req, res) => {
+  try {
+    const { student_phone, otp } = req.body;
+    if (!student_phone || !otp) {
+      return res.status(400).json({ message: 'Student phone number and OTP are required' });
+    }
+    const user = await Student.findOne({ student_phone });
+    if (!user) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    if (!user.accepted) {
+      return res.status(403).json({ message: 'Student account not accepted yet' });
+    }
+    if (user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(401).json({ message: 'Invalid or expired OTP' });
+    }
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+    const token = jwt.sign(
+      { userId: user._id, firstName: user.first_name, lastName: user.last_name, loggedInAs: 'student' },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      student: {
+        id: user._id,
+        student_phone: user.student_phone,
+        firstName: user.first_name,
+        lastName: user.last_name,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Current Student Controller
+exports.currentStudent = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+    const user = await Student.findById(req.user.userId).select('-otp -otpExpires');
+    if (!user) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    res.status(200).json({
+      id: user._id,
+      student_phone: user.student_phone,
+      firstName: user.first_name,
+      lastName: user.last_name,
+    });
+  } catch (error) {
+    console.error('Error fetching student:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
