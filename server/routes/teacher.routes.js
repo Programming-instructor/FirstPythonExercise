@@ -1,5 +1,6 @@
+// Edited backend routes file: routes/teacher.routes.js (assuming the file name)
 const express = require('express');
-const { addTeacher, getAllTeachers, login, sendOTP, checkOTP, currentTeacher, getReports, addReportToTeacher } = require('../controllers/teacher.controller');
+const { addTeacher, getAllTeachers, login, sendOTP, checkOTP, currentTeacher, getReports, addReportToTeacher, editTeacher, deleteTeacher, getTeacherById } = require('../controllers/teacher.controller');
 const { authMiddleware, authMiddlewareTeacher } = require('../middleware/auth.middleware');
 const router = express.Router();
 
@@ -15,5 +16,10 @@ router.get('/me', authMiddlewareTeacher, currentTeacher);
 
 router.post('/add-report', authMiddleware, addReportToTeacher); // full route: /api/teacher/add-report
 
+router.put('/teachers/:id', authMiddleware, editTeacher);
+
+router.delete('/teachers/:id', authMiddleware, deleteTeacher);
+
+router.get('/teachers/:id', authMiddleware, getTeacherById);
 
 module.exports = router;

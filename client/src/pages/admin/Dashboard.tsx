@@ -26,9 +26,16 @@ const cards = [
   },
   {
     body: 'ثبت نام اساتید',
-    desc: 'مدیریت فناوری اطلاعات',
+    desc: 'ثبت نام اساتید',
     icon: <FaChalkboardTeacher size={40} />,
     href: '/admin/register-teacher',
+    permission: 'register_teachers',
+  },
+  {
+    body: 'لیست اساتید',
+    desc: 'لیست اساتید',
+    icon: <FaChalkboardTeacher size={40} />,
+    href: '/admin/teachers',
     permission: 'register_teachers',
   },
   {

@@ -1,3 +1,4 @@
+// Edited backend controllers file: controllers/teacher.controller.js
 const Teacher = require('../models/teacher.model');
 const path = require('path');
 const fs = require('fs');
@@ -139,15 +140,13 @@ exports.addTeacher = async (req, res) => {
 
 exports.getAllTeachers = async (req, res) => {
   try {
-    const teachers = await Teacher.find().select('first_name last_name mobile _id');
+    const teachers = await Teacher.find().select('first_name last_name mobile _id numberOfReports');
     res.json(teachers);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-
 
 // Generate and Send OTP Controller
 exports.sendOTP = async (req, res) => {
@@ -290,5 +289,182 @@ exports.addReportToTeacher = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.editTeacher = async (req, res) => {
+  try {
+    // Handle file upload
+    uploadTeacherImage(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({
+          success: false,
+          message: err.message || 'File upload failed',
+        });
+      }
+
+      const { id } = req.params; // Teacher ID from URL params
+      const {
+        mobile,
+        first_name,
+        last_name,
+        birth_date,
+        birth_certificate_number,
+        national_code,
+        academic_year,
+        academic_level,
+      } = req.body;
+
+      // Validate teacher ID
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: 'Teacher ID is required',
+        });
+      }
+
+      // Find the teacher
+      const teacher = await Teacher.findById(id);
+      if (!teacher) {
+        return res.status(404).json({
+          success: false,
+          message: 'Teacher not found',
+        });
+      }
+
+      // Validate national_code if provided
+      if (national_code && !/^\d{10}$/.test(national_code)) {
+        return res.status(400).json({
+          success: false,
+          message: 'National code must be exactly 10 digits',
+        });
+      }
+
+      // Validate academic_level if provided
+      const validStatuses = [
+        'high_school_diploma',
+        'teaching_diploma',
+        'associate_degree',
+        'bachelor_degree',
+        'master_degree',
+        'doctoral_degree',
+        'postdoctoral',
+        'other_certification',
+      ];
+      if (academic_level && !validStatuses.includes(academic_level)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid academic level',
+        });
+      }
+
+      // Prepare update data
+      const updateData = {};
+      if (mobile) updateData.mobile = mobile;
+      if (first_name) updateData.first_name = first_name;
+      if (last_name) updateData.last_name = last_name;
+      if (birth_date) updateData.birth_date = birth_date;
+      if (birth_certificate_number) updateData.birth_certificate_number = birth_certificate_number;
+      if (national_code) updateData.national_code = national_code;
+      if (academic_year) updateData.academic_year = academic_year;
+      if (academic_level) updateData.academic_level = academic_level;
+
+      // Handle image update if provided
+      if (req.file) {
+        // Optionally, delete the old image if it exists
+        if (teacher.teacher_portrait_front && teacher.teacher_portrait_front.public_id) {
+          const oldImagePath = path.join(__dirname, '../Uploads/teachers', teacher.teacher_portrait_front.public_id);
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+          }
+        }
+        updateData.teacher_portrait_front = {
+          url: `/Uploads/teachers/${req.file.filename}`,
+          public_id: req.file.filename,
+        };
+      }
+
+      // Update teacher
+      const updatedTeacher = await Teacher.findByIdAndUpdate(id, updateData, {
+        new: true, // Return the updated document
+        runValidators: true, // Ensure schema validators are run
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Teacher updated successfully',
+        data: updatedTeacher,
+      });
+    });
+  } catch (error) {
+    // Handle duplicate national_code or mobile
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'National code or mobile number already exists',
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Server error: ' + error.message,
+    });
+  }
+};
+
+exports.deleteTeacher = async (req, res) => {
+  try {
+    const { id } = req.params; // Teacher ID from URL params
+
+    // Validate teacher ID
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Teacher ID is required',
+      });
+    }
+
+    // Find the teacher
+    const teacher = await Teacher.findById(id);
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: 'Teacher not found',
+      });
+    }
+
+    // Delete associated image if it exists
+    if (teacher.teacher_portrait_front && teacher.teacher_portrait_front.public_id) {
+      const imagePath = path.join(__dirname, '../Uploads/teachers', teacher.teacher_portrait_front.public_id);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+
+    // Delete the teacher
+    await Teacher.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Teacher deleted successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error: ' + error.message,
+    });
+  }
+};
+
+exports.getTeacherById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const teacher = await Teacher.findById(id).select('-otp -otpExpires');
+    if (!teacher) {
+      return res.status(404).json({ success: false, message: 'Teacher not found' });
+    }
+    res.status(200).json({ success: true, data: teacher });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
   }
 };

@@ -24,6 +24,7 @@ import TeacherClass from "./pages/teacher/TeacherClass"
 import DisciplinaryDeputy from "./pages/admin/DisciplinaryDeputy"
 import DisciplinaryDeputyReports from "./pages/admin/DisciplinaryDeputyReports"
 import DisciplinaryDeputyStudent from "./pages/admin/DisciplinaryDeputyStudent"
+import TeachersList from "./pages/admin/TeachersList"
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
               <Route path='' element={<Dashboard />} index />
               <Route path='register-student' element={<StudentRegister />} />
               <Route path='register-teacher' element={<TeacherRegister />} />
+              <Route path='teachers' element={<TeachersList />} />
               <Route path='students' element={<StudentsPage />} />
               <Route path='academic-counseling' element={<AcademicCounseling />} />
               <Route path='educational-deputy' element={<EducationalDeputy />} />
