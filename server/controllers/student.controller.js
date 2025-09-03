@@ -683,7 +683,7 @@ exports.currentStudent = async (req, res) => {
     if (!req.user) {
       return res.status(403).json({ message: 'Unauthorized' });
     }
-    const user = await Student.findById(req.user.userId).select('-otp -otpExpires');
+    const user = await Student.findById(req.user.userId).select('-otp -otpExpires').populate('class');
     if (!user) {
       return res.status(404).json({ message: 'Student not found' });
     }
@@ -692,9 +692,31 @@ exports.currentStudent = async (req, res) => {
       student_phone: user.student_phone,
       firstName: user.first_name,
       lastName: user.last_name,
+      cls: user.class.name
     });
   } catch (error) {
     console.error('Error fetching student:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Get Reports for Student
+exports.getReports = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ message: 'id is required' });
+  }
+  try {
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    res.status(200).json({
+      amount: student.reports.length,
+      reports: student.reports
+    });
+  } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

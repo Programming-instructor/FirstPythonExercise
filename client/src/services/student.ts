@@ -96,3 +96,12 @@ export const fetchStudent = async () => {
     console.error('Error Fetching Student: ', err);
   }
 };
+
+export const fetchStudentReports = async (studentId: string) => {
+  try {
+    const response = await api.get(`/student/reports/${studentId}`);
+    return response.data;
+  } catch (err) {
+    console.error('Error Fetching Student Reports: ', err);
+  }
+};
