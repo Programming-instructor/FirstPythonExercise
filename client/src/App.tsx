@@ -28,6 +28,7 @@ import TeachersList from "./pages/admin/TeachersList"
 import StudentAuth from "./pages/student/StudentAuth"
 import StudentLayout from "./layout/StudentLayout"
 import StudentDashboard from "./pages/student/StudentDashboard"
+import Index from "./pages/Index"
 
 
 function App() {
@@ -39,6 +40,8 @@ function App() {
         <Toaster dir="rtl" theme="light" swipeDirections={['left', 'right']} duration={2000} />
         <Router>
           <Routes>
+            <Route index element={<Index />} />
+
             <Route path="/admin/auth" element={<Auth />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route path='' element={<Dashboard />} index />
