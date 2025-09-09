@@ -30,6 +30,7 @@ const Evaluation = () => {
     educationalDeputy: 'معاونت آموزشی',
     principal: 'مدیر',
     psychCounselor: 'مشاور روانکاوی',
+    disciplinaryDeputy: 'معاونت انضباطی'
   };
 
   const isTableFull = decisions && Object.values(decisions).every((status) => status !== null);

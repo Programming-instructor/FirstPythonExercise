@@ -1,3 +1,4 @@
+// Updated frontend/utils/fieldMapper.ts
 export const fieldMapper = {
   "نقاط قوت درسی": "academicStrengths",
   "نقاط ضعف درسی": "academicWeaknesses",
@@ -50,6 +51,17 @@ export const fieldMapper = {
   "میزان انگیزه برای تحصیل": "studyMotivation",
   "توصیه‌های مشاور روانشناسی": "psychNotes",
   "نتیجه نهایی مشاور روانشناسی (پذیرش/عدم پذیرش)": "psychDecision",
+  "سابقه انضباطی در مدارس قبلی": "pastDisciplinaryRecords",
+  "گزارش‌های انضباطی سال گذشته": "lastYearDisciplinaryReport",
+  "وضعیت رفتار در کلاس": "classBehavior",
+  "حوادث گزارش‌شده": "reportedIncidents",
+  "درگیری با همکلاسی‌ها": "peerConflicts",
+  "رعایت قوانین مدرسه": "ruleCompliance",
+  "تعامل با معلمان": "teacherInteractions",
+  "نیاز به نظارت ویژه": "specialSupervisionNeeds",
+  "پیشنهادات انضباطی": "disciplinarySuggestions",
+  "توضیحات تکمیلی معاون انضباطی": "deputyNotes",
+  "نتیجه نهایی معاون انضباطی (پذیرش/عدم پذیرش)": "deputyDecision",
 } as const;
 
 export type FieldMapperKeys = keyof typeof fieldMapper;

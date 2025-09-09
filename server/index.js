@@ -50,6 +50,9 @@ app.use('/api/academic-advisor', academicAdvisorRoutes);
 const educationalDeputy = require('./routes/educationalDeputy.routes');
 app.use('/api/educational-deputy', educationalDeputy);
 
+const disciplinaryDeputy = require('./routes/disciplinaryDeputy.routes');
+app.use('/api/disciplinary-deputy', disciplinaryDeputy);
+
 const psychCounselor = require('./routes/psychCounselor.routes');
 app.use('/api/psych-counselor', psychCounselor);
 

@@ -9,6 +9,7 @@ const EducationalDeputy = require('../models/educationalDeputy.model');
 const Principal = require('../models/principal.model');
 const PsychCounselor = require('../models/psychCounselor.model');
 const jwt = require('jsonwebtoken');
+const disciplinaryDeputy = require('../models/disciplinaryDeputy.model');
 
 // ==== Multer setup for images ====
 const imageStorage = multer.diskStorage({
@@ -554,12 +555,14 @@ exports.getDecisionsByNationalCode = async (req, res) => {
 
     const academicAdvisorRecord = await AcademicAdvisor.findOne({ studentId });
     const educationalDeputyRecord = await EducationalDeputy.findOne({ studentId });
+    const disciplinaryDeputyRecord = await disciplinaryDeputy.findOne({ studentId });
     const principalRecord = await Principal.findOne({ studentId });
     const psychCounselorRecord = await PsychCounselor.findOne({ studentId });
 
     const decisions = {
       academicAdvisor: academicAdvisorRecord ? academicAdvisorRecord.advisorDecision : null,
       educationalDeputy: educationalDeputyRecord ? educationalDeputyRecord.deputyDecision : null,
+      disciplinaryDeputy: disciplinaryDeputyRecord ? disciplinaryDeputyRecord.deputyDecision : null,
       principal: principalRecord ? principalRecord.principalDecision : null,
       psychCounselor: psychCounselorRecord ? psychCounselorRecord.psychDecision : null,
     };
