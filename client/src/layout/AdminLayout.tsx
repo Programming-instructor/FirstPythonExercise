@@ -20,7 +20,7 @@ const AdminLayout = () => {
   return (
     <div className="min-h-screen w-screen pt-16 px-28 flex flex-col gap-9 pb-5" dir="rtl">
       <div className="flex">
-        <ProfileCard logoutUrl='/admin/auth' name={user.name} />
+        <ProfileCard logoutUrl='/' name={user.name} />
       </div>
       <Outlet context={user} />
     </div>

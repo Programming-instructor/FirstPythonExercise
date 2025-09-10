@@ -21,7 +21,7 @@ const StudentLayout = () => {
   return (
     <div className="min-h-screen w-screen lg:pt-16 lg:px-28 flex flex-col gap-9 pb-5" dir="rtl">
       <div className="flex">
-        <ProfileCard logoutUrl='/student/auth' name={student.firstName} lastName={student.lastName} />
+        <ProfileCard logoutUrl='/' name={student.firstName} lastName={student.lastName} />
       </div>
       <Outlet context={student} />
     </div>
