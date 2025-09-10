@@ -1,10 +1,13 @@
+// Modified component: TeacherClass (split button into two, use both hooks)
 import { useGetClassByName } from "@/hooks/useGetClassByName";
 import { useGetAttendance } from "@/hooks/useGetAttendance";
 import { useSubmitAttendance } from "@/hooks/useSubmitAttendance";
+import { useSubmitReport } from "@/hooks/useSubmitReport"; // Import the new hook
 import { Link, useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -50,7 +53,6 @@ const TeacherClass = () => {
   const classId: string | undefined = classData?._id;
   const today: string = moment().locale("fa").local().format("jYYYY-jMM-jDD");
 
-  // Fetch existing attendance using the new hook
   const { data: attendanceData, isLoading: isAttendanceLoading } = useGetAttendance(
     classId,
     today,
@@ -102,8 +104,9 @@ const TeacherClass = () => {
     );
   };
 
-  // Mutation to post/update attendance using the new hook
-  const mutation = useSubmitAttendance();
+  // Mutations
+  const attendanceMutation = useSubmitAttendance();
+  const reportMutation = useSubmitReport();
 
   // Conditional rendering
   if (!classId) {
@@ -143,6 +146,7 @@ const TeacherClass = () => {
             </span>
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           {schedule ? (
             <p>درس: {schedule.subject}</p>
@@ -150,6 +154,14 @@ const TeacherClass = () => {
             <p>برنامه‌ای برای این زنگ یافت نشد.</p>
           )}
         </CardContent>
+
+        <CardFooter className="mt-3">
+          <Link to={"/teacher"} className="w-full sm:w-auto">
+            <Button className="w-full" variant={"outline"}>
+              داشبورد
+            </Button>
+          </Link>
+        </CardFooter>
       </Card>
 
       <Card>
@@ -203,6 +215,23 @@ const TeacherClass = () => {
             </Table>
           )}
         </CardContent>
+        <CardFooter>
+          <Button
+            onClick={() =>
+              attendanceMutation.mutate({
+                classId,
+                date: today,
+                day,
+                period: periodNum,
+                attendances,
+              })
+            }
+            disabled={attendanceMutation.isPending || !classId || !day || !period}
+            className="w-full sm:w-auto"
+          >
+            {attendanceMutation.isPending ? "در حال ارسال..." : "ارسال حضور و غیاب"}
+          </Button>
+        </CardFooter>
       </Card>
 
       <Card>
@@ -219,29 +248,27 @@ const TeacherClass = () => {
             rows={5}
           />
         </CardContent>
+        <CardFooter>
+          <Button
+            onClick={() =>
+              reportMutation.mutate({
+                classId,
+                date: today,
+                day,
+                period: periodNum,
+                report,
+              })
+            }
+            disabled={reportMutation.isPending || !classId || !day || !period}
+            className="w-full sm:w-auto"
+          >
+            {reportMutation.isPending ? "در حال ارسال..." : "ارسال گزارش"}
+          </Button>
+        </CardFooter>
       </Card>
 
-      <Link to={"/teacher"}>
-        <Button className="w-full sm:w-auto ml-1" variant={"outline"}>
-          داشبورد
-        </Button>
-      </Link>
-      <Button
-        onClick={() =>
-          mutation.mutate({
-            classId,
-            date: today,
-            day,
-            period: periodNum,
-            attendances,
-            report,
-          })
-        }
-        disabled={mutation.isPending || !classId || !day || !period}
-        className="w-full sm:w-auto"
-      >
-        {mutation.isPending ? "در حال ارسال..." : "ارسال حضور و غیاب"}
-      </Button>
+      <div className="flex flex-col sm:flex-row gap-2">
+      </div>
     </div>
   );
 };

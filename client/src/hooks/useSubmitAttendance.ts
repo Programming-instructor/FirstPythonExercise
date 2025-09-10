@@ -10,9 +10,8 @@ export const useSubmitAttendance = () => {
     day: string;
     period: number;
     attendances: AttendanceInput[];
-    report: string;
   }>({
-    mutationFn: async ({ classId, date, day, period, attendances, report }) => {
+    mutationFn: async ({ classId, date, day, period, attendances }) => {
       if (!classId || !day || !period) {
         throw new Error("Missing required fields");
       }
@@ -22,7 +21,6 @@ export const useSubmitAttendance = () => {
         day,
         period,
         attendances,
-        report,
       });
     },
     onSuccess: () => {

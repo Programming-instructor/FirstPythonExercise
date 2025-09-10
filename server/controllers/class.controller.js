@@ -362,7 +362,7 @@ exports.removePeriodFromClass = async (req, res) => {
 
 exports.postAttendance = async (req, res) => {
   try {
-    const { classId, date, day, period, attendances, report } = req.body;
+    const { classId, date, day, period, attendances } = req.body;
 
     // Validate required fields
     if (!classId || !date || !day || !period || !attendances || !Array.isArray(attendances)) {
@@ -403,7 +403,6 @@ exports.postAttendance = async (req, res) => {
     if (existing) {
       // Update existing record
       existing.studentsAttendance = formattedAttendances;
-      existing.report = report || existing.report;
       existing.subject = schedulePeriod.subject; // Refresh in case schedule changed
       existing.teacher = schedulePeriod.teacher;
     } else {
@@ -415,12 +414,47 @@ exports.postAttendance = async (req, res) => {
         subject: schedulePeriod.subject,
         teacher: schedulePeriod.teacher,
         studentsAttendance: formattedAttendances,
-        report: report || ''
+        report: ''
       });
     }
 
     await cls.save();
     res.json({ message: 'Attendance saved successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.updateAttendanceReport = async (req, res) => {
+  try {
+    const { classId, date, day, period, report } = req.body;
+
+    // Validate required fields
+    if (!classId || !date || !day || !period) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const cls = await Class.findById(classId);
+    if (!cls) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    // Find existing attendance record
+    let existing = cls.attendance.find(
+      a => a.date === date &&
+        a.day === day &&
+        a.period === period
+    );
+
+    if (!existing) {
+      return res.status(404).json({ message: 'Attendance record not found. Please submit attendance first.' });
+    }
+
+    existing.report = report || '';
+
+    await cls.save();
+    res.json({ message: 'Report updated successfully' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
