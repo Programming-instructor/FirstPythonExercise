@@ -10,6 +10,7 @@ const Principal = require('../models/principal.model');
 const PsychCounselor = require('../models/psychCounselor.model');
 const jwt = require('jsonwebtoken');
 const disciplinaryDeputy = require('../models/disciplinaryDeputy.model');
+const Class = require('../models/class.model');
 
 // ==== Multer setup for images ====
 const imageStorage = multer.diskStorage({
@@ -721,5 +722,71 @@ exports.getReports = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.getStudentAttendance = async (req, res) => {
+  try {
+    const { national_code } = req.params; // Assuming national_code is passed as a URL parameter
+
+    // Find the student by national_code and select only _id and class
+    const student = await Student.findOne({ national_code }).select('_id class');
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // If student has no class assigned, return zeros and empty array
+    if (!student.class) {
+      return res.json({
+        numOfPres: 0,
+        numOfAbs: 0,
+        numOfLate: 0,
+        fullAttendance: []
+      });
+    }
+
+    // Find the class and populate the teacher in attendance records
+    const classDoc = await Class.findById(student.class)
+      .populate('attendance.teacher')
+      .select('attendance');
+
+    if (!classDoc) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    // Initialize counts and full attendance array
+    let numOfPres = 0;
+    let numOfAbs = 0;
+    let numOfLate = 0;
+    const fullAttendance = [];
+
+    // Loop through each attendance record in the class
+    classDoc.attendance.forEach(att => {
+      // Find the student's attendance status in this record
+      const studentAtt = att.studentsAttendance.find(sa => sa.student.equals(student._id));
+      if (studentAtt) {
+        const status = studentAtt.status;
+        if (status === 'present') numOfPres++;
+        else if (status === 'absent') numOfAbs++;
+        else if (status === 'late') numOfLate++;
+
+        fullAttendance.push({
+          date: att.date,
+          subject: att.subject,
+          teacher: att.teacher, // Populated teacher object
+          attendance: status // Corrected from 'attendace' to 'attendance'
+        });
+      }
+    });
+
+    return res.json({
+      numOfPres,
+      numOfAbs,
+      numOfLate,
+      fullAttendance
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
   }
 };

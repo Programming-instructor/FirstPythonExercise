@@ -105,3 +105,12 @@ export const fetchStudentReports = async (nCode: string) => {
     console.error('Error Fetching Student Reports: ', err);
   }
 };
+
+export const fetchStudentAttendance = async (nCode: string) => {
+  try {
+    const response = await api.get(`/student/attendance/${nCode}`);
+    return response.data;
+  } catch (err) {
+    console.error('Error Fetching Student Reports: ', err);
+  }
+}

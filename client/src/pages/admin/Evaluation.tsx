@@ -19,6 +19,7 @@ import ReadOnlyStudent from "@/components/admin/global/ReadOnlyStudent";
 import { useFetchDecisionsByNationalCode } from "@/hooks/useDecisionsByNationalCode";
 import { useFetchStudentByCode } from "@/hooks/useFetchStudnetByNationalCode";
 import { useGetStudentReports } from "@/hooks/useGetStudentReports";
+import { useGetStudentAttendance } from "@/hooks/useGetStudentAttendance";
 
 interface User {
   id: string;
@@ -41,6 +42,7 @@ const Evaluation = () => {
   const { data: student, isLoading: studentLoading, error: studentError } = useFetchStudentByCode(submittedCode);
   const { data: decisions, isLoading: decisionsLoading } = useFetchDecisionsByNationalCode(submittedCode);
   const { data: reportsData } = useGetStudentReports(submittedCode);
+  const { data: attendanceData } = useGetStudentAttendance(submittedCode);
 
   const roleTranslations: { [key: string]: string } = {
     admin: 'ادمین',
@@ -49,6 +51,12 @@ const Evaluation = () => {
     principal: 'مدیر',
     psychCounselor: 'مشاور روانکاوی',
     disciplinaryDeputy: 'معاونت انضباطی'
+  };
+
+  const attendanceTranslations: { [key: string]: string } = {
+    present: 'حاضر',
+    absent: 'غایب',
+    late: 'تاخیر'
   };
 
   const isTableFull = decisions && Object.values(decisions).every((status) => status !== null);
@@ -172,6 +180,48 @@ const Evaluation = () => {
                       <div className="text-gray-700">
                         از: {report.from.name} ({roleTranslations[report.from.role] || report.from.role})
                       </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {submittedCode && attendanceData && (
+          <div className="mt-8">
+            <h2 className="font-bold text-xl text-center mb-4">حضور و غیاب</h2>
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="font-semibold">تعداد حضور</div>
+                  <div className="text-2xl">{attendanceData.numOfPres}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="font-semibold">تعداد غیبت</div>
+                  <div className="text-2xl">{attendanceData.numOfAbs}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="font-semibold">تعداد تاخیر</div>
+                  <div className="text-2xl">{attendanceData.numOfLate}</div>
+                </CardContent>
+              </Card>
+            </div>
+            {attendanceData.fullAttendance.length === 0 ? (
+              <p className="text-center text-gray-500">هیچ سابقه حضور و غیابی یافت نشد.</p>
+            ) : (
+              <div className="space-y-4">
+                {attendanceData.fullAttendance.map((att: any, index: number) => (
+                  <Card key={index} className="shadow-sm">
+                    <CardContent className="p-4 space-y-2">
+                      <div className="font-semibold text-gray-800">تاریخ: {att.date}</div>
+                      <div className="text-gray-700">درس: {att.subject}</div>
+                      <div className="text-gray-700">معلم: {att.teacher.first_name} {att.teacher.last_name}</div>
+                      <div className="text-gray-700">وضعیت: {attendanceTranslations[att.attendance] || att.attendance}</div>
                     </CardContent>
                   </Card>
                 ))}
