@@ -9,13 +9,13 @@ router.get('/evaluation/:nationalCode', authMiddleware, getDecisionsByNationalCo
 router.post('/import', uploadExcel.single('file'), authMiddleware, importStudentsFromExcel);
 router.get('/export', authMiddleware, exportStudentsToExcel);
 
-router.post('/report', authMiddleware, report);
+router.post('/report', authMiddleware, report); // /api/student/report
+router.get('/reports/:ncode', getReports);
 
 router.post('/send-otp', sendOTP);
 router.post('/check-otp', checkOTP);
 router.post('/login', login);
 router.get('/me', authMiddlewareStudent, currentStudent);
-router.get('/reports/:id', authMiddlewareTeacherAndAdmin, getReports); // Assuming admin access; adjust as needed
 
 router.get('/:national_code', authMiddleware, getStudentByNationalCode);
 

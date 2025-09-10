@@ -9,15 +9,36 @@ import { rolesFormFields } from "./data/rolesFormFields";
 import type { FieldMapperKeys } from "@/utils/fieldMapper";
 import { usePrincipalForm } from "@/hooks/usePrincipalForm";
 import { useFetchStudentByCode } from "@/hooks/useFetchStudnetByNationalCode";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { useSubmitPrincipalForm } from "@/hooks/useSubmitPrincipalForm";
+import { Textarea } from "@/components/ui/textarea";
+import { usePostReport } from "@/hooks/usePostReport";
+import { Card, CardContent } from "@/components/ui/card";
+import moment from "moment-jalaali";
+
+interface User {
+  id: string;
+  isAdmin: boolean;
+  name: string;
+  permissions: string[];
+  role: string;
+}
 
 const Principal = () => {
+  const user: User = useOutletContext();
   const [nationalCode, setNationalCode] = useState("");
   const [submittedCode, setSubmittedCode] = useState("");
+  const [message, setMessage] = useState("");
   const { data: student, isLoading, error: studentError } = useFetchStudentByCode(submittedCode);
   const { data: formData, isLoading: formLoading, error: formError } = usePrincipalForm(student?._id);
   const { mutate: submitForm, isPending: isSubmitting } = useSubmitPrincipalForm();
+  const currentJalaaliDate = moment().format("jYYYY-jMM-jDD");
+  const { mutate: postReport, isPending: isPosting } = usePostReport(
+    student?._id || "",
+    message,
+    currentJalaaliDate,
+    user.id
+  );
 
   const handleSubmitCode = () => {
     if (!/^\d{10}$/.test(nationalCode)) {
@@ -43,6 +64,22 @@ const Principal = () => {
         },
       }
     );
+  };
+
+  const handleSubmitReport = () => {
+    if (!message) {
+      toast.error("لطفاً متن گزارش را وارد کنید");
+      return;
+    }
+    postReport(undefined, {
+      onSuccess: () => {
+        toast.success("گزارش با موفقیت ثبت شد");
+        setMessage("");
+      },
+      onError: (error) => {
+        toast.error(`خطا در ثبت گزارش: ${error.message}`);
+      },
+    });
   };
 
   return (
@@ -96,6 +133,41 @@ const Principal = () => {
               isSubmitting={isSubmitting}
             />
           )
+        )}
+
+        {student && (
+          <Card className="border-gray-200 shadow-sm">
+            <CardContent className="p-6 space-y-6">
+              <h2 className="font-semibold text-lg text-gray-800">ثبت گزارش مدیریت</h2>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-semibold text-gray-700">
+                    تاریخ گزارش
+                  </Label>
+                  <p className="text-sm text-gray-600 mt-1">{currentJalaaliDate}</p>
+                </div>
+                <div>
+                  <Label htmlFor="report_message" className="text-sm font-semibold text-gray-700">
+                    متن گزارش
+                  </Label>
+                  <Textarea
+                    id="report_message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="متن گزارش مدیریت را وارد کنید"
+                    className="mt-2 min-h-[100px] border-gray-300 focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <Button
+                  onClick={handleSubmitReport}
+                  disabled={isPosting || !message}
+                  className="w-full "
+                >
+                  {isPosting ? "در حال ثبت..." : "ثبت گزارش"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         <Link to="/admin">

@@ -22,7 +22,7 @@ const AdminLayout = () => {
       <div className="flex">
         <ProfileCard logoutUrl='/admin/auth' name={user.name} />
       </div>
-      <Outlet />
+      <Outlet context={user} />
     </div>
   );
 };

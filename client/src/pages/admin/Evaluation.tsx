@@ -14,18 +14,36 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { data, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ReadOnlyStudent from "@/components/admin/global/ReadOnlyStudent";
 import { useFetchDecisionsByNationalCode } from "@/hooks/useDecisionsByNationalCode";
 import { useFetchStudentByCode } from "@/hooks/useFetchStudnetByNationalCode";
+import { useGetStudentReports } from "@/hooks/useGetStudentReports";
+
+interface User {
+  id: string;
+  isAdmin: boolean;
+  name: string;
+  permissions: string[];
+  role: string;
+}
+
+interface Report {
+  _id: string;
+  date: string;
+  from: User;
+  message: string;
+}
 
 const Evaluation = () => {
   const [nationalCode, setNationalCode] = useState("");
   const [submittedCode, setSubmittedCode] = useState("");
   const { data: student, isLoading: studentLoading, error: studentError } = useFetchStudentByCode(submittedCode);
   const { data: decisions, isLoading: decisionsLoading } = useFetchDecisionsByNationalCode(submittedCode);
+  const { data: reportsData } = useGetStudentReports(submittedCode);
 
   const roleTranslations: { [key: string]: string } = {
+    admin: 'ادمین',
     academicAdvisor: 'مشاور تحصیلی',
     educationalDeputy: 'معاونت آموزشی',
     principal: 'مدیر',
@@ -136,6 +154,30 @@ const Evaluation = () => {
               </Table>
             </CardContent>
           </Card>
+        )}
+
+        {submittedCode && reportsData && (
+          <div className="mt-8">
+            <h2 className="font-bold text-xl text-center mb-4">گزارش‌ها</h2>
+            <p className="text-center text-gray-700 mb-6">تعداد گزارش‌ها: {reportsData.amount}</p>
+            {reportsData.amount === 0 ? (
+              <p className="text-center text-gray-500">هیچ گزارشی یافت نشد.</p>
+            ) : (
+              <div className="space-y-4">
+                {reportsData.reports.map((report: Report) => (
+                  <Card key={report._id} className="shadow-sm">
+                    <CardContent className="p-4 space-y-2">
+                      <div className="font-semibold text-gray-800">تاریخ: {report.date}</div>
+                      <div className="text-gray-700">پیام: {report.message}</div>
+                      <div className="text-gray-700">
+                        از: {report.from.name} ({roleTranslations[report.from.role] || report.from.role})
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         <Link to="/admin">

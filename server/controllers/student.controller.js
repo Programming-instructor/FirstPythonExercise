@@ -574,9 +574,9 @@ exports.getDecisionsByNationalCode = async (req, res) => {
 };
 
 exports.report = async (req, res) => {
-  const { message, date, studentId } = req.body;
-  if (!message || !date || !studentId) {
-    return res.status(400).json({ message: "Message, date and studentId are required." })
+  const { message, date, studentId, userId } = req.body;
+  if (!message || !date || !studentId || !userId) {
+    return res.status(400).json({ message: "Message, date, studentId and user are required." })
   }
   try {
     const student = await Student.findById(studentId);
@@ -585,7 +585,7 @@ exports.report = async (req, res) => {
       return res.status(404).json({ message: 'Student not found' });
     }
 
-    student.reports.push({ date, message });
+    student.reports.push({ date, message, from: userId });
 
     await student.save();
 
@@ -705,13 +705,13 @@ exports.currentStudent = async (req, res) => {
 
 // Get Reports for Student
 exports.getReports = async (req, res) => {
-  const { id } = req.params;
+  const { ncode } = req.params;
 
-  if (!id) {
-    return res.status(400).json({ message: 'id is required' });
+  if (!ncode) {
+    return res.status(400).json({ message: 'national code is required' });
   }
   try {
-    const student = await Student.findById(id);
+    const student = await Student.findOne({ national_code: ncode }).populate('reports.from');
     if (!student) {
       return res.status(404).json({ message: 'Student not found' });
     }

@@ -9,14 +9,23 @@ import { rolesFormFields } from "./data/rolesFormFields";
 import type { FieldMapperKeys } from "@/utils/fieldMapper";
 import { useDisciplinaryDeputyForm } from "@/hooks/useDisciplinaryDeputyForm";
 import { useFetchStudentByCode } from "@/hooks/useFetchStudnetByNationalCode";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { useSubmitDisciplinaryDeputyForm } from "@/hooks/useSubmitDisciplinaryDeputyForm";
 import { Textarea } from "@/components/ui/textarea";
 import { usePostReport } from "@/hooks/usePostReport";
 import { Card, CardContent } from "@/components/ui/card";
 import moment from "moment-jalaali";
 
+interface User {
+  id: string;
+  isAdmin: boolean;
+  name: string;
+  permissions: string[];
+  role: string;
+}
+
 const DisciplinaryDeputyStudent = () => {
+  const user: User = useOutletContext();
   const [nationalCode, setNationalCode] = useState("");
   const [submittedCode, setSubmittedCode] = useState("");
   const [message, setMessage] = useState("");
@@ -27,7 +36,8 @@ const DisciplinaryDeputyStudent = () => {
   const { mutate: postReport, isPending: isPosting } = usePostReport(
     student?._id || "",
     message,
-    currentJalaaliDate
+    currentJalaaliDate,
+    user.id
   );
 
   const handleSubmitCode = () => {
