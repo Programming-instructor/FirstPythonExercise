@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { uploadImage, uploadExcel, createStudent, importStudentsFromExcel, exportStudentsToExcel, getAllStudents, getStudentByNationalCode, getDecisionsByNationalCode, report, sendOTP, checkOTP, login, currentStudent, getReports, getStudentAttendance } = require('../controllers/student.controller');
+const { uploadImage, uploadExcel, createStudent, importStudentsFromExcel, exportStudentsToExcel, getAllStudents, getStudentByNationalCode, getDecisionsByNationalCode, report, sendOTP, checkOTP, login, currentStudent, getReports, getStudentAttendance, editReport, confirmReport } = require('../controllers/student.controller');
 const { authMiddleware, authMiddlewareStudent, authMiddlewareTeacherAndAdmin } = require('../middleware/auth.middleware'); // Assuming you will create authMiddlewareStudent similar to authMiddlewareTeacher
 
 router.post('/', uploadImage.single('portrait'), authMiddleware, createStudent);
@@ -11,6 +11,8 @@ router.get('/export', authMiddleware, exportStudentsToExcel);
 
 router.post('/report', authMiddleware, report); // /api/student/report
 router.get('/reports/:ncode', authMiddlewareTeacherAndAdmin, getReports);
+router.patch('/report/:reportId/confirm', authMiddleware, confirmReport);
+router.patch('/report/:reportId', authMiddleware, editReport);
 
 router.get('/attendance/:national_code', getStudentAttendance);
 

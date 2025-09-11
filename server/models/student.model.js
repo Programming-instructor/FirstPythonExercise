@@ -66,6 +66,7 @@ const studentSchema = new mongoose.Schema({
       date: { type: String, required: false },
       message: { type: String, required: false },
       from: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      confirmed: { type: Boolean, default: false },
     }
   ],
   otp: String,

@@ -31,6 +31,7 @@ import StudentDashboard from "./pages/student/StudentDashboard"
 import Index from "./pages/Index"
 import PrincipalStudents from "./pages/admin/PrincipalStudents"
 import PrincipalReports from "./pages/admin/PrincipalReports"
+import PrincipalStudentReports from "./pages/admin/PrincipalStudentReports"
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
               <Route path='principal' element={<Principal />} />
               <Route path='principal/students' element={<PrincipalStudents />} />
               <Route path='principal/reports' element={<PrincipalReports />} />
+              <Route path='principal/student-reports' element={<PrincipalStudentReports />} />
               <Route path='users' element={<UsersPage />} />
               <Route path="class" element={<ClassLevels />} />
               <Route path="class/:level" element={<ClassesByLevel />} />

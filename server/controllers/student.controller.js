@@ -790,3 +790,62 @@ exports.getStudentAttendance = async (req, res) => {
     return res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.confirmReport = async (req, res) => {
+  try {
+    const { reportId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(reportId)) {
+      return res.status(400).json({ message: 'Invalid report ID' });
+    }
+
+    const updatedStudent = await Student.findOneAndUpdate(
+      { 'reports._id': reportId },
+      { $set: { 'reports.$.confirmed': true } },
+      { new: true }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: 'Report not found' });
+    }
+
+    res.status(200).json({ message: 'Report confirmed successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.editReport = async (req, res) => {
+  try {
+    const { reportId } = req.params;
+    const { message, date } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(reportId)) {
+      return res.status(400).json({ message: 'Invalid report ID' });
+    }
+
+    if (!message && !date) {
+      return res.status(400).json({ message: 'At least one field (message or date) is required to update' });
+    }
+
+    const updateFields = {};
+    if (message) updateFields['reports.$.message'] = message;
+    if (date) updateFields['reports.$.date'] = date;
+
+    const updatedStudent = await Student.findOneAndUpdate(
+      { 'reports._id': reportId },
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: 'Report not found' });
+    }
+
+    res.status(200).json({ message: 'Report updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};

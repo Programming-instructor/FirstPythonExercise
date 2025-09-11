@@ -114,3 +114,23 @@ export const fetchStudentAttendance = async (nCode: string) => {
     console.error('Error Fetching Student Reports: ', err);
   }
 }
+
+export const confirmStudentReport = async (reportId: string) => {
+  try {
+    const response = await api.patch(`/student/report/${reportId}/confirm`);
+    return response.data;
+  } catch (error) {
+    console.error('Error confirming report: ', error);
+    throw error;
+  }
+};
+
+export const editStudentReport = async (reportId: string, message: string, date: string) => {
+  try {
+    const response = await api.patch(`/student/report/${reportId}`, { message, date });
+    return response.data;
+  } catch (error) {
+    console.error('Error editing report: ', error);
+    throw error;
+  }
+};

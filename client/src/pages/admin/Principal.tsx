@@ -7,7 +7,7 @@ const Principal = () => {
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
         <h1 className="font-bold text-2xl text-center">مدیریت</h1>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <Link to="reports">
             <Card className="hover:shadow-xl transition">
               <CardContent>
@@ -23,6 +23,16 @@ const Principal = () => {
               <CardContent>
                 <p className="font-bold text-xl text-center">
                   دانش آموزان
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="student-reports">
+            <Card className="hover:shadow-xl transition">
+              <CardContent>
+                <p className="font-bold text-xl text-center">
+                  گزارش دانش آموزان
                 </p>
               </CardContent>
             </Card>
