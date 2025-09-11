@@ -94,7 +94,6 @@ interface MissingAttendance {
 }
 
 type AttendanceQueryResult = UseQueryResult<ClassAttendance[]>
-type AddReportMutationResult = UseMutationResult<any, unknown, { teacherId: string; date: string; message: string }, unknown>
 
 const PrincipalReports = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -102,7 +101,6 @@ const PrincipalReports = () => {
 
   const { data, isLoading: isAttendanceLoading, refetch: refetchAttendance }: AttendanceQueryResult = useGetAttendanceByDate(selectedDate || '')
 
-  const addReportMutation: AddReportMutationResult = useAddReportToTeacher()
   const updateAttendanceMutation = useUpdateAttendanceByDeputy()
   const confirmMutation = useConfirmByPrincipal()
 
@@ -304,7 +302,7 @@ const PrincipalReports = () => {
                   </AccordionTrigger>
                   <AccordionContent className="px-4 py-2 bg-white">
                     {classItem.attendance.map((att: Attendance, attIndex: number) => {
-                      const isConfirmed = att.confirmedBy?.principal || false
+                      const isConfirmed = att.confirmedBy.disciplinaryDeputy ? att.confirmedBy?.principal || false : true;
                       const key = `${classItem.className}-${att.period}`
                       const editingData = editingStates[key] || {
                         report: att.report,
@@ -317,9 +315,12 @@ const PrincipalReports = () => {
                           <CardHeader className="border-b">
                             <div className="flex justify-between items-center">
                               <CardTitle className="text-xl">زنگ {att.period}: {att.subject}</CardTitle>
-                              <Badge variant={isConfirmed ? 'default' : 'secondary'} className="flex gap-1">
-                                {isConfirmed ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
-                                {isConfirmed ? 'تایید شده' : 'نیاز به تایید'}
+                              <Badge variant={att.confirmedBy.disciplinaryDeputy ? isConfirmed ? 'default' : 'secondary' : 'destructive'} className="flex gap-1 max-w-fit">
+                                {att.confirmedBy.disciplinaryDeputy && isConfirmed ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                                {
+                                  att.confirmedBy.disciplinaryDeputy ? isConfirmed ? 'تایید شده' : 'نیاز به تایید' : 'در انتظار تایید معاونت آموزشی'
+                                }
+                                {/* {isConfirmed ? 'تایید شده' : 'نیاز به تایید'} */}
                               </Badge>
                             </div>
                             <div className="text-sm text-muted-foreground mt-2 space-y-1">
