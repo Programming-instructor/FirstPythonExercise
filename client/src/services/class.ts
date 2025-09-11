@@ -1,4 +1,3 @@
-// Updated src/lib/api/classApi.ts (assuming this is the file name based on content)
 import api from "@/lib/axiosConfig";
 
 export const fetchStudentsInClass = async (className: string) => {
@@ -38,6 +37,55 @@ export const deleteClass = async (classId: string) => {
     return response.data;
   } catch (error) {
     console.error('Error deleting class: ', error);
+    throw error;
+  }
+};
+
+export const updateAttendanceByDeputy = async (data: {
+  className: string;
+  date: string;
+  day: string;
+  period: number;
+  attendances: { studentId: string; status: 'present' | 'absent' | 'late' }[];
+  report: string;
+}) => {
+  try {
+    const response = await api.post('/class/attendance/update-deputy', data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating attendance by deputy: ', error);
+    throw error;
+  }
+};
+
+export const confirmByDisciplinaryDeputy = async (data: {
+  className: string;
+  date: string;
+  day: string;
+  period: number;
+}) => {
+  try {
+    const response = await api.post('/class/attendance/confirm-deputy', data);
+    return response.data;
+  } catch (error) {
+    console.error('Error confirming by disciplinary deputy: ', error);
+    throw error;
+  }
+};
+
+
+
+export const confirmByPrincipal = async (data: {
+  className: string;
+  date: string;
+  day: string;
+  period: number;
+}) => {
+  try {
+    const response = await api.post('/class/attendance/confirm-principal', data);
+    return response.data;
+  } catch (error) {
+    console.error('Error confirming by principal: ', error);
     throw error;
   }
 };

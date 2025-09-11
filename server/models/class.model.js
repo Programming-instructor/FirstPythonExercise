@@ -65,7 +65,11 @@ const classSchema = new mongoose.Schema(
             status: { type: String, enum: ['present', 'absent', 'late'], required: true }
           }
         ],
-        report: { type: String, default: '' }
+        report: { type: String, default: '' },
+        confirmedBy: {
+          disciplinaryDeputy: { type: Boolean, default: false },
+          principal: { type: Boolean, default: false },
+        }
       }
     ]
   },

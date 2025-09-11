@@ -1,13 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGetAttendanceByDate } from '@/hooks/useGetAttendanceByDate'
 import { useGetMissingAttendanceByDate } from '@/hooks/useGetMissingAttendanceByDate'
 import { useAddReportToTeacher } from '@/hooks/useAddReportToTeacher'
+import { useUpdateAttendanceByDeputy } from '@/hooks/useUpdateAttendanceByDeputy'
+import { useConfirmByDisciplinaryDeputy } from '@/hooks/useConfirmByDisciplinaryDeputy'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { toast } from 'sonner' // Import Sonner components
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { toast } from 'sonner'
+import { CalendarIcon, CheckCircle2, Edit2, XCircle, AlertTriangle, Save } from 'lucide-react'
 import type { UseQueryResult, UseMutationResult } from '@tanstack/react-query'
 import DatePicker, { DateObject } from 'react-multi-date-picker'
 import persian from 'react-date-object/calendars/persian'
@@ -15,6 +22,7 @@ import persian_fa from 'react-date-object/locales/persian_fa'
 import type { Value } from 'react-multi-date-picker'
 import moment from 'moment-jalaali'
 import { Link } from 'react-router-dom'
+import type { Student } from '@/types/student'
 
 // force moment-jalaali to use EN digits internally
 moment.loadPersian({ usePersianDigits: false })
@@ -48,51 +56,9 @@ interface Teacher {
   numberOfReports: number
 }
 
-interface Guardian {
-  name: string
-  relation: string
-  mourir: string
-}
-
-interface Student {
-  guardian: Guardian
-  student_portrait_front: {
-    url: string
-    public_id: string
-  }
-  _id: string
-  first_name: string
-  last_name: string
-  father_name: string
-  mother_name: string
-  national_code: string
-  birth_date: string
-  birth_certificate_number: string
-  student_phone: string
-  father_phone: string
-  father_job: string
-  mother_phone: string
-  academic_year: string
-  education_level: string
-  mother_job: string
-  grade: number
-  emergency_phone: string
-  marital_status: string
-  previous_school_address: string
-  home_address: string
-  residence_status: string
-  postal_code: string
-  home_phone: string
-  student_goal: string
-  academic_status: string
-  __v: number
-  accepted: boolean
-  class: string
-}
-
 interface StudentAttendance {
   student: Student
-  status: 'absent' | 'present'
+  status: 'absent' | 'present' | 'late'
   _id: string
 }
 
@@ -105,6 +71,10 @@ interface Attendance {
   studentsAttendance: StudentAttendance[]
   report: string
   _id: string
+  confirmedBy: {
+    disciplinaryDeputy: boolean
+    principal: boolean
+  }
 }
 
 interface ClassAttendance {
@@ -113,7 +83,6 @@ interface ClassAttendance {
 }
 
 interface MissingAttendance {
-  classId: string
   className: string
   date: string
   day: string
@@ -130,11 +99,14 @@ type AddReportMutationResult = UseMutationResult<any, unknown, { teacherId: stri
 
 const DisciplinaryDeputyReports = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [editingStates, setEditingStates] = useState<Record<string, { report: string; attendances: StudentAttendance[] }>>({})
 
-  const { data }: AttendanceQueryResult = useGetAttendanceByDate(selectedDate || '')
-  const { data: missingAttendances }: MissingAttendanceQueryResult = useGetMissingAttendanceByDate(selectedDate || '')
+  const { data, isLoading: isAttendanceLoading, refetch: refetchAttendance }: AttendanceQueryResult = useGetAttendanceByDate(selectedDate || '')
+  const { data: missingAttendances, isLoading: isMissingLoading, refetch: refetchMissingAttendance }: MissingAttendanceQueryResult = useGetMissingAttendanceByDate(selectedDate || '')
 
   const addReportMutation: AddReportMutationResult = useAddReportToTeacher()
+  const updateAttendanceMutation = useUpdateAttendanceByDeputy()
+  const confirmMutation = useConfirmByDisciplinaryDeputy()
 
   const handleSetToday = () => {
     const today = moment() // today in Gregorian
@@ -171,6 +143,13 @@ const DisciplinaryDeputyReports = () => {
   const statusMap: Record<string, string> = {
     absent: 'غایب',
     present: 'حاضر',
+    late: 'تاخیر',
+  }
+
+  const statusColors: Record<string, string> = {
+    absent: 'text-red-600',
+    present: 'text-green-600',
+    late: 'text-yellow-600',
   }
 
   const handleSubmitWarning = (miss: MissingAttendance) => {
@@ -197,27 +176,131 @@ const DisciplinaryDeputyReports = () => {
     )
   }
 
+  const initializeEditingState = (att: Attendance, className: string) => {
+    const key = `${className}-${att.period}`
+    console.log(className)
+    if (!editingStates[key]) {
+      setEditingStates(prev => ({
+        ...prev,
+        [key]: {
+          report: att.report,
+          attendances: [...att.studentsAttendance],
+        }
+      }))
+    }
+  }
+
+  const handleReportChange = (value: string, className: string, period: number) => {
+    const key = `${className}-${period}`
+    setEditingStates(prev => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        report: value,
+      }
+    }))
+  }
+
+  const handleStatusChange = (studentId: string, newStatus: 'present' | 'absent' | 'late', className: string, period: number) => {
+    const key = `${className}-${period}`
+    setEditingStates(prev => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        attendances: prev[key].attendances.map(sa =>
+          sa.student._id === studentId ? { ...sa, status: newStatus } : sa
+        )
+      }
+    }))
+  }
+
+  const handleSaveChanges = (att: Attendance, className: string) => {
+    const key = `${className}-${att.period}`
+    const editingData = editingStates[key]
+    if (!editingData) return
+
+    updateAttendanceMutation.mutate({
+      className,
+      date: att.date,
+      day: att.day,
+      period: att.period,
+      attendances: editingData.attendances.map(sa => ({
+        studentId: sa.student._id,
+        status: sa.status
+      })),
+      report: editingData.report
+    }, {
+      onSuccess: () => {
+        toast.success('تغییرات با موفقیت ذخیره شد')
+      },
+      onError: () => {
+        toast.error('خطا در ذخیره تغییرات')
+      }
+    })
+  }
+
+  const handleConfirm = (att: Attendance, className: string) => {
+    confirmMutation.mutate({
+      className,
+      date: att.date,
+      day: att.day,
+      period: att.period
+    }, {
+      onSuccess: () => {
+        toast.success('تایید با موفقیت انجام شد');
+        refetchAttendance();
+        refetchMissingAttendance();
+      },
+      onError: () => {
+        toast.error('خطا در تایید')
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (data) {
+      let count = 0
+      data.forEach(classItem => {
+        classItem.attendance.forEach(att => {
+          if (!att.confirmedBy?.disciplinaryDeputy) count++
+          initializeEditingState(att, classItem.className)
+        })
+      })
+      if (count > 0) {
+        toast.info(`تعداد حضور و غیاب جدید/تایید نشده: ${count}`, {
+          icon: <AlertTriangle className="h-4 w-4" />,
+          duration: 5000,
+        })
+      }
+    }
+  }, [data])
+
   return (
-    <Card dir="rtl" className="container mx-auto p-4">
-      <CardContent>
-        <h1 className="text-2xl font-bold mb-4 text-center">معاون انضباطی - حضور و غیاب</h1>
+    <div className="flex flex-col items-center min-h-screen p-4" dir="rtl">
+      <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
+        <h1 className="font-bold text-2xl text-center">
+          معاون انضباطی - مدیریت حضور و غیاب
+        </h1>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end">
           <div className="flex-1">
-            <Label htmlFor="date-picker" className="mb-2 block">
+            <Label htmlFor="date-picker" className="mb-2 block font-medium">
               انتخاب تاریخ
             </Label>
-            <DatePicker
-              id="date-picker"
-              calendar={persian}
-              locale={persian_fa}
-              value={selectedDate || null}
-              onChange={handleDateChange}
-              format="YYYY-MM-DD"
-              containerStyle={{ width: '100%' }}
-              inputClass="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              calendarPosition="bottom-right"
-              placeholder="انتخاب تاریخ (مثال: ۱۴۰۴/۰۶/۱۱)"
-            />
+            <div className="relative">
+              <CalendarIcon className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+              <DatePicker
+                id="date-picker"
+                calendar={persian}
+                locale={persian_fa}
+                value={selectedDate || null}
+                onChange={handleDateChange}
+                format="YYYY-MM-DD"
+                containerStyle={{ width: '100%' }}
+                inputClass="w-full rounded-md border border-input bg-background px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+                calendarPosition="bottom-right"
+                placeholder="انتخاب تاریخ (مثال: ۱۴۰۴/۰۶/۱۱)"
+              />
+            </div>
           </div>
           <Button onClick={handleSetToday} className="w-full sm:w-auto">
             تنظیم به امروز
@@ -225,73 +308,148 @@ const DisciplinaryDeputyReports = () => {
         </div>
 
         {!selectedDate && (
-          <div className="text-center text-muted-foreground">لطفاً یک تاریخ انتخاب کنید</div>
+          <div className="text-center text-muted-foreground py-8">لطفاً یک تاریخ انتخاب کنید تا اطلاعات نمایش داده شود.</div>
         )}
 
-        {selectedDate && !data && (
-          <div className="text-center">در حال بارگذاری...</div>
-        )}
-
-        {selectedDate && data && (
+        {selectedDate && (isAttendanceLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+        ) : data && (
           <>
-            <h2 className="text-xl font-semibold mb-4 text-center">
+            <h2 className="text-xl font-semibold mb-6 text-center flex items-center justify-center gap-2">
+              <CalendarIcon className="h-6 w-6" />
               حضور و غیاب تاریخ {displayDate}
             </h2>
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="single" collapsible className="w-full border rounded-lg overflow-hidden">
               {data.map((classItem: ClassAttendance, index: number) => (
-                <AccordionItem value={`class-${index}`} key={index}>
-                  <AccordionTrigger className="text-right hover:bg-neutral-100 hover:no-underline bg-neutral-50 items-center px-4 cursor-pointer">
+                <AccordionItem value={`class-${index}`} key={index} className="border-b last:border-0">
+                  <AccordionTrigger className="text-right hover:bg-neutral-100 hover:no-underline bg-neutral-50 items-center px-4 cursor-pointer font-medium">
                     {classItem.className}
                   </AccordionTrigger>
-                  <AccordionContent className="shadow px-4 mt-1">
-                    {classItem.attendance.map((att: Attendance, attIndex: number) => (
-                      <div key={attIndex} className="mb-6 border-b pb-4">
-                        <h3 className="text-xl font-semibold mb-2">زنگ {att.period}: {att.subject}</h3>
-                        <p className="mb-2">روز: {dayMap[att.day.toLowerCase()] || att.day}</p>
-                        <p className="mb-2">معلم: {att.teacher.first_name} {att.teacher.last_name}</p>
-                        <p className="mb-2">گزارش معلم: {att.report || 'بدون گزارش'}</p>
-                        <h4 className="font-bold mt-4">حضور و غیاب دانش‌آموزان:</h4>
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="text-start">نام</TableHead>
-                              <TableHead className="text-start">نام خانوادگی</TableHead>
-                              <TableHead className="text-start">وضعیت</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {att.studentsAttendance.map((stuAtt: StudentAttendance, stuIndex: number) => (
-                              <TableRow key={stuIndex}>
-                                <TableCell>{stuAtt.student.first_name}</TableCell>
-                                <TableCell>{stuAtt.student.last_name}</TableCell>
-                                <TableCell
-                                  className={stuAtt.status === 'absent' ? 'text-red-600' : 'text-green-600'}
+                  <AccordionContent className="px-4 py-2 bg-white">
+                    {classItem.attendance.map((att: Attendance, attIndex: number) => {
+                      const isConfirmed = att.confirmedBy?.disciplinaryDeputy || false
+                      const key = `${classItem.className}-${att.period}` // Assume className available
+                      const editingData = editingStates[key] || { report: att.report, attendances: att.studentsAttendance }
+                      const absentCount = editingData.attendances.filter(sa => sa.status === 'absent').length
+
+                      return (
+                        <Card key={attIndex} className={`mb-6 shadow-sm ${isConfirmed ? 'bg-gray-50' : 'bg-white'}`}>
+                          <CardHeader className="border-b">
+                            <div className="flex justify-between items-center">
+                              <CardTitle className="text-xl">زنگ {att.period}: {att.subject}</CardTitle>
+                              <Badge variant={isConfirmed ? 'default' : 'secondary'} className="flex gap-1">
+                                {isConfirmed ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                                {isConfirmed ? 'تایید شده' : 'نیاز به تایید'}
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-muted-foreground mt-2 space-y-1">
+                              <p>روز: {dayMap[att.day.toLowerCase()] || att.day}</p>
+                              <p>معلم: {att.teacher.first_name} {att.teacher.last_name}</p>
+                              <p>تعداد غایب: {absentCount}</p>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-4">
+                            <div className="mb-4">
+                              <Label htmlFor={`report-${key}`} className="mb-2 block font-medium">گزارش معلم</Label>
+                              <Textarea
+                                id={`report-${key}`}
+                                value={editingData.report}
+                                onChange={(e) => handleReportChange(e.target.value, classItem.className, att.period)}
+                                disabled={isConfirmed || updateAttendanceMutation.isPending}
+                                className="min-h-[100px]"
+                                placeholder="گزارش معلم..."
+                              />
+                            </div>
+                            <h4 className="font-bold mb-3 flex items-center gap-2"><Edit2 className="h-4 w-4" />حضور و غیاب دانش‌آموزان</h4>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-start">نام</TableHead>
+                                  <TableHead className="text-start">نام خانوادگی</TableHead>
+                                  <TableHead className="text-start">وضعیت</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {editingData.attendances.map((stuAtt: StudentAttendance, stuIndex: number) => (
+                                  <TableRow key={stuIndex} className={isConfirmed ? 'text-muted-foreground' : ''}>
+                                    <TableCell>{stuAtt.student.first_name}</TableCell>
+                                    <TableCell>{stuAtt.student.last_name}</TableCell>
+                                    <TableCell>
+                                      {isConfirmed ? (
+                                        <span className={statusColors[stuAtt.status]}>
+                                          {statusMap[stuAtt.status] || stuAtt.status}
+                                        </span>
+                                      ) : (
+                                        <Select
+                                          value={stuAtt.status}
+                                          onValueChange={(value: 'present' | 'absent' | 'late') => handleStatusChange(stuAtt.student._id, value, classItem.className, att.period)}
+                                        >
+                                          <SelectTrigger className="w-[120px]">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="present">حاضر</SelectItem>
+                                            <SelectItem value="absent">غایب</SelectItem>
+                                            <SelectItem value="late">تاخیر</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                            {!isConfirmed && (
+                              <div className="mt-4 flex gap-4">
+                                <Button
+                                  onClick={() => handleSaveChanges(att, classItem.className)}
+                                  disabled={updateAttendanceMutation.isPending}
+                                  className="flex gap-2"
                                 >
-                                  {statusMap[stuAtt.status] || stuAtt.status}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    ))}
+                                  <Save className="h-4 w-4" /> ذخیره تغییرات
+                                </Button>
+                                <Button
+                                  onClick={() => handleConfirm(att, classItem.className)}
+                                  variant="default"
+                                  disabled={confirmMutation.isPending}
+                                >
+                                  تایید نهایی
+                                </Button>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
                   </AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
           </>
-        )}
+        ))}
 
-        {selectedDate && missingAttendances && (
+        {selectedDate && (isMissingLoading ? (
+          <div className="mt-8 space-y-4">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        ) : missingAttendances && (
           <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4 text-center">
+            <h2 className="text-xl font-semibold mb-6 text-center flex items-center justify-center gap-2">
+              <AlertTriangle className="h-6 w-6 text-yellow-500" />
               عدم ثبت حضور و غیاب تاریخ {displayDate}
             </h2>
             {missingAttendances.length === 0 ? (
-              <div className="text-center text-muted-foreground">همه حضور و غیاب‌ها ثبت شده است</div>
+              <div className="text-center text-muted-foreground py-8 flex justify-center items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-green-500" /> همه حضور و غیاب‌ها ثبت شده است
+              </div>
             ) : (
-              <Table>
-                <TableHeader>
+              <Table className="border rounded-lg overflow-hidden">
+                <TableHeader className="bg-neutral-50">
                   <TableRow>
                     <TableHead className="text-start">کلاس</TableHead>
                     <TableHead className="text-start">روز</TableHead>
@@ -303,7 +461,7 @@ const DisciplinaryDeputyReports = () => {
                 </TableHeader>
                 <TableBody>
                   {missingAttendances.map((miss: MissingAttendance, index: number) => (
-                    <TableRow key={index}>
+                    <TableRow key={index} className="hover:bg-neutral-50">
                       <TableCell>{miss.className}</TableCell>
                       <TableCell>{dayMap[miss.day.toLowerCase()] || miss.day}</TableCell>
                       <TableCell>{miss.period}</TableCell>
@@ -314,6 +472,7 @@ const DisciplinaryDeputyReports = () => {
                           onClick={() => handleSubmitWarning(miss)}
                           disabled={addReportMutation.isPending}
                           variant="destructive"
+                          size="sm"
                         >
                           ارسال اخطار
                         </Button>
@@ -324,13 +483,13 @@ const DisciplinaryDeputyReports = () => {
               </Table>
             )}
           </div>
-        )}
+        ))}
 
-        <Button asChild variant="outline" className='mt-5'>
+        <Button asChild variant="outline" className='mt-8 w-full sm:w-auto'>
           <Link to="/admin">بازگشت به داشبورد</Link>
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 

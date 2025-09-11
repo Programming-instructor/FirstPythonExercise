@@ -1,5 +1,5 @@
 const express = require('express');
-const { assignTeacherToClass, addStudentsToClass, getStudentsInClass, getTeacherClasses, deleteClass, addClass, getAllClasses, getClassLevel, distributeStudentsToLevel, autoAddStudentsToClass, getUnassignedStudentsByLevel, getClassName, removeStudentsFromClass, removePeriodFromClass, getAttendance, postAttendance, getAttendanceByDate, getMissingAttendanceByDate, updateAttendanceReport } = require('../controllers/class.controller');
+const { assignTeacherToClass, addStudentsToClass, getStudentsInClass, getTeacherClasses, deleteClass, addClass, getAllClasses, getClassLevel, distributeStudentsToLevel, autoAddStudentsToClass, getUnassignedStudentsByLevel, getClassName, removeStudentsFromClass, removePeriodFromClass, getAttendance, postAttendance, getAttendanceByDate, getMissingAttendanceByDate, updateAttendanceReport, updateAttendanceByDeputy, confirmByDisciplinaryDeputy, unconfirmByDisciplinaryDeputy, confirmByPrincipal, unconfirmByPrincipal } = require('../controllers/class.controller');
 const { authMiddleware, authMiddlewareTeacher, authMiddlewareTeacherAndAdmin } = require('../middleware/auth.middleware');
 const router = express.Router();
 
@@ -21,7 +21,10 @@ router.post('/attendance', authMiddlewareTeacher, postAttendance); // full route
 router.post('/attendance/report', authMiddlewareTeacher, updateAttendanceReport); // full route: /api/class/attendance/report
 router.get('/:classId/attendance', authMiddlewareTeacherAndAdmin, getAttendance); // full route: /api/class/:classId/attendance?date=...&day=...&period=...
 router.get('/attendance/:date', authMiddleware, getAttendanceByDate);
-
 router.get('/missing-attendance/:date', authMiddleware, getMissingAttendanceByDate); // full route: /api/class/missing-attendance/:date
+
+router.post('/attendance/update-deputy', authMiddleware, updateAttendanceByDeputy); // Assuming auth for deputy
+router.post('/attendance/confirm-deputy', authMiddleware, confirmByDisciplinaryDeputy);
+router.post('/attendance/confirm-principal', authMiddleware, confirmByPrincipal);
 
 module.exports = router;

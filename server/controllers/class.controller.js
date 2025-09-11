@@ -584,3 +584,131 @@ exports.getMissingAttendanceByDate = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Update attendance by disciplinary deputy (edit studentsAttendance and report if not confirmed)
+exports.updateAttendanceByDeputy = async (req, res) => {
+  try {
+    const { className, date, day, period, attendances, report } = req.body;
+
+    // Validate required fields
+    if (!className || !date || !day || !period || !attendances || !Array.isArray(attendances)) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const cls = await Class.findOne({ name: className });
+    if (!cls) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    // Find existing attendance record
+    let existing = cls.attendance.find(
+      a => a.date === date &&
+        a.day === day &&
+        a.period === period
+    );
+
+    if (!existing) {
+      return res.status(404).json({ message: 'Attendance record not found' });
+    }
+
+    if (existing.confirmedBy.disciplinaryDeputy) {
+      return res.status(403).json({ message: 'Attendance already confirmed by disciplinary deputy, cannot edit' });
+    }
+
+    // Validate day and period exist in schedule (optional, but good to have)
+    if (!cls.days[day] || cls.days[day].length < period || period < 1) {
+      return res.status(400).json({ message: 'Invalid day or period for this class' });
+    }
+
+    // Optional: Validate that attendances cover all students in the class
+    const classStudentIds = cls.students.map(s => s.toString());
+    const providedStudentIds = attendances.map(a => a.studentId.toString());
+    if (classStudentIds.length !== providedStudentIds.length || !classStudentIds.every(id => providedStudentIds.includes(id))) {
+      return res.status(400).json({ message: 'Attendance must be provided for all students in the class' });
+    }
+
+    const formattedAttendances = attendances.map(a => ({
+      student: a.studentId,
+      status: a.status
+    }));
+
+    // Update record
+    existing.studentsAttendance = formattedAttendances;
+    existing.report = report !== undefined ? report : existing.report;
+
+    await cls.save();
+    res.json({ message: 'Attendance updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Confirm by disciplinary deputy
+exports.confirmByDisciplinaryDeputy = async (req, res) => {
+  try {
+    const { className, date, day, period } = req.body;
+
+    if (!className || !date || !day || !period) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const cls = await Class.findOne({ name: className });
+    if (!cls) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    let existing = cls.attendance.find(
+      a => a.date === date &&
+        a.day === day &&
+        a.period === period
+    );
+
+    if (!existing) {
+      return res.status(404).json({ message: 'Attendance record not found' });
+    }
+
+    existing.confirmedBy.disciplinaryDeputy = true;
+
+    await cls.save();
+    res.json({ message: 'Confirmed by disciplinary deputy successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+// Confirm by principal
+exports.confirmByPrincipal = async (req, res) => {
+  try {
+    const { className, date, day, period } = req.body;
+
+    if (!className || !date || !day || !period) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const cls = await Class.findOne({ name: className });
+    if (!cls) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    let existing = cls.attendance.find(
+      a => a.date === date &&
+        a.day === day &&
+        a.period === period
+    );
+
+    if (!existing) {
+      return res.status(404).json({ message: 'Attendance record not found' });
+    }
+
+    existing.confirmedBy.principal = true;
+
+    await cls.save();
+    res.json({ message: 'Confirmed by principal successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
