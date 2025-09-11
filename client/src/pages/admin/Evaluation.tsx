@@ -18,22 +18,26 @@ import { Link } from "react-router-dom";
 import ReadOnlyStudent from "@/components/admin/global/ReadOnlyStudent";
 import { useFetchDecisionsByNationalCode } from "@/hooks/useDecisionsByNationalCode";
 import { useFetchStudentByCode } from "@/hooks/useFetchStudnetByNationalCode";
-import { useGetStudentReports } from "@/hooks/useGetStudentReports";
-import { useGetStudentAttendance } from "@/hooks/useGetStudentAttendance";
+import { useGetConfirmedReports } from "@/hooks/useGetConfirmedReports";
 
 interface User {
-  id: string;
-  isAdmin: boolean;
-  name: string;
-  permissions: string[];
+  _id: string;
   role: string;
+  name: string;
 }
 
 interface Report {
-  _id: string;
+  reportId: string;
   date: string;
-  from: User;
   message: string;
+  confirmed: boolean;
+  from: User;
+  student: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    national_code: string;
+  };
 }
 
 const Evaluation = () => {
@@ -41,8 +45,8 @@ const Evaluation = () => {
   const [submittedCode, setSubmittedCode] = useState("");
   const { data: student, isLoading: studentLoading, error: studentError } = useFetchStudentByCode(submittedCode);
   const { data: decisions, isLoading: decisionsLoading } = useFetchDecisionsByNationalCode(submittedCode);
-  const { data: reportsData } = useGetStudentReports(submittedCode);
-  const { data: attendanceData } = useGetStudentAttendance(submittedCode);
+
+  const { data: confirmedReports } = useGetConfirmedReports(submittedCode);
 
   const roleTranslations: { [key: string]: string } = {
     admin: 'ادمین',
@@ -164,16 +168,16 @@ const Evaluation = () => {
           </Card>
         )}
 
-        {submittedCode && reportsData && (
+        {submittedCode && confirmedReports && (
           <div className="mt-8">
             <h2 className="font-bold text-xl text-center mb-4">گزارش‌ها</h2>
-            <p className="text-center text-gray-700 mb-6">تعداد گزارش‌ها: {reportsData.amount}</p>
-            {reportsData.amount === 0 ? (
+            <p className="text-center text-gray-700 mb-6">تعداد گزارش‌ها: {confirmedReports.reports.length}</p>
+            {confirmedReports.reports.length === 0 ? (
               <p className="text-center text-gray-500">هیچ گزارشی یافت نشد.</p>
             ) : (
               <div className="space-y-4">
-                {reportsData.reports.map((report: Report) => (
-                  <Card key={report._id} className="shadow-sm">
+                {confirmedReports.reports.map((report: Report) => (
+                  <Card key={report.reportId} className="shadow-sm">
                     <CardContent className="p-4 space-y-2">
                       <div className="font-semibold text-gray-800">تاریخ: {report.date}</div>
                       <div className="text-gray-700">پیام: {report.message}</div>
@@ -188,40 +192,39 @@ const Evaluation = () => {
           </div>
         )}
 
-        {submittedCode && attendanceData && (
+        {submittedCode && confirmedReports && (
           <div className="mt-8">
             <h2 className="font-bold text-xl text-center mb-4">حضور و غیاب</h2>
             <div className="grid grid-cols-3 gap-4 mb-6">
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="font-semibold">تعداد حضور</div>
-                  <div className="text-2xl">{attendanceData.numOfPres}</div>
+                  <div className="text-2xl">{confirmedReports.attendanceSummary.present}</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="font-semibold">تعداد غیبت</div>
-                  <div className="text-2xl">{attendanceData.numOfAbs}</div>
+                  <div className="text-2xl">{confirmedReports.attendanceSummary.absent}</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="font-semibold">تعداد تاخیر</div>
-                  <div className="text-2xl">{attendanceData.numOfLate}</div>
+                  <div className="text-2xl">{confirmedReports.attendanceSummary.late}</div>
                 </CardContent>
               </Card>
             </div>
-            {attendanceData.fullAttendance.length === 0 ? (
+            {confirmedReports.attendanceRecords.length === 0 ? (
               <p className="text-center text-gray-500">هیچ سابقه حضور و غیابی یافت نشد.</p>
             ) : (
               <div className="space-y-4">
-                {attendanceData.fullAttendance.map((att: any, index: number) => (
+                {confirmedReports.attendanceRecords.map((att: any, index: number) => (
                   <Card key={index} className="shadow-sm">
                     <CardContent className="p-4 space-y-2">
                       <div className="font-semibold text-gray-800">تاریخ: {att.date}</div>
                       <div className="text-gray-700">درس: {att.subject}</div>
-                      <div className="text-gray-700">معلم: {att.teacher.first_name} {att.teacher.last_name}</div>
-                      <div className="text-gray-700">وضعیت: {attendanceTranslations[att.attendance] || att.attendance}</div>
+                      <div className="text-gray-700">وضعیت: {attendanceTranslations[att.status] || att.status}</div>
                     </CardContent>
                   </Card>
                 ))}

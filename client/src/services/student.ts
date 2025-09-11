@@ -134,3 +134,13 @@ export const editStudentReport = async (reportId: string, message: string, date:
     throw error;
   }
 };
+
+export const getConfirmedReports = async (ncode: string) => {
+  try {
+    const response = await api.get(`/student/confirmed-reports/${ncode}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting confirmed reports: ', error);
+    throw error;
+  }
+};

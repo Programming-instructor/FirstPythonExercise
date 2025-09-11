@@ -696,7 +696,8 @@ exports.currentStudent = async (req, res) => {
       student_phone: user.student_phone,
       firstName: user.first_name,
       lastName: user.last_name,
-      cls: user.class.name
+      cls: user.class.name,
+      nCode: user.national_code
     });
   } catch (error) {
     console.error('Error fetching student:', error);
@@ -849,3 +850,107 @@ exports.editReport = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.getConfirmedReportsByNationalCode = async (req, res) => {
+  try {
+    const { nationalCode } = req.params;
+
+    const student = await Student.findOne({ national_code: nationalCode })
+      .select('first_name last_name national_code reports class')
+      .populate('reports.from', 'name role')
+      .populate({
+        path: 'class',
+        select: 'attendance',
+        populate: {
+          path: 'attendance.teacher',
+          select: 'name'
+        }
+      })
+      .lean();
+
+    if (!student) {
+      return res.status(404).json({ message: 'دانش‌آموز پیدا نشد' });
+    }
+
+    const confirmed = [];
+
+    (student.reports || []).forEach((r) => {
+      if (r.confirmed) {
+        let ts = null;
+
+        if (r.updatedAt) {
+          ts = new Date(r.updatedAt);
+        } else if (r._id && typeof r._id.getTimestamp === 'function') {
+          try {
+            ts = r._id.getTimestamp();
+          } catch (e) {
+            ts = null;
+          }
+        } else if (r.date) {
+          ts = new Date(r.date);
+        }
+
+        confirmed.push({
+          reportId: r._id,
+          date: r.date || null,
+          message: r.message || '',
+          confirmed: true,
+          from: r.from || null,
+          student: {
+            id: student._id,
+            first_name: student.first_name,
+            last_name: student.last_name,
+            national_code: student.national_code,
+          },
+          _sortTs: ts ? ts.getTime() : 0,
+        });
+      }
+    });
+
+    confirmed.sort((a, b) => b._sortTs - a._sortTs);
+
+    const reports = confirmed.map(({ _sortTs, ...rest }) => rest);
+
+    const attendanceRecords = [];
+    let present = 0, absent = 0, late = 0;
+
+    if (student.class && student.class.attendance) {
+      student.class.attendance.forEach(att => {
+        if (att.confirmedBy && att.confirmedBy.disciplinaryDeputy && att.confirmedBy.principal) {
+          const sa = att.studentsAttendance.find(s => s.student.toString() === student._id.toString());
+          if (sa) {
+            const record = {
+              date: att.date,
+              day: att.day,
+              period: att.period,
+              subject: att.subject,
+              teacher: att.teacher,
+              status: sa.status,
+              _sortTs: new Date(att.date).getTime()
+            };
+            attendanceRecords.push(record);
+
+            if (sa.status === 'present') present++;
+            else if (sa.status === 'absent') absent++;
+            else if (sa.status === 'late') late++;
+          }
+        }
+      });
+
+      attendanceRecords.sort((a, b) => b._sortTs - a._sortTs);
+    }
+
+    const attendance = attendanceRecords.map(({ _sortTs, ...rest }) => rest);
+
+    res.status(200).json({
+      reports,
+      attendanceSummary: { present, absent, late },
+      attendanceRecords: attendance
+    });
+  } catch (err) {
+    console.error('Error getting confirmed reports:', err);
+    res.status(500).json({ message: 'خطای سرور', error: err.message });
+  }
+};
+
+

@@ -23,7 +23,9 @@ const StudentLayout = () => {
       <div className="flex">
         <ProfileCard logoutUrl='/' name={student.firstName} lastName={student.lastName} />
       </div>
-      <Outlet context={student} />
+      <div className="my-8">
+        <Outlet context={student} />
+      </div>
     </div>
   );
 };
