@@ -5,11 +5,11 @@ import { PiStudentBold } from "react-icons/pi";
 
 const Index = () => {
   return (
-    <div className="container mx-auto p-4 flex flex-col items-center justify-center min-h-screen">
+    <div className="container mx-auto p-4 flex flex-col items-center justify-center min-h-screen mt-8">
       <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">انتخاب نقش</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl w-full content-center place-items-center">
         <Link to="/admin/auth">
-          <Card className="hover:shadow-lg transition-shadow text-right aspect-square flex flex-col justify-center">
+          <Card className="hover:shadow-lg transition-shadow text-right aspect-square flex flex-col justify-center max-h-60">
             <CardHeader className="flex flex-col items-center">
               <FaUserTie size={40} className="mb-2 text-gray-700" />
               <CardTitle className="text-center">مدیریت</CardTitle>
@@ -20,7 +20,7 @@ const Index = () => {
           </Card>
         </Link>
         <Link to="/teacher/auth">
-          <Card className="hover:shadow-lg transition-shadow text-right aspect-square flex flex-col justify-center">
+          <Card className="hover:shadow-lg transition-shadow text-right aspect-square flex flex-col justify-center max-h-60">
             <CardHeader className="flex flex-col items-center">
               <FaChalkboardTeacher size={40} className="mb-2 text-gray-700" />
               <CardTitle className="text-center">معلم</CardTitle>
@@ -31,7 +31,7 @@ const Index = () => {
           </Card>
         </Link>
         <Link to="/student/auth">
-          <Card className="hover:shadow-lg transition-shadow text-right aspect-square flex flex-col justify-center">
+          <Card className="hover:shadow-lg transition-shadow text-right aspect-square flex flex-col justify-center max-h-60">
             <CardHeader className="flex flex-col items-center">
               <PiStudentBold size={40} className="mb-2 text-gray-700" />
               <CardTitle className="text-center">دانش‌آموز</CardTitle>

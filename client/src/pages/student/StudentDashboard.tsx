@@ -4,6 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -131,54 +132,58 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-8">
+    <div className="container mx-auto p-4 sm:p-6 space-y-8">
       <Card>
         <CardContent>
-          <h2 className="text-2xl font-bold mb-4 text-right">برنامه کلاسی</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">روز</TableHead>
-                <TableHead className="text-right">درس</TableHead>
-                <TableHead className="text-right">معلم</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {scheduleItems.length > 0 ? (
-                scheduleItems.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="text-right">{item.day}</TableCell>
-                    <TableCell className="text-right">{item.subject}</TableCell>
-                    <TableCell className="text-right">{item.teacher}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 text-right">برنامه کلاسی</h2>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center">
-                    هیچ برنامه‌ای یافت نشد
-                  </TableCell>
+                  <TableHead className="text-right">روز</TableHead>
+                  <TableHead className="text-right">درس</TableHead>
+                  <TableHead className="text-right">معلم</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {scheduleItems.length > 0 ? (
+                  scheduleItems.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="text-right">{item.day}</TableCell>
+                      <TableCell className="text-right">{item.subject}</TableCell>
+                      <TableCell className="text-right">{item.teacher}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center">
+                      هیچ برنامه‌ای یافت نشد
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
       <section>
-        <h2 className="text-2xl font-bold mb-4 text-right">گزارش‌ها</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4 text-right">گزارش‌ها</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {confirmedReports?.reports && confirmedReports.reports.length > 0 ? (
             confirmedReports.reports.map((report) => (
               <Card key={report.reportId} className="text-right">
                 <CardHeader>
-                  <CardTitle>تاریخ: {report.date}</CardTitle>
+                  <CardTitle className="text-base sm:text-lg">تاریخ: {report.date}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p>{report.message}</p>
-                  <p>
+                </CardContent>
+                <CardFooter>
+                  <p className="text-xs  text-neutral-700">
                     از: {report.from.name} ({roleTranslations[report.from.role] || report.from.role})
                   </p>
-                </CardContent>
+                </CardFooter>
               </Card>
             ))
           ) : (
@@ -188,24 +193,24 @@ const StudentDashboard = () => {
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold mb-4 text-right">حضور و غیاب</h2>
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4 text-right">حضور و غیاب</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 text-center">
               <div className="font-semibold">تعداد حضور</div>
-              <div className="text-2xl">{confirmedReports?.attendanceSummary.present || 0}</div>
+              <div className="text-xl sm:text-2xl">{confirmedReports?.attendanceSummary.present || 0}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <div className="font-semibold">تعداد غیبت</div>
-              <div className="text-2xl">{confirmedReports?.attendanceSummary.absent || 0}</div>
+              <div className="text-xl sm:text-2xl">{confirmedReports?.attendanceSummary.absent || 0}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <div className="font-semibold">تعداد تاخیر</div>
-              <div className="text-2xl">{confirmedReports?.attendanceSummary.late || 0}</div>
+              <div className="text-xl sm:text-2xl">{confirmedReports?.attendanceSummary.late || 0}</div>
             </CardContent>
           </Card>
         </div>

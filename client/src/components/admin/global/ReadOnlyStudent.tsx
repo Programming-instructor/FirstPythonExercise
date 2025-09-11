@@ -5,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean }) => {
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="shadow">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">اطلاعات هویتی</CardTitle>
         </CardHeader>
@@ -65,7 +65,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
       {
         !short && (
           <>
-            <Card>
+            <Card className="shadow">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">اطلاعات خانوادگی</CardTitle>
               </CardHeader>
@@ -91,7 +91,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">اطلاعات ولی قانونی</CardTitle>
               </CardHeader>
@@ -108,7 +108,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">اطلاعات تماس</CardTitle>
               </CardHeader>
@@ -136,7 +136,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">اطلاعات تحصیلی</CardTitle>
               </CardHeader>

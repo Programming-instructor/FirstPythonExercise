@@ -132,16 +132,16 @@ const TeacherClass = () => {
   const translatedDay = dayMap[day] || day;
 
   return (
-    <div className="p-4 space-y-4" dir="rtl">
+    <div className="p-4 sm:p-6 space-y-4" dir="rtl">
       <Card className="gap-1">
         <CardHeader>
           <CardTitle className="flex gap-3 flex-col">
-            <span className="text-xl">
+            <span className="text-lg sm:text-xl">
               <span>کلاس {classname}</span>
               {" - "}
               <span>زنگ {period}</span>
             </span>
-            <span className="flex gap-1 font-normal">
+            <span className="flex gap-1 font-normal text-sm sm:text-base">
               <span>{translatedDay}</span>|<span>{today}</span>
             </span>
           </CardTitle>
@@ -166,53 +166,55 @@ const TeacherClass = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>حضور و غیاب دانش آموزان</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">حضور و غیاب دانش آموزان</CardTitle>
         </CardHeader>
         <CardContent>
           {isAttendanceLoading ? (
             <p>در حال بارگیری حضور و غیاب...</p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-start">نام</TableHead>
-                  <TableHead className="text-start">کد ملی</TableHead>
-                  <TableHead className="text-start">وضعیت</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {students.map((student) => {
-                  const att = attendances.find(
-                    (a) => a.studentId === student._id
-                  );
-                  return (
-                    <TableRow key={student._id}>
-                      <TableCell>
-                        {student.first_name} {student.last_name}
-                      </TableCell>
-                      <TableCell>{student.national_code}</TableCell>
-                      <TableCell>
-                        <Select
-                          value={att?.status}
-                          onValueChange={(val: "present" | "absent" | "late") =>
-                            handleStatusChange(student._id, val)
-                          }
-                        >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="انتخاب وضعیت" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="present">حاضر</SelectItem>
-                            <SelectItem value="absent">غایب</SelectItem>
-                            <SelectItem value="late">تأخیر</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-start">نام</TableHead>
+                    <TableHead className="text-start">کد ملی</TableHead>
+                    <TableHead className="text-start">وضعیت</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {students.map((student) => {
+                    const att = attendances.find(
+                      (a) => a.studentId === student._id
+                    );
+                    return (
+                      <TableRow key={student._id}>
+                        <TableCell>
+                          {student.first_name} {student.last_name}
+                        </TableCell>
+                        <TableCell>{student.national_code}</TableCell>
+                        <TableCell>
+                          <Select
+                            value={att?.status}
+                            onValueChange={(val: "present" | "absent" | "late") =>
+                              handleStatusChange(student._id, val)
+                            }
+                          >
+                            <SelectTrigger className="w-full sm:w-[180px]">
+                              <SelectValue placeholder="انتخاب وضعیت" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="present">حاضر</SelectItem>
+                              <SelectItem value="absent">غایب</SelectItem>
+                              <SelectItem value="late">تأخیر</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
         <CardFooter>
@@ -236,7 +238,7 @@ const TeacherClass = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>گزارش</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">گزارش</CardTitle>
         </CardHeader>
         <CardContent>
           <Textarea

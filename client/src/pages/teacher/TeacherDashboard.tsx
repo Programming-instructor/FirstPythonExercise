@@ -36,7 +36,7 @@ const TeacherDashboard: React.FC = () => {
   const { data: reports, isLoading: isLoadingReports } = useGetTeacherReports(teacher.id)
 
   if (isLoading || isLoadingReports) {
-    return <div className="container mx-auto p-4">در حال بارگذاری...</div>;
+    return <div className="container mx-auto p-4 sm:p-6">در حال بارگذاری...</div>;
   }
   console.log(reports)
 
@@ -72,21 +72,21 @@ const TeacherDashboard: React.FC = () => {
   const todayPeriods: Period[] = schedule[todayDay] || [];
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">برنامه معلم {teacher.firstName ?? ''} {teacher.lastName ?? ''}</h1>
+    <div className="container mx-auto p-4 sm:p-6">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4">برنامه معلم {teacher.firstName ?? ''} {teacher.lastName ?? ''}</h1>
 
       <Card className="mb-8 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">کلاس‌های امروز</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl font-bold">کلاس‌های امروز</CardTitle>
         </CardHeader>
         <CardContent>
           {todayPeriods.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {todayPeriods.map((period, index) => (
                 <Link to={`/teacher/class/${period.className}/${todayDay}/${period.period}`} key={`${todayDay}-${period.period}-${index}`}>
                   <Card className="hover:shadow-xl cursor-pointer">
                     <CardHeader>
-                      <CardTitle className="text-lg font-semibold">
+                      <CardTitle className="text-base sm:text-lg font-semibold">
                         {period.className} - {period.periodName}
                       </CardTitle>
                     </CardHeader>
@@ -103,34 +103,36 @@ const TeacherDashboard: React.FC = () => {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {daysOrder.map((day: Day) => {
           const periods: Period[] = schedule[day] || [];
           return (
             <Card key={day} className="shadow-md">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold">{getDayName(day)}</CardTitle>
+                <CardTitle className="text-base sm:text-lg font-semibold">{getDayName(day)}</CardTitle>
               </CardHeader>
               <CardContent>
                 {periods.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-start">زنگ</TableHead>
-                        <TableHead className="text-start">درس</TableHead>
-                        <TableHead className="text-start">کلاس</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {periods.map((period: Period, index: number) => (
-                        <TableRow key={`${day}-${period.period}-${index}`}>
-                          <TableCell>{period.period}</TableCell>
-                          <TableCell>{period.periodName}</TableCell>
-                          <TableCell>{period.className}</TableCell>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-start">زنگ</TableHead>
+                          <TableHead className="text-start">درس</TableHead>
+                          <TableHead className="text-start">کلاس</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {periods.map((period: Period, index: number) => (
+                          <TableRow key={`${day}-${period.period}-${index}`}>
+                            <TableCell>{period.period}</TableCell>
+                            <TableCell>{period.periodName}</TableCell>
+                            <TableCell>{period.className}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 ) : (
                   <p className="text-center text-gray-500">بدون برنامه</p>
                 )}
@@ -142,7 +144,7 @@ const TeacherDashboard: React.FC = () => {
 
       <Card className="mt-8 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">اخطار ها</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl font-bold">اخطار ها</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoadingReports ? (
@@ -150,22 +152,24 @@ const TeacherDashboard: React.FC = () => {
               <AiOutlineLoading3Quarters className="animate-spin h-8 w-8 text-gray-500" />
             </div>
           ) : reports?.amount > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-start">تاریخ</TableHead>
-                  <TableHead className="text-start">پیام</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {reports.reports.map((report: report) => (
-                  <TableRow key={report._id}>
-                    <TableCell>{report.date}</TableCell>
-                    <TableCell>{report.message}</TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-start">تاریخ</TableHead>
+                    <TableHead className="text-start">پیام</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {reports.reports.map((report: report) => (
+                    <TableRow key={report._id}>
+                      <TableCell>{report.date}</TableCell>
+                      <TableCell>{report.message}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <p className="text-center text-gray-500">بدون اخطار</p>
           )}
