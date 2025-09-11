@@ -541,7 +541,6 @@ exports.getMissingAttendanceByDate = async (req, res) => {
     const dayIndex = new Date(date).getDay();
     const dayName = daysOfWeek[dayIndex];
 
-    console.log(dayName);
 
     const classes = await Class.find({})
       .populate({

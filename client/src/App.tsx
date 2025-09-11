@@ -29,6 +29,8 @@ import StudentAuth from "./pages/student/StudentAuth"
 import StudentLayout from "./layout/StudentLayout"
 import StudentDashboard from "./pages/student/StudentDashboard"
 import Index from "./pages/Index"
+import PrincipalStudents from "./pages/admin/PrincipalStudents"
+import PrincipalReports from "./pages/admin/PrincipalReports"
 
 
 function App() {
@@ -53,6 +55,8 @@ function App() {
               <Route path='educational-deputy' element={<EducationalDeputy />} />
               <Route path='psych-counselor' element={<PsychCounselor />} />
               <Route path='principal' element={<Principal />} />
+              <Route path='principal/students' element={<PrincipalStudents />} />
+              <Route path='principal/reports' element={<PrincipalReports />} />
               <Route path='users' element={<UsersPage />} />
               <Route path="class" element={<ClassLevels />} />
               <Route path="class/:level" element={<ClassesByLevel />} />
