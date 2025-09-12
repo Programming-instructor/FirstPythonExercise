@@ -10,7 +10,7 @@ import api from '@/lib/axiosConfig';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FaTrash } from 'react-icons/fa';
-import { PlusCircle, Edit, UserPlus, Calendar, Trash2 } from 'lucide-react'; // Icons for better UX
+import { PlusCircle, Edit, UserPlus, Calendar, Trash2, Check, ChevronsUpDown } from 'lucide-react'; // Icons for better UX
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +22,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import Breadcrumb from '@/components/admin/global/Breadcrumb';
 import { useDeleteClass } from '@/hooks/useDeleteClass';
 
@@ -69,6 +83,7 @@ const ClassDetails: React.FC = () => {
     subject: '',
     teacherId: '',
   });
+  const [comboboxOpen, setComboboxOpen] = useState(false);
 
   const { mutate: deleteClassMutation, isPending: isDeleting } = useDeleteClass();
 
@@ -270,24 +285,52 @@ const ClassDetails: React.FC = () => {
                       <p className="text-sm text-gray-600">
                         تعداد دانش‌آموزان باقی مانده: {unassignedStudents.length}
                       </p>
-                      <Select
-                        onValueChange={(value) => {
-                          if (!selectedStudents.includes(value)) {
-                            setSelectedStudents([...selectedStudents, value]);
-                          }
-                        }}
-                      >
-                        <SelectTrigger className="border-gray-300 focus:border-blue-500">
-                          <SelectValue placeholder="انتخاب دانش‌آموز" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {unassignedStudents.map((student) => (
-                            <SelectItem key={student._id} value={student.national_code}>
-                              {student.first_name} {student.last_name} ({student.national_code})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={comboboxOpen}
+                            className="justify-between"
+                          >
+                            انتخاب دانش‌آموز
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0">
+                          <Command>
+                            <CommandInput placeholder="جستجو دانش‌آموز..." />
+                            <CommandList>
+                              <CommandEmpty>دانش‌آموز یافت نشد.</CommandEmpty>
+                              <CommandGroup>
+                                {unassignedStudents.map((student) => (
+                                  <CommandItem
+                                    key={student._id}
+                                    value={`${student.first_name} ${student.last_name} (${student.national_code})`}
+                                    onSelect={() => {
+                                      const code = student.national_code;
+                                      if (selectedStudents.includes(code)) {
+                                        setComboboxOpen(false);
+                                        return;
+                                      }
+                                      setSelectedStudents([...selectedStudents, code]);
+                                      setComboboxOpen(false);
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        selectedStudents.includes(student.national_code) ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                    {student.first_name} {student.last_name} ({student.national_code})
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                       <div>
                         <h3 className="text-sm font-medium mb-2">دانش‌آموزان انتخاب‌شده:</h3>
                         <ul className="space-y-2 max-h-40 overflow-y-auto">
