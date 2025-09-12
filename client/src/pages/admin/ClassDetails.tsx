@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import Breadcrumb from '@/components/admin/global/BreadCrumb';
+import Breadcrumb from '@/components/admin/global/Breadcrumb';
 import { useDeleteClass } from '@/hooks/useDeleteClass';
 
 interface Student {

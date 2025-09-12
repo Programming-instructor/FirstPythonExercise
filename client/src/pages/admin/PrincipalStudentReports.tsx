@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom';
 import { useGetStudentReports } from '@/hooks/useGetStudentReports';
 import { useFetchStudentByCode } from '@/hooks/useFetchStudnetByNationalCode';
 import ReadOnlyStudent from '@/components/admin/global/ReadOnlyStudent';
+import Breadcrumb from '@/components/admin/global/Breadcrumb';
 
 const PrincipalStudentReports = () => {
   const [nationalCode, setNationalCode] = useState('');
@@ -100,6 +101,15 @@ const PrincipalStudentReports = () => {
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4" dir="rtl">
+      <div className="w-full max-w-5xl mx-auto">
+        <Breadcrumb
+          items={[
+            { link: '/admin', text: 'داشبورد' },
+            { link: '/admin/principal', text: 'مدیریت' },
+            { text: 'گزارش‌های دانش‌آموز ' },
+          ]}
+        />
+      </div>
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
         <h1 className="font-bold text-2xl text-center">مدیر - گزارش‌های دانش‌آموز</h1>
 
