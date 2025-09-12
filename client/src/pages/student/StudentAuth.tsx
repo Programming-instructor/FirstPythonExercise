@@ -1,5 +1,3 @@
-// Create a new file for the StudentAuth page, e.g., pages/StudentAuth.tsx
-
 import { Button } from "@/components/ui/button";
 import {
   Card,

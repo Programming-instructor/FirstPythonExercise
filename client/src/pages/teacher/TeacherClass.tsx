@@ -1,8 +1,8 @@
-// Modified component: TeacherClass (split button into two, use both hooks)
+// Modified component: TeacherClass (split button into two, use both hooks, add read-only mode)
 import { useGetClassByName } from "@/hooks/useGetClassByName";
 import { useGetAttendance } from "@/hooks/useGetAttendance";
 import { useSubmitAttendance } from "@/hooks/useSubmitAttendance";
-import { useSubmitReport } from "@/hooks/useSubmitReport"; // Import the new hook
+import { useSubmitReport } from "@/hooks/useSubmitReport";
 import { Link, useParams } from "react-router-dom";
 import {
   Card,
@@ -67,6 +67,9 @@ const TeacherClass = () => {
   const [attendances, setAttendances] = useState<AttendanceInput[]>([]);
   const [report, setReport] = useState<string>("");
 
+  // Determine if the page should be read-only (existing attendance or report)
+  const isReadOnly = !!existing && (existing.studentsAttendance.length > 0 || !!existing.report);
+
   // Set default attendances when students load and no existing
   useEffect(() => {
     if (!existing && students.length > 0 && attendances.length === 0) {
@@ -97,11 +100,13 @@ const TeacherClass = () => {
     studentId: string,
     newStatus: "present" | "absent" | "late"
   ) => {
-    setAttendances((prev) =>
-      prev.map((a) =>
-        a.studentId === studentId ? { ...a, status: newStatus } : a
-      )
-    );
+    if (!isReadOnly) {
+      setAttendances((prev) =>
+        prev.map((a) =>
+          a.studentId === studentId ? { ...a, status: newStatus } : a
+        )
+      );
+    }
   };
 
   // Mutations
@@ -193,21 +198,29 @@ const TeacherClass = () => {
                         </TableCell>
                         <TableCell>{student.national_code}</TableCell>
                         <TableCell>
-                          <Select
-                            value={att?.status}
-                            onValueChange={(val: "present" | "absent" | "late") =>
-                              handleStatusChange(student._id, val)
-                            }
-                          >
-                            <SelectTrigger className="w-full sm:w-[180px]">
-                              <SelectValue placeholder="انتخاب وضعیت" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="present">حاضر</SelectItem>
-                              <SelectItem value="absent">غایب</SelectItem>
-                              <SelectItem value="late">تأخیر</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {isReadOnly ? (
+                            <span>
+                              {att?.status === "present" && "حاضر"}
+                              {att?.status === "absent" && "غایب"}
+                              {att?.status === "late" && "تأخیر"}
+                            </span>
+                          ) : (
+                            <Select
+                              value={att?.status}
+                              onValueChange={(val: "present" | "absent" | "late") =>
+                                handleStatusChange(student._id, val)
+                              }
+                            >
+                              <SelectTrigger className="w-full sm:w-[180px]">
+                                <SelectValue placeholder="انتخاب وضعیت" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="present">حاضر</SelectItem>
+                                <SelectItem value="absent">غایب</SelectItem>
+                                <SelectItem value="late">تأخیر</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
                         </TableCell>
                       </TableRow>
                     );
@@ -217,23 +230,25 @@ const TeacherClass = () => {
             </div>
           )}
         </CardContent>
-        <CardFooter>
-          <Button
-            onClick={() =>
-              attendanceMutation.mutate({
-                classId,
-                date: today,
-                day,
-                period: periodNum,
-                attendances,
-              })
-            }
-            disabled={attendanceMutation.isPending || !classId || !day || !period}
-            className="w-full sm:w-auto"
-          >
-            {attendanceMutation.isPending ? "در حال ارسال..." : "ارسال حضور و غیاب"}
-          </Button>
-        </CardFooter>
+        {!isReadOnly && (
+          <CardFooter>
+            <Button
+              onClick={() =>
+                attendanceMutation.mutate({
+                  classId,
+                  date: today,
+                  day,
+                  period: periodNum,
+                  attendances,
+                })
+              }
+              disabled={attendanceMutation.isPending || !classId || !day || !period}
+              className="w-full sm:w-auto"
+            >
+              {attendanceMutation.isPending ? "در حال ارسال..." : "ارسال حضور و غیاب"}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
 
       <Card>
@@ -241,36 +256,39 @@ const TeacherClass = () => {
           <CardTitle className="text-md sm:text-lg">گزارش</CardTitle>
         </CardHeader>
         <CardContent>
-          <Textarea
-            value={report}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setReport(e.target.value)
-            }
-            placeholder="گزارش کلاس را اینجا بنویسید..."
-            rows={5}
-          />
+          {isReadOnly ? (
+            <p className="text-sm text-gray-700">{report || "گزارشی ثبت نشده است."}</p>
+          ) : (
+            <Textarea
+              value={report}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setReport(e.target.value)
+              }
+              placeholder="گزارش کلاس را اینجا بنویسید..."
+              rows={5}
+            />
+          )}
         </CardContent>
-        <CardFooter>
-          <Button
-            onClick={() =>
-              reportMutation.mutate({
-                classId,
-                date: today,
-                day,
-                period: periodNum,
-                report,
-              })
-            }
-            disabled={reportMutation.isPending || !classId || !day || !period}
-            className="w-full sm:w-auto"
-          >
-            {reportMutation.isPending ? "در حال ارسال..." : "ارسال گزارش"}
-          </Button>
-        </CardFooter>
+        {!isReadOnly && (
+          <CardFooter>
+            <Button
+              onClick={() =>
+                reportMutation.mutate({
+                  classId,
+                  date: today,
+                  day,
+                  period: periodNum,
+                  report,
+                })
+              }
+              disabled={reportMutation.isPending || !classId || !day || !period}
+              className="w-full sm:w-auto"
+            >
+              {reportMutation.isPending ? "در حال ارسال..." : "ارسال گزارش"}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
-
-      <div className="flex flex-col sm:flex-row gap-2">
-      </div>
     </div>
   );
 };

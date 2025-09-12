@@ -1,6 +1,7 @@
 import { StudentSendOTP } from "@/services/student";
 import type { SendOTPResponse } from "@/types/user";
 import { useMutation, type UseMutationResult } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { toast } from "sonner";
 
 export const useSendOTPStudent = (): UseMutationResult<SendOTPResponse, Error, string> => {
@@ -9,8 +10,9 @@ export const useSendOTPStudent = (): UseMutationResult<SendOTPResponse, Error, s
     onSuccess: (data) => {
       toast.success(data.message || 'کد با موفقیت ارسال شد');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'خطا در ارسال کد. لطفاً دوباره تلاش کنید.');
+    onError: (error: AxiosError) => {
+      // @ts-ignore
+      toast.error(error.response?.data.message || 'خطا در ارسال کد. لطفاً دوباره تلاش کنید.');
     },
   });
 };

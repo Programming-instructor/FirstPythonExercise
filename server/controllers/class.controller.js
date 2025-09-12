@@ -401,10 +401,7 @@ exports.postAttendance = async (req, res) => {
     }));
 
     if (existing) {
-      // Update existing record
-      existing.studentsAttendance = formattedAttendances;
-      existing.subject = schedulePeriod.subject; // Refresh in case schedule changed
-      existing.teacher = schedulePeriod.teacher;
+      return res.status(400).json({ message: 'Attendance already exists' });
     } else {
       // Create new record
       cls.attendance.push({
@@ -451,6 +448,9 @@ exports.updateAttendanceReport = async (req, res) => {
       return res.status(404).json({ message: 'Attendance record not found. Please submit attendance first.' });
     }
 
+    if (existing.report) {
+      return res.status(400).json({ message: 'Report already exists' });
+    }
     existing.report = report || '';
 
     await cls.save();
