@@ -184,17 +184,17 @@ const StudentsPage = () => {
             </Table>
           </div>
         </CardContent>
-      </Card>
 
-      {totalPages > 1 && (
-        <div className="flex justify-center">
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </div>
-      )}
+        {totalPages > 1 && (
+          <div className="flex justify-center">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </div>
+        )}
+      </Card>
     </div>
   );
 };
