@@ -1,9 +1,18 @@
+import Breadcrumb from "@/components/admin/global/Breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Link } from "react-router-dom"
 
 const DisciplinaryDeputy = () => {
   return (
     <div className="flex flex-col items-center min-h-screen p-4" dir="rtl">
+      <div className="w-full max-w-5xl mx-auto">
+        <Breadcrumb
+          items={[
+            { link: '/admin', text: 'داشبورد' },
+            { text: 'معاونت انضباطی' },
+          ]}
+        />
+      </div>
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
         <h1 className="font-bold text-xl text-center">معاونت انضباطی</h1>
 

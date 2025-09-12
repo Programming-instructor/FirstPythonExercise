@@ -23,6 +23,7 @@ import type { Value } from 'react-multi-date-picker'
 import moment from 'moment-jalaali'
 import { Link } from 'react-router-dom'
 import type { Student } from '@/types/student'
+import Breadcrumb from '@/components/admin/global/Breadcrumb'
 
 // force moment-jalaali to use EN digits internally
 moment.loadPersian({ usePersianDigits: false })
@@ -277,6 +278,15 @@ const DisciplinaryDeputyReports = () => {
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4" dir="rtl">
+      <div className="w-full max-w-5xl mx-auto">
+        <Breadcrumb
+          items={[
+            { link: '/admin', text: 'داشبورد' },
+            { link: '/admin/disciplinary-deputy', text: 'معاونت انضباطی' },
+            { text: ' مدیریت حضور و غیاب' },
+          ]}
+        />
+      </div>
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
         <h1 className="font-bold text-xl text-center">
           معاون انضباطی - مدیریت حضور و غیاب
