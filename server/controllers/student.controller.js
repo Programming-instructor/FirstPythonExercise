@@ -278,6 +278,19 @@ exports.importStudentsFromExcel = async (req, res) => {
       const residenceStatusInput = row['وضعیت سکونت'] || row['residence_status'] || '';
       const academicStatusInput = row['وضعیت تحصیلی'] || row['academic_status'] || '';
 
+      const guardianName = row['نام ولی'] || row['guardian_name'] || '';
+      const guardianRelation = row['نسبت ولی'] || row['guardian_relation'] || '';
+      const guardianPhone = row['تلفن ولی'] || row['guardian_phone'] || '';
+
+      let guardian;
+      if (guardianPhone || guardianName || guardianRelation) {
+        guardian = {
+          name: guardianName,
+          relation: guardianRelation,
+          phone: guardianPhone,
+        };
+      }
+
       const studentData = {
         first_name: row['نام'] || row['first_name'] || '',
         last_name: row['نام خانوادگی'] || row['last_name'] || '',
@@ -296,20 +309,7 @@ exports.importStudentsFromExcel = async (req, res) => {
         grade: row['پایه تحصیلی'] || row['grade'] ? Number(row['پایه تحصیلی'] || row['grade']) : undefined,
         emergency_phone: row['تلفن اضطراری'] || row['emergency_phone'] || '',
         marital_status: maritalStatusMap[maritalStatusInput] || (validMaritalStatus.includes(maritalStatusInput) ? maritalStatusInput : ''),
-        guardian: row['ولی']
-          ? (() => {
-            try {
-              const parsed = JSON.parse(row['ولی']);
-              return {
-                name: parsed.name || '',
-                relation: parsed.relation || '',
-                phone: parsed.phone || '',
-              };
-            } catch {
-              return undefined;
-            }
-          })()
-          : undefined,
+        guardian,
         previous_school_address: row['آدرس مدرسه قبلی'] || row['previous_school_address'] || '',
         home_address: row['آدرس منزل'] || row['home_address'] || '',
         residence_status: residenceStatusMap[residenceStatusInput] || (validResidenceStatus.includes(residenceStatusInput) ? residenceStatusInput : ''),
@@ -393,10 +393,12 @@ exports.importStudentsFromExcel = async (req, res) => {
         skippedRows.push({ row, reason: `Invalid academic_status: ${studentData.academic_status}` });
         continue;
       }
-      if (studentData.guardian && (!studentData.guardian.name || !studentData.guardian.relation || !phoneRegex.test(studentData.guardian.phone))) {
-        skippedCount++;
-        skippedRows.push({ row, reason: 'Invalid guardian data' });
-        continue;
+      if (studentData.guardian) {
+        if (!studentData.guardian.name || !studentData.guardian.relation || !phoneRegex.test(studentData.guardian.phone)) {
+          skippedCount++;
+          skippedRows.push({ row, reason: 'Invalid guardian data: missing name, relation, or invalid phone' });
+          continue;
+        }
       }
 
       // Prevent duplicates
@@ -469,7 +471,9 @@ exports.exportStudentsToExcel = async (req, res) => {
       'پایه تحصیلی': s.grade,
       'تلفن اضطراری': s.emergency_phone,
       'وضعیت تاهل': translations.marital_status[s.marital_status] || s.marital_status,
-      'ولی': s.guardian ? JSON.stringify(s.guardian) : '',
+      'نام ولی': s.guardian?.name || '',
+      'نسبت ولی': s.guardian?.relation || '',
+      'تلفن ولی': s.guardian?.phone || '',
       'آدرس مدرسه قبلی': s.previous_school_address,
       'آدرس منزل': s.home_address,
       'وضعیت سکونت': translations.residence_status[s.residence_status] || s.residence_status,
