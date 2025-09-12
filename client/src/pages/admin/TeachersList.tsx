@@ -96,12 +96,12 @@ const TeachersList = () => {
     setAcademicLevel(value as FullTeacher['academic_level'] | '');
   };
 
-  if (isLoading) return <p className="text-center text-lg">در حال بارگذاری...</p>;
+  if (isLoading) return <p className="text-center text-md">در حال بارگذاری...</p>;
 
   return (
     <div className="flex flex-col items-center" dir="rtl">
       <div className="flex flex-col gap-5 bg-neutral-50 px-8 pt-12 pb-4 shadow rounded-2xl w-full max-w-5xl">
-        <h1 className="font-bold text-2xl m-auto">لیست اساتید</h1>
+        <h1 className="font-bold text-xl m-auto">لیست اساتید</h1>
         <Table>
           <TableHeader>
             <TableRow>

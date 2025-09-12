@@ -111,7 +111,7 @@ const PrincipalStudentReports = () => {
         />
       </div>
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
-        <h1 className="font-bold text-2xl text-center">مدیر - گزارش‌های دانش‌آموز</h1>
+        <h1 className="font-bold text-xl text-center">مدیر - گزارش‌های دانش‌آموز</h1>
 
         <div>
           <Label htmlFor="national_code" className="text-sm font-semibold">
@@ -146,7 +146,7 @@ const PrincipalStudentReports = () => {
           </div>
         ) : reportsData && (
           <>
-            <h2 className="text-xl font-semibold mb-6 text-center">
+            <h2 className="text-lg font-semibold mb-6 text-center">
               گزارش‌های دانش‌آموز (تعداد: {reportsData.amount})
             </h2>
 
@@ -165,7 +165,7 @@ const PrincipalStudentReports = () => {
                       <Card className={`shadow-sm ${isConfirmed ? 'bg-gray-50' : 'bg-white'}`}>
                         <CardHeader className="border-b">
                           <div className="flex justify-between items-center">
-                            <CardTitle className="text-xl">جزئیات گزارش</CardTitle>
+                            <CardTitle className="text-lg">جزئیات گزارش</CardTitle>
                             <Badge variant={isConfirmed ? 'default' : 'secondary'} className="flex gap-1 max-w-fit">
                               {isConfirmed ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
                               {isConfirmed ? 'تایید شده' : 'نیاز به تایید'}

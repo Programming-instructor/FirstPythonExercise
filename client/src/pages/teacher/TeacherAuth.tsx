@@ -68,7 +68,7 @@ const TeacherAuth = () => {
     <div className="min-w-screen min-h-screen flex items-center justify-center">
       <Card className="w-96">
         <CardHeader className="flex justify-center">
-          <p className="font-bold text-lg">ورود به پنل معلم</p>
+          <p className="font-bold text-md">ورود به پنل معلم</p>
         </CardHeader>
         <CardContent className="flex flex-col gap-3 items-center">
           {error && (

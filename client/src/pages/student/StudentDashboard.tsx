@@ -135,7 +135,7 @@ const StudentDashboard = () => {
     <div className="container mx-auto p-4 sm:p-6 space-y-8">
       <Card>
         <CardContent>
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 text-right">برنامه کلاسی</h2>
+          <h2 className="text-lg sm:text-xl font-bold mb-4 text-right">برنامه کلاسی</h2>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -168,13 +168,13 @@ const StudentDashboard = () => {
       </Card>
 
       <section>
-        <h2 className="text-xl sm:text-2xl font-bold mb-4 text-right">گزارش‌ها</h2>
+        <h2 className="text-lg sm:text-xl font-bold mb-4 text-right">گزارش‌ها</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {confirmedReports?.reports && confirmedReports.reports.length > 0 ? (
             confirmedReports.reports.map((report) => (
               <Card key={report.reportId} className="text-right">
                 <CardHeader>
-                  <CardTitle className="text-base sm:text-lg">تاریخ: {report.date}</CardTitle>
+                  <CardTitle className="text-base sm:text-md">تاریخ: {report.date}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p>{report.message}</p>
@@ -193,24 +193,24 @@ const StudentDashboard = () => {
       </section>
 
       <section>
-        <h2 className="text-xl sm:text-2xl font-bold mb-4 text-right">حضور و غیاب</h2>
+        <h2 className="text-lg sm:text-xl font-bold mb-4 text-right">حضور و غیاب</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 text-center">
               <div className="font-semibold">تعداد حضور</div>
-              <div className="text-xl sm:text-2xl">{confirmedReports?.attendanceSummary.present || 0}</div>
+              <div className="text-lg sm:text-xl">{confirmedReports?.attendanceSummary.present || 0}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <div className="font-semibold">تعداد غیبت</div>
-              <div className="text-xl sm:text-2xl">{confirmedReports?.attendanceSummary.absent || 0}</div>
+              <div className="text-lg sm:text-xl">{confirmedReports?.attendanceSummary.absent || 0}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <div className="font-semibold">تعداد تاخیر</div>
-              <div className="text-xl sm:text-2xl">{confirmedReports?.attendanceSummary.late || 0}</div>
+              <div className="text-lg sm:text-xl">{confirmedReports?.attendanceSummary.late || 0}</div>
             </CardContent>
           </Card>
         </div>

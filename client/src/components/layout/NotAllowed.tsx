@@ -6,7 +6,7 @@ const NotAllowed = () => {
     <div className="flex flex-col items-center justify-center flex-grow" dir="rtl">
       <div className="max-w-md p-8 bg-white rounded-lg shadow-md text-center">
         <FaLock className="mx-auto text-red-500" size={48} />
-        <h1 className="mt-4 text-2xl font-bold text-gray-800">عدم دسترسی</h1>
+        <h1 className="mt-4 text-xl font-bold text-gray-800">عدم دسترسی</h1>
         <p className="mt-2 text-gray-600">
           شما مجوز لازم برای دسترسی به این صفحه را ندارید.
         </p>

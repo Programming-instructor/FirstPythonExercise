@@ -278,7 +278,7 @@ const DisciplinaryDeputyReports = () => {
   return (
     <div className="flex flex-col items-center min-h-screen p-4" dir="rtl">
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
-        <h1 className="font-bold text-2xl text-center">
+        <h1 className="font-bold text-xl text-center">
           معاون انضباطی - مدیریت حضور و غیاب
         </h1>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end">
@@ -319,7 +319,7 @@ const DisciplinaryDeputyReports = () => {
           </div>
         ) : data && (
           <>
-            <h2 className="text-xl font-semibold mb-6 text-center flex items-center justify-center gap-2">
+            <h2 className="text-lg font-semibold mb-6 text-center flex items-center justify-center gap-2">
               <CalendarIcon className="h-6 w-6" />
               حضور و غیاب تاریخ {displayDate}
             </h2>
@@ -340,7 +340,7 @@ const DisciplinaryDeputyReports = () => {
                         <Card key={attIndex} className={`mb-6 shadow-sm ${isConfirmed ? 'bg-gray-50' : 'bg-white'}`}>
                           <CardHeader className="border-b">
                             <div className="flex justify-between items-center">
-                              <CardTitle className="text-xl">زنگ {att.period}: {att.subject}</CardTitle>
+                              <CardTitle className="text-lg">زنگ {att.period}: {att.subject}</CardTitle>
                               <Badge variant={isConfirmed ? 'default' : 'secondary'} className="flex gap-1">
                                 {isConfirmed ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
                                 {isConfirmed ? 'تایید شده' : 'نیاز به تایید'}
@@ -439,7 +439,7 @@ const DisciplinaryDeputyReports = () => {
           </div>
         ) : missingAttendances && (
           <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-6 text-center flex items-center justify-center gap-2">
+            <h2 className="text-lg font-semibold mb-6 text-center flex items-center justify-center gap-2">
               <AlertTriangle className="h-6 w-6 text-yellow-500" />
               عدم ثبت حضور و غیاب تاریخ {displayDate}
             </h2>

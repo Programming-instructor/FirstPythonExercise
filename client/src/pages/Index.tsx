@@ -6,7 +6,7 @@ import { PiStudentBold } from "react-icons/pi";
 const Index = () => {
   return (
     <div className="container mx-auto p-4 flex flex-col items-center justify-center min-h-screen mt-8">
-      <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">انتخاب نقش</h1>
+      <h1 className="text-2xl font-bold mb-8 text-center text-gray-800">انتخاب نقش</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl w-full content-center place-items-center">
         <Link to="/admin/auth">
           <Card className="hover:shadow-lg transition-shadow text-right aspect-square flex flex-col justify-center max-h-60">

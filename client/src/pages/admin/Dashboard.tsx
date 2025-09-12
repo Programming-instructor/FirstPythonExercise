@@ -123,7 +123,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col items-center gap-8" dir="rtl">
-      <h3 className="text-2xl font-bold">اتوماسیون اداری هنرستان</h3>
+      <h3 className="text-xl font-bold">اتوماسیون اداری هنرستان</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl w-full auto-rows-fr justify-center">
         {cards.map((card, index) => (
           <DashboardCard

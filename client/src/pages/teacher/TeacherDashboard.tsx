@@ -73,11 +73,11 @@ const TeacherDashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 sm:p-6">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4">برنامه معلم {teacher.firstName ?? ''} {teacher.lastName ?? ''}</h1>
+      <h1 className="text-lg sm:text-xl font-bold mb-4">برنامه معلم {teacher.firstName ?? ''} {teacher.lastName ?? ''}</h1>
 
       <Card className="mb-8 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-xl sm:text-2xl font-bold">کلاس‌های امروز</CardTitle>
+          <CardTitle className="text-lg sm:text-xl font-bold">کلاس‌های امروز</CardTitle>
         </CardHeader>
         <CardContent>
           {todayPeriods.length > 0 ? (
@@ -86,7 +86,7 @@ const TeacherDashboard: React.FC = () => {
                 <Link to={`/teacher/class/${period.className}/${todayDay}/${period.period}`} key={`${todayDay}-${period.period}-${index}`}>
                   <Card className="hover:shadow-xl cursor-pointer">
                     <CardHeader>
-                      <CardTitle className="text-base sm:text-lg font-semibold">
+                      <CardTitle className="text-base sm:text-md font-semibold">
                         {period.className} - {period.periodName}
                       </CardTitle>
                     </CardHeader>
@@ -109,7 +109,7 @@ const TeacherDashboard: React.FC = () => {
           return (
             <Card key={day} className="shadow-md">
               <CardHeader>
-                <CardTitle className="text-base sm:text-lg font-semibold">{getDayName(day)}</CardTitle>
+                <CardTitle className="text-base sm:text-md font-semibold">{getDayName(day)}</CardTitle>
               </CardHeader>
               <CardContent>
                 {periods.length > 0 ? (
@@ -144,7 +144,7 @@ const TeacherDashboard: React.FC = () => {
 
       <Card className="mt-8 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-xl sm:text-2xl font-bold">اخطار ها</CardTitle>
+          <CardTitle className="text-lg sm:text-xl font-bold">اخطار ها</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoadingReports ? (

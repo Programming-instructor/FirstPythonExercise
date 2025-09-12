@@ -92,7 +92,7 @@ const TeacherRegister = () => {
   return (
     <div className="flex flex-col items-center" dir="rtl">
       <div className="flex flex-col gap-5 bg-neutral-50 px-8 py-12 shadow rounded-2xl w-full max-w-5xl">
-        <h1 className="font-bold text-2xl m-auto">فرم ثبت‌نام اولیه معلم</h1>
+        <h1 className="font-bold text-xl m-auto">فرم ثبت‌نام اولیه معلم</h1>
 
         {/* Important Notes */}
         <h3 className="font-semibold text-sm">اطلاعات هویتی</h3>
@@ -204,7 +204,7 @@ const TeacherRegister = () => {
               {imagePreview ? (
                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
               ) : (
-                <FaCamera className="text-neutral-500 text-3xl" />
+                <FaCamera className="text-neutral-500 text-2xl" />
               )}
             </div>
           </div>

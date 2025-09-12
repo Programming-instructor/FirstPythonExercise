@@ -85,7 +85,7 @@ const DisciplinaryDeputyStudent = () => {
   return (
     <div className="flex flex-col items-center min-h-screen p-4" dir="rtl">
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
-        <h1 className="font-bold text-2xl text-center">معاونت انضباطی</h1>
+        <h1 className="font-bold text-xl text-center">معاونت انضباطی</h1>
 
         <div>
           <Label htmlFor="national_code" className="text-sm font-semibold">
@@ -138,7 +138,7 @@ const DisciplinaryDeputyStudent = () => {
         {student && (
           <Card className="border-gray-200 shadow-sm">
             <CardContent className="p-6 space-y-6">
-              <h2 className="font-semibold text-lg text-gray-800">ثبت گزارش انضباطی</h2>
+              <h2 className="font-semibold text-md text-gray-800">ثبت گزارش انضباطی</h2>
               <div className="space-y-4">
                 <div>
                   <Label className="text-sm font-semibold text-gray-700">

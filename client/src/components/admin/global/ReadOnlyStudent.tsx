@@ -7,7 +7,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
     <div className="space-y-6">
       <Card className="shadow">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">اطلاعات هویتی</CardTitle>
+          <CardTitle className="text-md font-semibold">اطلاعات هویتی</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex gap-4 items-center mb-3">
@@ -67,7 +67,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
           <>
             <Card className="shadow">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold">اطلاعات خانوادگی</CardTitle>
+                <CardTitle className="text-md font-semibold">اطلاعات خانوادگی</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
@@ -93,7 +93,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
 
             <Card className="shadow">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold">اطلاعات ولی قانونی</CardTitle>
+                <CardTitle className="text-md font-semibold">اطلاعات ولی قانونی</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
@@ -110,7 +110,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
 
             <Card className="shadow">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold">اطلاعات تماس</CardTitle>
+                <CardTitle className="text-md font-semibold">اطلاعات تماس</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
@@ -138,7 +138,7 @@ const ReadOnlyStudent = ({ student, short }: { student: Student, short?: boolean
 
             <Card className="shadow">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold">اطلاعات تحصیلی</CardTitle>
+                <CardTitle className="text-md font-semibold">اطلاعات تحصیلی</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>

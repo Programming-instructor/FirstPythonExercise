@@ -32,7 +32,7 @@ const DashboardCard = ({ icon, body, desc, href, hasPerm }: props) => {
             {icon}
           </span>
         </CardHeader>
-        <CardContent className="flex flex-col items-center gap-1.5">
+        <CardContent className="flex flex-col items-center gap-1.5 px-3">
           <p className="text-sm font-semibold text-center">{body}</p>
           <p className="text-xs font-light text-center">{desc}</p>
         </CardContent>

@@ -257,7 +257,7 @@ const PrincipalReports = () => {
         />
       </div>
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
-        <h1 className="font-bold text-2xl text-center">مدیر - مدیریت حضور و غیاب</h1>
+        <h1 className="font-bold text-xl text-center">مدیر - مدیریت حضور و غیاب</h1>
 
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end">
           <div className="flex-1">
@@ -299,7 +299,7 @@ const PrincipalReports = () => {
           </div>
         ) : data && (
           <>
-            <h2 className="text-xl font-semibold mb-6 text-center flex items-center justify-center gap-2">
+            <h2 className="text-lg font-semibold mb-6 text-center flex items-center justify-center gap-2">
               <CalendarIcon className="h-6 w-6" />
               حضور و غیاب تاریخ {displayDate}
             </h2>
@@ -324,7 +324,7 @@ const PrincipalReports = () => {
                         <Card key={attIndex} className={`mb-6 shadow-sm ${isConfirmed ? 'bg-gray-50' : 'bg-white'}`}>
                           <CardHeader className="border-b">
                             <div className="flex justify-between items-center">
-                              <CardTitle className="text-xl">زنگ {att.period}: {att.subject}</CardTitle>
+                              <CardTitle className="text-lg">زنگ {att.period}: {att.subject}</CardTitle>
                               <Badge variant={att.confirmedBy.disciplinaryDeputy ? isConfirmed ? 'default' : 'secondary' : 'destructive'} className="flex gap-1 max-w-fit">
                                 {att.confirmedBy.disciplinaryDeputy && isConfirmed ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
                                 {

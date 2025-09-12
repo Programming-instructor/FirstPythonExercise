@@ -74,7 +74,7 @@ const ClassesByLevel: React.FC = () => {
       />
       <Card className="shadow-lg border-0">
         <CardContent className="p-8">
-          <h1 className="text-3xl font-bold mb-6 text-gray-800">کلاس‌های پایه {level}</h1>
+          <h1 className="text-2xl font-bold mb-6 text-gray-800">کلاس‌های پایه {level}</h1>
           <div className="flex flex-wrap gap-4 mb-6">
             <Button asChild variant="outline" className="border-gray-300 hover:bg-gray-100">
               <Link to="/admin">بازگشت به داشبورد</Link>
@@ -88,7 +88,7 @@ const ClassesByLevel: React.FC = () => {
               </DialogTrigger>
               <DialogContent className="rounded-xl">
                 <DialogHeader>
-                  <DialogTitle className="text-xl">افزودن کلاس جدید به پایه {level}</DialogTitle>
+                  <DialogTitle className="text-lg">افزودن کلاس جدید به پایه {level}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleAddClass} className="space-y-6">
                   <div>
@@ -120,7 +120,7 @@ const ClassesByLevel: React.FC = () => {
                 onClick={() => navigate(`/admin/class/${level}/${cls.name}`)}
               >
                 <CardHeader className="">
-                  <CardTitle className="text-xl font-semibold text-gray-800">{cls.name}</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-gray-800">{cls.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <p className="text-gray-600">دانش‌آموزان: {cls.students.length}</p>

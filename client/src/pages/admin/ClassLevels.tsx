@@ -18,7 +18,7 @@ const ClassLevels: React.FC = () => {
       />
       <Card className="shadow-lg border-0">
         <CardContent className="p-8">
-          <h1 className="text-3xl font-bold mb-6 text-gray-800">مدیریت کلاس‌ها</h1>
+          <h1 className="text-2xl font-bold mb-6 text-gray-800">مدیریت کلاس‌ها</h1>
           <Button asChild variant="outline" className="mb-6 border-gray-300 hover:bg-gray-100">
             <Link to="/admin">بازگشت به داشبورد</Link>
           </Button>
@@ -30,7 +30,7 @@ const ClassLevels: React.FC = () => {
                 onClick={() => navigate(`/admin/class/${level}`)}
               >
                 <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
-                  <CardTitle className="flex items-center text-xl font-semibold text-gray-800">
+                  <CardTitle className="flex items-center text-lg font-semibold text-gray-800">
                     <School className="ml-2 h-6 w-6 text-blue-600" />
                     پایه {level}
                   </CardTitle>

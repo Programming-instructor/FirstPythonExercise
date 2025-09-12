@@ -136,7 +136,7 @@ const TeacherClass = () => {
       <Card className="gap-1">
         <CardHeader>
           <CardTitle className="flex gap-3 flex-col">
-            <span className="text-lg sm:text-xl">
+            <span className="text-md sm:text-lg">
               <span>کلاس {classname}</span>
               {" - "}
               <span>زنگ {period}</span>
@@ -166,7 +166,7 @@ const TeacherClass = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">حضور و غیاب دانش آموزان</CardTitle>
+          <CardTitle className="text-md sm:text-lg">حضور و غیاب دانش آموزان</CardTitle>
         </CardHeader>
         <CardContent>
           {isAttendanceLoading ? (
@@ -238,7 +238,7 @@ const TeacherClass = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">گزارش</CardTitle>
+          <CardTitle className="text-md sm:text-lg">گزارش</CardTitle>
         </CardHeader>
         <CardContent>
           <Textarea

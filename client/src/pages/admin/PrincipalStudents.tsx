@@ -98,7 +98,7 @@ const PrincipalStudents = () => {
         />
       </div>
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
-        <h1 className="font-bold text-2xl text-center">مدیریت - دانش آموزان</h1>
+        <h1 className="font-bold text-xl text-center">مدیریت - دانش آموزان</h1>
         <div>
           <Label htmlFor="national_code" className="text-sm font-semibold">
             کد ملی هنرجو
@@ -151,7 +151,7 @@ const PrincipalStudents = () => {
         {student && (
           <Card className="border-gray-200 shadow-sm">
             <CardContent className="p-6 space-y-6">
-              <h2 className="font-semibold text-lg text-gray-800">ثبت گزارش مدیریت</h2>
+              <h2 className="font-semibold text-md text-gray-800">ثبت گزارش مدیریت</h2>
               <div className="space-y-4">
                 <div>
                   <Label className="text-sm font-semibold text-gray-700">تاریخ گزارش</Label>

@@ -16,7 +16,7 @@ const ProfileCard = ({ name, lastName, logoutUrl }: { name: string, lastName?: s
       <div className="flex flex-col gap-1 text-sm sm:text-base">
         <p>{name} {lastName && lastName}</p>
         <p className="flex items-center gap-1 text-red-600 border-b border-red-500 pb-0 cursor-pointer hover:text-red-700 transition" onClick={handleLogout}>
-          <IoExitOutline size={16} className="sm:text-xl" />
+          <IoExitOutline size={16} className="sm:text-lg" />
           خروج از سیستم
         </p>
       </div>

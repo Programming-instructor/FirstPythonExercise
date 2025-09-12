@@ -101,7 +101,7 @@ export default function UsersPage() {
     <div className="container mx-auto p-6 space-y-8 font-noto" dir="rtl">
       <Card className="border-none shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-gray-800">
+          <CardTitle className="text-xl font-bold text-gray-800">
             مدیریت کاربران
           </CardTitle>
         </CardHeader>

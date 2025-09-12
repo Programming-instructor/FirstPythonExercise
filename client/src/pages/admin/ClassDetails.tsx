@@ -224,7 +224,7 @@ const ClassDetails: React.FC = () => {
       <Card className="shadow-lg border-0">
         <CardContent className="p-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-800">کلاس {cls.name} (پایه {cls.level})</h1>
+            <h1 className="text-2xl font-bold text-gray-800">کلاس {cls.name} (پایه {cls.level})</h1>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" disabled={isDeleting} className="text-white">
@@ -254,7 +254,7 @@ const ClassDetails: React.FC = () => {
           {/* Students Section */}
           <section className="mb-12">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold text-gray-800">دانش‌آموزان</h2>
+              <h2 className="text-xl font-semibold text-gray-800">دانش‌آموزان</h2>
               <div className="flex gap-3">
                 <Dialog open={isAddStudentModalOpen} onOpenChange={setIsAddStudentModalOpen}>
                   <DialogTrigger asChild>
@@ -265,7 +265,7 @@ const ClassDetails: React.FC = () => {
                   </DialogTrigger>
                   <DialogContent className="rounded-xl max-w-lg">
                     <DialogHeader>
-                      <DialogTitle className="text-xl">افزودن دانش‌آموزان به {cls.name}</DialogTitle>
+                      <DialogTitle className="text-lg">افزودن دانش‌آموزان به {cls.name}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-6">
                       <Select
@@ -369,7 +369,7 @@ const ClassDetails: React.FC = () => {
           {/* Schedule Section */}
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold text-gray-800">برنامه</h2>
+              <h2 className="text-xl font-semibold text-gray-800">برنامه</h2>
               <Dialog open={isEditScheduleModalOpen} onOpenChange={setIsEditScheduleModalOpen}>
                 <DialogTrigger asChild>
                   <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
@@ -379,7 +379,7 @@ const ClassDetails: React.FC = () => {
                 </DialogTrigger>
                 <DialogContent className="rounded-xl">
                   <DialogHeader>
-                    <DialogTitle className="text-xl">ویرایش برنامه برای {cls.name}</DialogTitle>
+                    <DialogTitle className="text-lg">ویرایش برنامه برای {cls.name}</DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleEditSchedule} className="space-y-6">
                     <div>
@@ -440,7 +440,7 @@ const ClassDetails: React.FC = () => {
                 <Card key={day} className="shadow-md border border-gray-200 rounded-xl overflow-hidden">
                   <CardHeader className="px-5 flex items-center">
                     <Calendar className="ml-2 h-5 w-5 text-indigo-600" />
-                    <CardTitle className="text-lg font-semibold text-gray-800">{getDayName(day)}</CardTitle>
+                    <CardTitle className="text-md font-semibold text-gray-800">{getDayName(day)}</CardTitle>
                   </CardHeader>
                   <CardContent className="p-5">
                     {periods.length > 0 ? (

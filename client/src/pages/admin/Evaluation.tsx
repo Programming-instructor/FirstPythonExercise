@@ -76,7 +76,7 @@ const Evaluation = () => {
   return (
     <div className="flex flex-col items-center min-h-screen p-4" dir="rtl">
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
-        <h1 className="font-bold text-2xl text-center">ارزیابی</h1>
+        <h1 className="font-bold text-xl text-center">ارزیابی</h1>
 
         <div>
           <Label htmlFor="national_code" className="text-sm font-semibold">
@@ -170,7 +170,7 @@ const Evaluation = () => {
 
         {submittedCode && confirmedReports && (
           <div className="mt-8">
-            <h2 className="font-bold text-xl text-center mb-4">گزارش‌ها</h2>
+            <h2 className="font-bold text-lg text-center mb-4">گزارش‌ها</h2>
             <p className="text-center text-gray-700 mb-6">تعداد گزارش‌ها: {confirmedReports.reports.length}</p>
             {confirmedReports.reports.length === 0 ? (
               <p className="text-center text-gray-500">هیچ گزارشی یافت نشد.</p>
@@ -194,24 +194,24 @@ const Evaluation = () => {
 
         {submittedCode && confirmedReports && (
           <div className="mt-8">
-            <h2 className="font-bold text-xl text-center mb-4">حضور و غیاب</h2>
+            <h2 className="font-bold text-lg text-center mb-4">حضور و غیاب</h2>
             <div className="grid grid-cols-3 gap-4 mb-6">
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="font-semibold">تعداد حضور</div>
-                  <div className="text-2xl">{confirmedReports.attendanceSummary.present}</div>
+                  <div className="text-xl">{confirmedReports.attendanceSummary.present}</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="font-semibold">تعداد غیبت</div>
-                  <div className="text-2xl">{confirmedReports.attendanceSummary.absent}</div>
+                  <div className="text-xl">{confirmedReports.attendanceSummary.absent}</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="font-semibold">تعداد تاخیر</div>
-                  <div className="text-2xl">{confirmedReports.attendanceSummary.late}</div>
+                  <div className="text-xl">{confirmedReports.attendanceSummary.late}</div>
                 </CardContent>
               </Card>
             </div>
