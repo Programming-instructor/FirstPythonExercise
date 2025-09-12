@@ -181,18 +181,22 @@ const TeacherClass = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="text-start">ردیف</TableHead>
                     <TableHead className="text-start">نام</TableHead>
                     <TableHead className="text-start">کد ملی</TableHead>
                     <TableHead className="text-start">وضعیت</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {students.map((student) => {
+                  {students.map((student, index) => {
                     const att = attendances.find(
                       (a) => a.studentId === student._id
                     );
                     return (
                       <TableRow key={student._id}>
+                        <TableCell>
+                          {index + 1}
+                        </TableCell>
                         <TableCell>
                           {student.first_name} {student.last_name}
                         </TableCell>

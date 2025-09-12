@@ -68,9 +68,9 @@ export const fetchDecisionsByNationalCode = async (national_code: string): Promi
   }
 };
 
-export const postStudentReport = async (id: string, message: string, date: string, userId: string) => {
+export const postStudentReport = async (studentId: string, message: string, date: string, userId: string) => {
   try {
-    const response = await api.post(`/student/report`, { message, date, studentId: id, userId });
+    const response = await api.post(`/student/report`, { message, date, studentId, userId });
     return response.data;
   } catch (error) {
     console.error('Error posting student report: ', error);

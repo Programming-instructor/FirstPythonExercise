@@ -21,9 +21,12 @@ import persian from 'react-date-object/calendars/persian'
 import persian_fa from 'react-date-object/locales/persian_fa'
 import type { Value } from 'react-multi-date-picker'
 import moment from 'moment-jalaali'
-import { Link } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
 import type { Student } from '@/types/student'
 import Breadcrumb from '@/components/admin/global/Breadcrumb'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useMutation } from '@tanstack/react-query'
+import { postStudentReport } from '@/services/student'
 
 // force moment-jalaali to use EN digits internally
 moment.loadPersian({ usePersianDigits: false })
@@ -94,13 +97,25 @@ interface MissingAttendance {
   teacherMobile: string
 }
 
+interface User {
+  id: string;
+  isAdmin: boolean;
+  name: string;
+  permissions: string[];
+  role: string;
+}
+
 type AttendanceQueryResult = UseQueryResult<ClassAttendance[]>
 type MissingAttendanceQueryResult = UseQueryResult<MissingAttendance[]>
 type AddReportMutationResult = UseMutationResult<any, unknown, { teacherId: string; date: string; message: string }, unknown>
 
 const DisciplinaryDeputyReports = () => {
+  const user: User = useOutletContext();
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [editingStates, setEditingStates] = useState<Record<string, { report: string; attendances: StudentAttendance[] }>>({})
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentStudent, setCurrentStudent] = useState<StudentAttendance | null>(null)
+  const [reportMessage, setReportMessage] = useState('')
 
   const { data, isLoading: isAttendanceLoading, refetch: refetchAttendance }: AttendanceQueryResult = useGetAttendanceByDate(selectedDate || '')
   const { data: missingAttendances, isLoading: isMissingLoading, refetch: refetchMissingAttendance }: MissingAttendanceQueryResult = useGetMissingAttendanceByDate(selectedDate || '')
@@ -108,6 +123,20 @@ const DisciplinaryDeputyReports = () => {
   const addReportMutation: AddReportMutationResult = useAddReportToTeacher()
   const updateAttendanceMutation = useUpdateAttendanceByDeputy()
   const confirmMutation = useConfirmByDisciplinaryDeputy()
+
+  const postStudentReportMutation = useMutation({
+    mutationFn: ({ studentId, message, date, userId }: { studentId: string; message: string; date: string; userId: string }) => postStudentReport(studentId, message, date, userId),
+    onSuccess: () => {
+      toast.success('گزارش با موفقیت ارسال شد')
+      setIsModalOpen(false)
+      setReportMessage('')
+      setCurrentStudent(null)
+    },
+    onError: (error) => {
+      toast.error('خطا در ارسال گزارش')
+      console.error('Post Student Report Mutation Error:', error)
+    },
+  })
 
   const handleSetToday = () => {
     const today = moment() // today in Gregorian
@@ -258,6 +287,18 @@ const DisciplinaryDeputyReports = () => {
     })
   }
 
+  const handleSendStudentReport = () => {
+    if (currentStudent && selectedDate) {
+      const userId = user.id
+      postStudentReportMutation.mutate({
+        studentId: currentStudent.student._id,
+        message: reportMessage,
+        date: selectedDate,
+        userId,
+      })
+    }
+  }
+
   useEffect(() => {
     if (data) {
       let count = 0
@@ -381,6 +422,7 @@ const DisciplinaryDeputyReports = () => {
                                   <TableHead className="text-start">نام</TableHead>
                                   <TableHead className="text-start">نام خانوادگی</TableHead>
                                   <TableHead className="text-start">وضعیت</TableHead>
+                                  <TableHead className="text-start">عملیات</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
@@ -407,6 +449,21 @@ const DisciplinaryDeputyReports = () => {
                                             <SelectItem value="late">تاخیر</SelectItem>
                                           </SelectContent>
                                         </Select>
+                                      )}
+                                    </TableCell>
+                                    <TableCell>
+                                      {!isConfirmed && (
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => {
+                                            setCurrentStudent(stuAtt)
+                                            setReportMessage('')
+                                            setIsModalOpen(true)
+                                          }}
+                                        >
+                                          ارسال گزارش
+                                        </Button>
                                       )}
                                     </TableCell>
                                   </TableRow>
@@ -499,6 +556,28 @@ const DisciplinaryDeputyReports = () => {
           <Link to="/admin">بازگشت به داشبورد</Link>
         </Button>
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              ارسال گزارش برای {currentStudent?.student.first_name} {currentStudent?.student.last_name}
+            </DialogTitle>
+          </DialogHeader>
+          <Textarea
+            value={reportMessage}
+            onChange={(e) => setReportMessage(e.target.value)}
+            placeholder="پیام گزارش..."
+            className="min-h-[100px]"
+          />
+          <Button
+            onClick={handleSendStudentReport}
+            disabled={postStudentReportMutation.isPending || !reportMessage}
+          >
+            ارسال
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
