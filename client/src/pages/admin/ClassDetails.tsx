@@ -1,4 +1,3 @@
-// Updated: ClassDetails.tsx
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -253,7 +252,7 @@ const ClassDetails: React.FC = () => {
           </Button>
           {/* Students Section */}
           <section className="mb-12">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-800">دانش‌آموزان</h2>
               <div className="flex gap-3">
                 <Dialog open={isAddStudentModalOpen} onOpenChange={setIsAddStudentModalOpen}>
@@ -268,6 +267,9 @@ const ClassDetails: React.FC = () => {
                       <DialogTitle className="text-lg">افزودن دانش‌آموزان به {cls.name}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-6">
+                      <p className="text-sm text-gray-600">
+                        تعداد دانش‌آموزان باقی مانده: {unassignedStudents.length}
+                      </p>
                       <Select
                         onValueChange={(value) => {
                           if (!selectedStudents.includes(value)) {
@@ -323,10 +325,16 @@ const ClassDetails: React.FC = () => {
                 </Button>
               </div>
             </div>
+
+            <Badge variant="secondary" className="text-lg my-3.5">
+              تعداد: {cls.students.length}
+            </Badge>
+
             <div className="border border-gray-200 rounded-xl overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
+                    <TableHead className="text-start py-4">ردیف</TableHead>
                     <TableHead className="text-start py-4">نام</TableHead>
                     <TableHead className="text-start py-4">نام خانوادگی</TableHead>
                     <TableHead className="text-start py-4">کدملی</TableHead>
@@ -334,8 +342,13 @@ const ClassDetails: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {cls.students.map((student) => (
+                  {cls.students.map((student, index) => (
                     <TableRow key={student._id} className="hover:bg-gray-50 transition-colors">
+                      <TableCell className="py-4">
+                        <span className='bg-cyan-50 p-1 rounded-2xl'>
+                          {index + 1}
+                        </span>
+                      </TableCell>
                       <TableCell className="py-4">{student.first_name}</TableCell>
                       <TableCell className="py-4">{student.last_name}</TableCell>
                       <TableCell className="py-4">{student.national_code}</TableCell>
@@ -457,13 +470,13 @@ const ClassDetails: React.FC = () => {
                           {periods.map((period, index) => (
                             <TableRow key={`${day}-${index}`} className="hover:bg-gray-50 transition-colors">
                               <TableCell className="py-3">
-                                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                                <span className='bg-cyan-50 p-1 rounded-2xl'>
                                   {index + 1}
-                                </Badge>
+                                </span>
                               </TableCell>
                               <TableCell className="py-3">{period.subject}</TableCell>
                               <TableCell className="py-3">
-                                {period.teacher ? `${period.teacher.first_name} ${period.teacher.last_name}` : 'تخصیص‌نشده'}
+                                {period.teacher ? `${period.teacher.first_name} ${period.teacher.last_name}` : 'باقی مانده'}
                               </TableCell>
                               <TableCell className="py-3">
                                 <AlertDialog>
