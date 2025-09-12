@@ -12,15 +12,30 @@ exports.assignTeacherToClass = async (req, res) => {
 
     if (!cls.days[day]) return res.status(400).json({ message: 'Invalid day' });
 
-    // If period is provided → replace that period
-    console.log(cls.days[day].length);
+    // Determine the target period (1-based)
+    const targetPeriod = period || cls.days[day].length + 1;
+
+    // If period is provided, validate it
     if (period) {
       if (cls.days[day].length < period) {
         return res.status(400).json({ message: 'Invalid period index' });
       }
+    }
+
+    // Check for conflicts: Ensure teacher is not assigned to another class on the same day and period
+    const conflictQuery = {
+      _id: { $ne: classId },
+      [`days.${day}.${targetPeriod - 1}.teacher`]: teacherId
+    };
+    const conflict = await Class.findOne(conflictQuery);
+    if (conflict) {
+      return res.status(409).json({ message: 'Teacher is already assigned to another class at this time' });
+    }
+
+    // Assign or replace
+    if (period) {
       cls.days[day][period - 1] = { subject, teacher: teacherId };
     } else {
-      // Otherwise push as a new period
       cls.days[day].push({ subject, teacher: teacherId });
     }
 
