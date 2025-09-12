@@ -319,7 +319,6 @@ exports.importStudentsFromExcel = async (req, res) => {
         academic_status: academicStatusMap[academicStatusInput] || (validAcademicStatus.includes(academicStatusInput) ? academicStatusInput : ''),
       };
 
-      console.log('Prepared studentData:', JSON.stringify(studentData, null, 2));
 
       // Validate required fields
       const requiredFields = [
@@ -410,11 +409,8 @@ exports.importStudentsFromExcel = async (req, res) => {
       }
 
       try {
-        console.log('Mongoose connection state:', mongoose.connection.readyState);
-        console.log('Attempting to save student...');
         const student = new Student(studentData);
         const savedStudent = await student.save();
-        console.log('Saved student:', savedStudent);
         addedCount++;
       } catch (err) {
         console.error('Error saving student:', err);
