@@ -1,3 +1,4 @@
+// pages/EducationalDeputy.tsx (updated)
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,9 @@ import { useSubmitEducationalDeputyForm } from "@/hooks/useSubmitEducationalDepu
 import { Textarea } from "@/components/ui/textarea";
 import { usePostReport } from "@/hooks/usePostReport";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import moment from "moment-jalaali";
+import { useGetStudentReports } from "@/hooks/useGetStudentReports";
 
 interface User {
   id: string;
@@ -39,6 +42,10 @@ const EducationalDeputy = () => {
     currentJalaaliDate,
     user.id
   );
+  const { data: reportsData, isLoading: reportsLoading, refetch } = useGetStudentReports(submittedCode);
+
+  // @ts-ignore
+  const roleReports = reportsData?.reports?.filter(report => report.from.role === user.role) || [];
 
   const handleSubmitCode = () => {
     if (!/^\d{10}$/.test(nationalCode)) {
@@ -47,7 +54,6 @@ const EducationalDeputy = () => {
     }
     setSubmittedCode(nationalCode);
   };
-
   const handleFormSubmit = (data: Record<FieldMapperKeys, string>) => {
     if (!student?._id) {
       toast.error("دانشجو انتخاب نشده است");
@@ -65,7 +71,6 @@ const EducationalDeputy = () => {
       }
     );
   };
-
   const handleSubmitReport = () => {
     if (!message) {
       toast.error("لطفاً متن گزارش را وارد کنید");
@@ -75,18 +80,17 @@ const EducationalDeputy = () => {
       onSuccess: () => {
         toast.success("گزارش با موفقیت ثبت شد");
         setMessage("");
+        refetch();
       },
       onError: (error) => {
         toast.error(`خطا در ثبت گزارش: ${error.message}`);
       },
     });
   };
-
   return (
     <div className="flex flex-col items-center min-h-screen p-4" dir="rtl">
       <div className="w-full max-w-5xl bg-white shadow rounded-2xl p-8 space-y-8">
         <h1 className="font-bold text-xl text-center">معاونت آموزشی</h1>
-
         <div>
           <Label htmlFor="national_code" className="text-sm font-semibold">
             کد ملی هنرجو
@@ -117,7 +121,6 @@ const EducationalDeputy = () => {
             </p>
           )}
         </div>
-
         {student && <ReadOnlyStudent student={student} />}
         {student && (
           formLoading ? (
@@ -134,7 +137,6 @@ const EducationalDeputy = () => {
             />
           )
         )}
-
         {student && (
           <Card className="border-gray-200 shadow-sm">
             <CardContent className="p-6 space-y-6">
@@ -169,7 +171,31 @@ const EducationalDeputy = () => {
             </CardContent>
           </Card>
         )}
-
+        {student && (
+          <div className="space-y-4">
+            <h2 className="font-semibold text-lg text-gray-800">گزارش‌های قبلی</h2>
+            {reportsLoading ? (
+              <p className="text-gray-600">در حال بارگیری گزارش‌ها...</p>
+            ) : roleReports.length === 0 ? (
+              <p className="text-gray-600">هیچ گزارش قبلی وجود ندارد.</p>
+            ) : (
+              // @ts-ignore
+              roleReports.map((report) => (
+                <Card key={report._id} className="border-gray-200 shadow-sm">
+                  <CardContent className="p-4 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-gray-600">تاریخ: {report.date}</p>
+                      <Badge variant={report.confirmed ? "default" : "secondary"}>
+                        {report.confirmed ? "تایید شده" : "در انتظار تایید"}
+                      </Badge>
+                    </div>
+                    <p className="text-gray-800">{report.message}</p>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        )}
         <Link to="/admin">
           <Button>داشبورد</Button>
         </Link>
@@ -177,5 +203,4 @@ const EducationalDeputy = () => {
     </div>
   );
 };
-
 export default EducationalDeputy;
