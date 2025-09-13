@@ -49,6 +49,7 @@ export default function UsersPage() {
     academic_counseling: 'مشاوره تحصیلی',
     educational_deputy: 'معاونت آموزشی',
     psych_counselor: 'مشاور روانکاوی',
+    disciplinary_deputy: 'معاونت انضباطی'
   };
 
   const permissionTranslations: { [key: string]: string } = {
@@ -59,11 +60,12 @@ export default function UsersPage() {
     academic_counseling: 'واحد مشاوره تحصیلی',
     educational_deputy: 'معاونت آموزشی',
     psych_counselor: 'مشاور روانکاوی',
+    disciplinary_deputy: 'معاونت انضباطی',
     principal: 'مدیر',
     manage_users: 'مدیریت کاربران ویژه',
   };
 
-  const validRoles = ['principal', 'academic_counseling', 'educational_deputy', 'psych_counselor'];
+  const validRoles = ['principal', 'academic_counseling', 'educational_deputy', 'psych_counselor', 'disciplinary_deputy'];
   const validPermissions = [
     'register_student',
     'manage_students',
@@ -74,6 +76,7 @@ export default function UsersPage() {
     'psych_counselor',
     'principal',
     'manage_users',
+    'disciplinary_deputy'
   ];
 
   const handleAddUser = () => {

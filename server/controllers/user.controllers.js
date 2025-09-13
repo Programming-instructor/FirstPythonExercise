@@ -53,7 +53,7 @@ exports.addUser = async (req, res) => {
     if (!validator.isMobilePhone(mobile, 'any')) {
       return res.status(400).json({ message: 'Invalid mobile number' });
     }
-    const validRoles = ['principal', 'academic_counseling', 'educational_deputy', 'psych_counselor'];
+    const validRoles = ['principal', 'academic_counseling', 'educational_deputy', 'psych_counselor', 'disciplinary_deputy'];
     if (!validRoles.includes(role)) {
       return res.status(400).json({ message: `Invalid role. Must be one of: ${validRoles.join(', ')}` });
     }
