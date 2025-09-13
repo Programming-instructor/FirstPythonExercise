@@ -32,6 +32,7 @@ import Index from "./pages/Index"
 import PrincipalStudents from "./pages/admin/PrincipalStudents"
 import PrincipalReports from "./pages/admin/PrincipalReports"
 import PrincipalStudentReports from "./pages/admin/PrincipalStudentReports"
+import EditStudent from "./pages/admin/EditStudent"
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
               <Route path='register-teacher' element={<TeacherRegister />} />
               <Route path='teachers' element={<TeachersList />} />
               <Route path='students' element={<StudentsPage />} />
+              <Route path='students/edit/:id' element={<EditStudent />} />
               <Route path='academic-counseling' element={<AcademicCounseling />} />
               <Route path='educational-deputy' element={<EducationalDeputy />} />
               <Route path='psych-counselor' element={<PsychCounselor />} />
