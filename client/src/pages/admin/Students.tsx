@@ -1,3 +1,4 @@
+// Updated pages/admin/students/StudentsPage.tsx
 import { useState, useRef } from "react";
 import { FaFileImport, FaFileExport, FaSearch } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
@@ -12,13 +13,25 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Pagination } from "@/components/ui/pagination";
-import { Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Pagination } from "@/components/ui/pagination"; // Assuming you have this component
+import { Loader2, Pencil, Trash } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useImportStudents } from "@/hooks/useImportStudents";
 import { useExportStudents } from "@/hooks/useExportStudents";
 import { useFetchStudents } from "@/hooks/useFetchStudents";
+import { useDeleteStudent } from "@/hooks/useDeleteStudent";
 
 const StudentsPage = () => {
   const [page, setPage] = useState(1);
@@ -26,10 +39,11 @@ const StudentsPage = () => {
   const [search, setSearch] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const { data, isLoading } = useFetchStudents(page, limit, search);
   const importMutation = useImportStudents();
   const exportMutation = useExportStudents();
+  const deleteMutation = useDeleteStudent();
+  const navigate = useNavigate();
 
   const students = data?.students || [];
   const totalPages = data?.totalPages || 1;
@@ -60,6 +74,14 @@ const StudentsPage = () => {
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleEdit = (id: string) => {
+    navigate(`/admin/students/edit/${id}`);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id);
   };
 
   return (
@@ -118,7 +140,6 @@ const StudentsPage = () => {
           </Button>
         </CardContent>
       </Card>
-
       {/* Search and Table */}
       <Card className="border-none shadow-lg">
         <div className="relative flex items-center gap-2 mx-10">
@@ -145,12 +166,13 @@ const StudentsPage = () => {
                   <TableHead className="font-semibold text-gray-700 text-start">شماره مادر</TableHead>
                   <TableHead className="font-semibold text-gray-700 text-start">سال تحصیلی</TableHead>
                   <TableHead className="font-semibold text-gray-700 text-start">مقطع</TableHead>
+                  <TableHead className="font-semibold text-gray-700 text-start">عملیات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-10">
+                    <TableCell colSpan={9} className="text-center py-10">
                       <div className="flex justify-center items-center gap-2 text-gray-500">
                         <Loader2 className="h-6 w-6 animate-spin" />
                         <span>در حال بارگذاری...</span>
@@ -171,11 +193,48 @@ const StudentsPage = () => {
                       <TableCell className="text-gray-800">{student.mother_phone}</TableCell>
                       <TableCell className="text-gray-800">{student.academic_year}</TableCell>
                       <TableCell className="text-gray-800">{student.education_level}</TableCell>
+                      <TableCell className="text-gray-800">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(student._id)}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-red-600 hover:text-red-800"
+                              >
+                                <Trash className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent dir="rtl">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>آیا مطمئن هستید؟</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  این عملیات قابل بازگشت نیست و دانش‌آموز برای همیشه حذف خواهد شد.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>لغو</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(student._id)}>
+                                  حذف
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-10 text-gray-500">
+                    <TableCell colSpan={9} className="text-center py-10 text-gray-500">
                       هیچ دانش‌آموزی یافت نشد
                     </TableCell>
                   </TableRow>
@@ -184,7 +243,6 @@ const StudentsPage = () => {
             </Table>
           </div>
         </CardContent>
-
         {totalPages > 1 && (
           <div className="flex justify-center">
             <Pagination

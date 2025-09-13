@@ -987,3 +987,80 @@ exports.getAllUnconfirmedReports = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.getStudentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid student ID' });
+    }
+    const student = await Student.findById(id).lean();
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    res.status(200).json({ student });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.updateStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid student ID' });
+    }
+    const data = { ...req.body };
+    if (data.guardian) {
+      data.guardian = JSON.parse(data.guardian);
+    }
+    if (req.file) {
+      // Delete old image if exists
+      const oldStudent = await Student.findById(id);
+      if (oldStudent && oldStudent.student_portrait_front?.public_id) {
+        const oldImagePath = path.join(__dirname, '../Uploads/students', oldStudent.student_portrait_front.public_id);
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+      data.student_portrait_front = {
+        url: `/Uploads/students/${req.file.filename}`,
+        public_id: req.file.filename,
+      };
+    }
+    const updatedStudent = await Student.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    if (!updatedStudent) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    res.status(200).json({ message: 'Student updated successfully', student: updatedStudent });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid student ID' });
+    }
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    // Delete image if exists
+    if (student.student_portrait_front?.public_id) {
+      const imagePath = path.join(__dirname, '../Uploads/students', student.student_portrait_front.public_id);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+    await Student.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Student deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};

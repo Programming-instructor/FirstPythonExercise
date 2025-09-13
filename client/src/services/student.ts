@@ -153,3 +153,36 @@ export const fetchAllUnconfirmedReports = async () => {
     console.error('Error Fetching Unconfirmed Reports: ', err);
   }
 };
+
+// Updated services/student.ts (add these new functions)
+export const fetchStudentById = async (id: string) => {
+  try {
+    const response = await api.get(`/student/by-id/${id}`);
+    return response.data.student;
+  } catch (error) {
+    console.error('Error fetching student by ID: ', error);
+    throw error;
+  }
+};
+
+export const updateStudent = async (id: string, formData: FormData) => {
+  try {
+    const res = await api.patch(`/student/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+  } catch (error) {
+    console.error('Error updating student: ', error);
+    throw error;
+  }
+};
+
+export const deleteStudent = async (id: string) => {
+  try {
+    const res = await api.delete(`/student/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error('Error deleting student: ', error);
+    throw error;
+  }
+};

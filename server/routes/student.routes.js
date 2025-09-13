@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { uploadImage, uploadExcel, createStudent, importStudentsFromExcel, exportStudentsToExcel, getAllStudents, getStudentByNationalCode, getDecisionsByNationalCode, report, sendOTP, checkOTP, login, currentStudent, getReports, getStudentAttendance, editReport, confirmReport, getConfirmedReportsByNationalCode, getAllUnconfirmedReports } = require('../controllers/student.controller');
+const { uploadImage, uploadExcel, createStudent, importStudentsFromExcel, exportStudentsToExcel, getAllStudents, getStudentByNationalCode, getDecisionsByNationalCode, report, sendOTP, checkOTP, login, currentStudent, getReports, getStudentAttendance, editReport, confirmReport, getConfirmedReportsByNationalCode, getAllUnconfirmedReports, deleteStudent, updateStudent, getStudentById } = require('../controllers/student.controller');
 const { authMiddleware, authMiddlewareStudent, authMiddlewareTeacherAndAdmin } = require('../middleware/auth.middleware'); // Assuming you will create authMiddlewareStudent similar to authMiddlewareTeacher
 
 router.post('/', uploadImage.single('portrait'), authMiddleware, createStudent);
 router.get('/', authMiddleware, getAllStudents);
+router.get('/by-id/:id', authMiddleware, getStudentById);
+router.patch('/:id', uploadImage.single('portrait'), authMiddleware, updateStudent);
+router.delete('/:id', authMiddleware, deleteStudent);
 router.get('/evaluation/:nationalCode', authMiddleware, getDecisionsByNationalCode);
 router.post('/import', uploadExcel.single('file'), authMiddleware, importStudentsFromExcel);
 router.get('/export', authMiddleware, exportStudentsToExcel);
