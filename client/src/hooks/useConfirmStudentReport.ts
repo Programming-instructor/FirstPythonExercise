@@ -7,6 +7,7 @@ export const useConfirmStudentReport = () => {
     mutationFn: (reportId: string) => confirmStudentReport(reportId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['student-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['all-unconfirmed-reports'] });
     },
   });
 };

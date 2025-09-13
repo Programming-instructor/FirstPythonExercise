@@ -8,6 +8,7 @@ export const useEditStudentReport = () => {
       editStudentReport(reportId, message, date),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['student-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['all-unconfirmed-reports'] });
     },
   });
 };

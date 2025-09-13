@@ -954,3 +954,36 @@ exports.getConfirmedReportsByNationalCode = async (req, res) => {
 };
 
 
+exports.getAllUnconfirmedReports = async (req, res) => {
+  try {
+    const students = await Student.find({ 'reports.confirmed': false })
+      .select('first_name last_name national_code reports')
+      .populate('reports.from', 'name role');
+
+    const unconfirmedReports = [];
+
+    students.forEach(student => {
+      student.reports.forEach(report => {
+        if (!report.confirmed) {
+          unconfirmedReports.push({
+            _id: report._id,
+            date: report.date,
+            message: report.message,
+            from: report.from,
+            student: {
+              _id: student._id,
+              first_name: student.first_name,
+              last_name: student.last_name,
+              national_code: student.national_code
+            }
+          });
+        }
+      });
+    });
+
+    res.status(200).json(unconfirmedReports);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};

@@ -144,3 +144,12 @@ export const getConfirmedReports = async (ncode: string) => {
     throw error;
   }
 };
+
+export const fetchAllUnconfirmedReports = async () => {
+  try {
+    const response = await api.get(`/student/unconfirmed-reports`);
+    return response.data;
+  } catch (err) {
+    console.error('Error Fetching Unconfirmed Reports: ', err);
+  }
+};

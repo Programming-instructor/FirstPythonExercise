@@ -13,6 +13,7 @@ import { useConfirmStudentReport } from '@/hooks/useConfirmStudentReport';
 import { useEditStudentReport } from '@/hooks/useEditStudentReport';
 import { Link } from 'react-router-dom';
 import { useGetStudentReports } from '@/hooks/useGetStudentReports';
+import { useGetAllUnconfirmedReports } from '@/hooks/useGetAllUnconfirmedReports';
 import { useFetchStudentByCode } from '@/hooks/useFetchStudnetByNationalCode';
 import ReadOnlyStudent from '@/components/admin/global/ReadOnlyStudent';
 import Breadcrumb from '@/components/admin/global/Breadcrumb';
@@ -22,8 +23,9 @@ const PrincipalStudentReports = () => {
   const [submittedCode, setSubmittedCode] = useState('');
   const [editingStates, setEditingStates] = useState<Record<string, { message: string; date: string }>>({});
 
-  const { data: reportsData, isLoading: reportsLoading, refetch } = useGetStudentReports(nationalCode);
+  const { data: reportsData, isLoading: reportsLoading, refetch } = useGetStudentReports(submittedCode);
   console.log(reportsData)
+  const { data: unconfirmedReports, isLoading: unconfirmedLoading } = useGetAllUnconfirmedReports();
   const { data: student, isLoading: studentLoading, error: studentError } = useFetchStudentByCode(submittedCode);
 
   const confirmMutation = useConfirmStudentReport();
@@ -130,6 +132,97 @@ const PrincipalStudentReports = () => {
             </Button>
           </div>
         </div>
+
+        {!submittedCode && (
+          unconfirmedLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          ) : unconfirmedReports && unconfirmedReports.length > 0 ? (
+            <>
+              <h2 className="text-lg font-semibold mb-6 text-center">
+                گزارش‌های تایید نشده (تعداد: {unconfirmedReports.length})
+              </h2>
+
+              <Accordion type="single" collapsible className="w-full border rounded-lg overflow-hidden">
+                {unconfirmedReports.map((report: any, index: number) => {
+                  initializeEditingState(report);
+                  const editingData = editingStates[report._id] || { message: report.message, date: report.date };
+
+                  return (
+                    <AccordionItem value={`unconf-report-${index}`} key={index} className="border-b last:border-0">
+                      <AccordionTrigger className="text-right hover:bg-neutral-100 hover:no-underline bg-neutral-50 items-center px-4 cursor-pointer font-medium">
+                        گزارش {index + 1} - دانش‌آموز: {report.student.first_name} {report.student.last_name} - تاریخ: {report.date}
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 py-2 bg-white">
+                        <Card className="shadow-sm bg-white">
+                          <CardHeader className="border-b">
+                            <div className="flex justify-between items-center">
+                              <CardTitle className="text-lg">جزئیات گزارش</CardTitle>
+                              <Badge variant="secondary" className="flex gap-1 max-w-fit">
+                                <XCircle className="h-4 w-4" />
+                                نیاز به تایید
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-muted-foreground mt-2 space-y-1">
+                              <p>از: {report.from?.name}</p>
+                              <p>دانش‌آموز: {report.student.first_name} {report.student.last_name} ({report.student.national_code})</p>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-4 space-y-4">
+                            <div>
+                              <Label htmlFor={`date-${report._id}`} className="mb-2 block font-medium">تاریخ</Label>
+                              <Input
+                                id={`date-${report._id}`}
+                                type="date"
+                                value={editingData.date}
+                                onChange={(e) => handleDateChange(e.target.value, report._id)}
+                                disabled={editMutation.isPending}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`message-${report._id}`} className="mb-2 block font-medium">پیام</Label>
+                              <Textarea
+                                id={`message-${report._id}`}
+                                value={editingData.message}
+                                onChange={(e) => handleMessageChange(e.target.value, report._id)}
+                                disabled={editMutation.isPending}
+                                className="min-h-[100px]"
+                                placeholder="پیام گزارش..."
+                              />
+                            </div>
+                            <div className="flex gap-4">
+                              <Button
+                                onClick={() => handleSaveEdit(report._id)}
+                                disabled={editMutation.isPending}
+                                className="flex gap-2"
+                              >
+                                <Save className="h-4 w-4" />
+                                ذخیره تغییرات
+                              </Button>
+                              <Button
+                                onClick={() => handleConfirm(report._id)}
+                                variant="default"
+                                disabled={confirmMutation.isPending}
+                              >
+                                تایید گزارش
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
+            </>
+          ) : (
+            <div className="text-center text-muted-foreground py-8">
+              هیچ گزارش تایید نشده‌ای وجود ندارد.
+            </div>
+          )
+        )}
 
         {student && <ReadOnlyStudent short student={student} />}
 
