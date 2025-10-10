@@ -16,4 +16,7 @@ The goal of this exercise is to learn how to create and run a basic Python scrip
 2. Run the following command in the terminal:
 
    ```bash
-   python welcome.py
+   git clone https://github.com/Programming-instructor/FirstPythonExercise.git
+cd FirstPythonExercise
+python welcome.py
+
