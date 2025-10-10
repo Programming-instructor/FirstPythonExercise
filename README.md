@@ -14,5 +14,5 @@ The goal of this exercise is to learn how to create and run a basic Python scrip
    python welcome.py
 
 ## How to run on terminal
-- git clone https://github.com/Programming-instructor/FirstPythonExercise.git
-- python welcome.py
+1. git clone https://github.com/Programming-instructor/FirstPythonExercise.git
+2. python welcome.py
