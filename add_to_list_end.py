@@ -20,6 +20,9 @@ my_list = [1, 2, 3]
 my_list.insert(len(my_list), 4)
 print(my_list)  
 
+# slicing
+my_list[len(my_list):] = [4, 5]
+
 
 ### new list
 # +
@@ -32,6 +35,11 @@ print(my_list)
 my_list = [1, 2, 3]
 new_list = [*my_list, 4, 5]
 print(new_list)
+
+# Unpacking - 2
+lst = [1, 2, 3]
+new_list = [*lst, *[4, 5]]
+
 
 # list
 my_list = [1, 2, 3]
@@ -46,6 +54,8 @@ new_list.append(4)
 print("Original list:", lst)  
 print("New list:", new_list) 
 
+
+
 # itertools
 # itertools.chain(iterable1, iterable2, iterable3, ...)
 # without lazy 
@@ -55,6 +65,7 @@ lst = [1, 2, 3]
 new_list = list(itertools.chain(lst, [4, 5]))
 print("Original list:", lst) 
 print("New list:", new_list) 
+
 
 # Mohammadreza Vossoughi
 
