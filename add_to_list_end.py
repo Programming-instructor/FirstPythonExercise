@@ -24,6 +24,16 @@ print(my_list)
 my_list[len(my_list):] = [4, 5]
 
 
+# For
+activity_log = []
+actions = ["login", "view_page", "logout"]
+
+for action in actions:
+    activity_log.append(action)  # in-place
+
+
+
+
 ### new list
 # +
 my_list = [1, 2, 3]
